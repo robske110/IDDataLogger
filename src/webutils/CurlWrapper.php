@@ -5,6 +5,7 @@ namespace robske_110\webutils;
 
 use CurlHandle;
 use Exception;
+use robske_110\utils\Logger;
 
 class CurlWrapper{
 	protected CurlHandle $ch;
@@ -76,7 +77,7 @@ class CurlWrapper{
 	}
 	
 	public function getRequest(string $url, array $fields = [], array $header = []){
-		debug("Get request to ".$url);
+		Logger::debug("GET request to ".$url.HTTPUtils::makeFieldStr($fields));
 		var_dump($fields);
 		curl_setopt($this->ch, CURLOPT_POST, false);
 		curl_setopt($this->ch, CURLOPT_URL, $url.HTTPUtils::makeFieldStr($fields));
@@ -87,7 +88,7 @@ class CurlWrapper{
 	}
 	
 	public function postRequest(string $url, $body, array $header = []){
-		debug("Post request to ".$url);
+		Logger::debug("POST request to ".$url."body:".print_r($body));
 		var_dump($body);
 		curl_setopt($this->ch, CURLOPT_POST, true);
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $body);

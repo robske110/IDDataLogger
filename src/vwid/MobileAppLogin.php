@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use DOMDocument;
+use robske_110\utils\Logger;
+use robske_110\vwid\exception\VWLoginException;
 use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
@@ -19,7 +21,7 @@ class MobileAppLogin extends CurlWrapper{
 	
 	public function __construct(LoginInformation $loginInformation){
 		parent::__construct();
-		debug("Loading login Page...");
+		Logger::debug("Loading login Page...");
 
 		libxml_use_internal_errors(true);
 
@@ -37,7 +39,7 @@ class MobileAppLogin extends CurlWrapper{
 		#var_dump($fields);
 		$fields["email"] = $loginInformation->username;
 		
-		debug("Sending email...");
+		Logger::debug("Sending email...");
 		var_dump($form->getAttribute("action"));
 		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		
@@ -51,7 +53,7 @@ class MobileAppLogin extends CurlWrapper{
 		$fields["password"] = $loginInformation->password;
 		#var_dump($fields);
 		
-		debug("Sending password ...");
+		Logger::debug("Sending password ...");
 		try{
 			$nextPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		}catch(CurlError $curlError){
@@ -61,11 +63,10 @@ class MobileAppLogin extends CurlWrapper{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			//error;
-			debug("Failed");
+			throw new VWLoginException("Unable to login. Could not find location header.");
 		}
 		var_dump($this->weConnectRedirFields);
-		debug("getting real token...");
+		Logger::debug("Getting real token...");
 		$this->appTokens = json_decode($this->postRequest("https://login.apps.emea.vwapps.io/login/v1", json_encode([
 			"state" => $this->weConnectRedirFields["state"],
 			"id_token" => $this->weConnectRedirFields["id_token"],
