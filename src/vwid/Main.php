@@ -5,7 +5,9 @@ namespace robske_110\vwid;
 
 use DateTime;
 use DateTimeZone;
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\webutils\CurlError;
 
 class Main{
 	/** @var resource */
@@ -122,6 +124,8 @@ class Main{
 		}
 		
 		Logger::log("Logging in...");
+		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
+		$this->idLogin = new MobileAppLogin($loginInformation);
 		$this->login();
 	}
 	
@@ -139,8 +143,7 @@ class Main{
 	}
 	
 	private function login(){
-		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
-		$this->idLogin = new MobileAppLogin($loginInformation);
+		$this->idLogin->login();
 		
 		$vehicles = json_decode($this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [
 			"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
@@ -195,15 +198,31 @@ class Main{
 	
 	private function fetchCarStatus(){
 		Logger::debug("fetching car status...");
-		$data = json_decode($this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
-			"accept: */*",
-			"content-type: application/json",
-			"content-version: 1",
-			"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
-			"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
-			"accept-language: de-de",
-			"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
-		]), true);#
+		try{
+			$data = $this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
+				"accept: */*",
+				"content-type: application/json",
+				"content-version: 1",
+				"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
+				"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
+				"accept-language: de-de",
+				"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
+			]);
+		}catch(CurlError $curlError){
+			Logger::critical("Failed to fetch car status");
+			ErrorUtils::logException($curlError);
+			return;
+		}
+		try{
+			$data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+		}catch(\JsonException $jsonException){
+			if(str_contains($data, "Unauthorized") || str_contains($data, "401")){
+				$this->login();
+			}else{
+				Logger::critical("Error while decoding car status.");
+				throw $jsonException;
+			}
+		}
 		
 		if(!empty($data["error"])){
 			Logger::critical("Error while fetching car status: ".print_r($data["error"], true));
@@ -211,7 +230,8 @@ class Main{
 		}
 		
 		if(!isset($data["data"])){
-			Logger::critical("Failed to get carStatus: ".print_r($data));
+			Logger::critical("Failed to get carStatus: ".print_r($data, true));
+			var_dump($data);
 			return;
 		}
 		

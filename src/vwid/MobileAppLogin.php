@@ -15,16 +15,22 @@ class MobileAppLogin extends CurlWrapper{
 	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";
 	
+	private LoginInformation $loginInformation;
+	
 	private array $weConnectRedirFields = [];
 	
 	private array $appTokens = [];
 	
 	public function __construct(LoginInformation $loginInformation){
 		parent::__construct();
+		$this->loginInformation = $loginInformation;
+	}
+	
+	public function login(){
 		Logger::debug("Loading login Page...");
-
+		
 		libxml_use_internal_errors(true);
-
+		
 		$loginPage = $this->getRequest(self::LOGIN_BASE."/authorize", [
 			"nonce" => base64_encode(random_bytes(12)),
 			"redirect_uri" => "weconnect://authenticated"
@@ -37,7 +43,7 @@ class MobileAppLogin extends CurlWrapper{
 		$form = new Form($dom->getElementById("emailPasswordForm"));
 		$fields = $form->getHiddenFields();
 		#var_dump($fields);
-		$fields["email"] = $loginInformation->username;
+		$fields["email"] = $this->loginInformation->username;
 		
 		Logger::debug("Sending email...");
 		var_dump($form->getAttribute("action"));
@@ -50,12 +56,12 @@ class MobileAppLogin extends CurlWrapper{
 		
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
-		$fields["password"] = $loginInformation->password;
+		$fields["password"] = $this->loginInformation->password;
 		#var_dump($fields);
 		
 		Logger::debug("Sending password ...");
 		try{
-			$nextPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
+			$this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		}catch(CurlError $curlError){
 			if($curlError->curlErrNo !== 1){
 				throw $curlError;
