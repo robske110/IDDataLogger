@@ -34,48 +34,97 @@ $vin = $vehicleToUse["vin"];
 $name = $vehicleToUse["nickname"];
 
 debug("getting cardata");
-var_dump($id3Login->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$vin."/status", [], [
+$data = json_decode($id3Login->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$vin."/status", [], [
 	"accept: */*",
 	"content-type: application/json",
 	"content-version: 1",
 	"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
 	"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
 	"accept-language: de-de",
-	"Authorization: Bearer ".$id3Login->getAppTokens()["accessToken"],
-	//"Host: customer-profile.apps.emea.vwapps.io",
-]));
-exit;
+	"Authorization: Bearer ".$id3Login->getAppTokens()["accessToken"]
+]), true);#
 
-debug("user:");
-$userInfo = json_decode($id3Login->authenticatedGetRequest("https://www.volkswagen.de/app/authproxy/vw-de/user", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true);
-var_dump($userInfo);
-debug("accesstokencar:");
-$tokens = json_decode($id3Login->authenticatedGetRequest("https://www.volkswagen.de/app/authproxy/vw-de/tokens", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true);
-var_dump($tokens);
-$accessTokenCar = $tokens["access_token"];
-debug("carlist:");
-var_dump($id3Login->authenticatedGetRequest("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars", [], ["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]));
-#https://w1hub-backend-production.apps.emea.vwapps.io/cars is empty ???
+if(!empty($data["error"])){
+	debug("err".print_r($data["errror"], true));
+}
 
-debug("accesstokenweconnect:");
-$accessTokenWeConnect = json_decode($id3Login->authenticatedGetRequest("https://www.volkswagen.de/app/authproxy/vwag-weconnect/tokens", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true)["access_token"];
-debug("accesstokenweconnectexchange:");
-$accessTokenWeConnect = $id3Login->authenticatedGetRequest("https://myvw-idk-token-exchanger.apps.emea.vwapps.io/token-exchange?isWcar=true", [], ["Accept: application/json, text/plain", "Authorization: Bearer ".$accessTokenWeConnect]);
+if(!isset($data["data"])){
+	exit;
+}
 
-/*var_dump($id3Login->authenticatedGetRequest("https://login.apps.emea.vwapps.io/authorize?nonce=&redirect_uri=weconnect://authenticated", [], [
-	"Host: login.apps.emea.vwapps.io"
-]));*/
+$data = $data["data"];
 
+const WINDOW_HEATING_STATUS_DYN = 0;
 
-#debug("fuelstatus:");
-#var_dump(json_decode($id3Login->authenticatedGetRequest("https://cardata.apps.emea.vwapps.io/vehicles/VIN/fuel/status", [], ["Accept: application/json", "Authorization: Bearer ".$accessTokenWeConnect, "User-Id: ".$userInfo["sub"]]), true));
+$dataMapping = [
+	"batteryStatus" => [
+		"currentSOC_pct" => "batterySOC",
+		"cruisingRangeElectric_km" => "remainingRange"
+	],
+	"chargingStatus" => [
+		"remainingChargingTimeToComplete_min" => "remainingChargingTime",
+		"chargingState" => "chargeState",
+		"chargePower_kW" => "chargePower",
+		"chargeRate_kmph" => "chargeRateKMPH"
+	],
+	"chargingSettings" => [
+		"maxChargeCurrentAC" => null,
+		"autoUnlockPlugWhenCharged" => "autoUnlockPlugWhenCharged",
+		"targetSOC_pct" => "targetSOC"
+	],
+	"plugStatus" => [
+		"plugConnectionState" => "plugConnectionState",
+		"plugLockState" => "plugLockState"
+	],
+	"climatisationStatus" => [
+		"remainingClimatisationTime_min" => "remainClimatisationTime",
+		"climatisationState" => "hvacState"
+	],
+	"climatisationSettings" => [
+		"targetTemperature_C" => "hvacTargetTemp",
+		"climatisationWithoutExternalPower" => "hvacWithoutExternalPower",
+		"climatizationAtUnlock" => "hvacAtUnlock",
+		"windowHeatingEnabled" => null,
+        "zoneFrontLeftEnabled" => null,
+        "zoneFrontRightEnabled" => null,
+		"zoneRearLeftEnabled" => null,
+        "zoneRearRightEnabled" => null
+	],
+	"windowHeatingStatus" => [
+		"windowHeatingStatus" => WINDOW_HEATING_STATUS_DYN
+	]
+];
 
-var_dump($id3Login->authenticatedGetRequest("https://customer-profile.apps.emea.vwapps.io/v1/customers/" . $userInfo["sub"] . "/realCarData", [], [
-	"user-agent: okhttp/3.7.0",
-	"Accept: application/json",
-	"Authorization: Bearer ".$accessTokenCar,
-	"Host: customer-profile.apps.emea.vwapps.io",
-]));
+$resultData = [];
 
+var_dump($data);
+readValues($data, $dataMapping, $resultData);
+var_dump($resultData);
 
-#var_dump($id3Login->authenticatedGetRequest("https://myvw-idk-token-exchanger.apps.emea.vwapps.io/token-exchange?isWcar=true", [], ["Accept: application/json", "Authorization: Bearer " .$id3Login->getCsrf()]));
+function readValues(array $data, array $dataMap, array &$resultData, ?string $lastLevelName = null){
+	foreach($data as $key => $content){
+		if (array_key_exists($key, $dataMap)){
+			if (is_array($dataMap[$key])){
+				readValues($content, $dataMap[$key], $resultData, $key);
+			}else{
+				if (!is_int($dataMap[$key])){
+					$resultData[$dataMap[$key] ?? $key] = $content;
+				}else{
+					switch ($dataMap[$key]){
+						case WINDOW_HEATING_STATUS_DYN:
+							foreach ($content as $window){
+								$resultData[$window["windowLocation"] . "WindowHeatingState"] = $window["windowHeatingState"];
+							}
+							break;
+						default:
+							debug("Unable to read content at " . $key . ": " . print_r($content, true));
+					}
+				}
+			}
+		}elseif($lastLevelName !== "" && $key == "carCapturedTimestamp"){
+			$resultData[$lastLevelName."Timestamp"] = new DateTime($content);
+		}else{
+			debug("Ignored content at ".$key.": "/*.print_r($content, true)*/);
+		}
+	}
+}
