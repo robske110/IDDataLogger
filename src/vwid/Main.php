@@ -90,6 +90,8 @@ class Main{
 	
 	const WINDOW_HEATING_STATUS_DYN = 0;
 	
+	private int $currentUpdateRate = 60;
+	
 	public function __construct(){
 		Logger::log("Reading config...");
 		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
@@ -136,8 +138,14 @@ class Main{
 			Logger::log("Ready!");
 			$this->firstTick = false;
 		}
-		if($tickCnter % 60 == 0){
+		if($tickCnter % $this->currentUpdateRate == 0){
 			$this->fetchCarStatus();
+			//increase update rate while charging:
+			if($this->carStatusData["chargeState"] == "readyForCharging"){
+				$this->currentUpdateRate = 60*5;
+			}else{
+				$this->currentUpdateRate = 60;
+			}
 			$this->writeCarStatus();
 		}
 	}
