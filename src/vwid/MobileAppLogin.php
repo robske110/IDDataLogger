@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use DOMDocument;
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\vwid\exception\VWLoginException;
 use robske_110\webutils\CurlError;
@@ -73,7 +74,7 @@ class MobileAppLogin extends CurlWrapper{
 		}
 		var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");
-		$this->appTokens = json_decode($this->postRequest("https://login.apps.emea.vwapps.io/login/v1", json_encode([
+		$this->appTokens = json_decode($this->postRequest(self::LOGIN_BASE."/login/v1", json_encode([
 			"state" => $this->weConnectRedirFields["state"],
 			"id_token" => $this->weConnectRedirFields["id_token"],
 			"redirect_uri" => "weconnect://authenticated",
@@ -86,7 +87,32 @@ class MobileAppLogin extends CurlWrapper{
 			"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
 			"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
 			"accept-language: de-de",
-		]), true);
+		]), true, 512, JSON_THROW_ON_ERROR);
+	}
+	
+	/**
+	 * Tries to refresh the tokens
+	 *
+	 * @return bool Returns whether the token refresh was successful. If false is returned consider calling login()
+	 */
+	public function refreshToken(): bool{
+		try{
+			$this->appTokens = json_decode($this->getRequest(self::LOGIN_BASE."/refresh/v1", [], [
+				"accept: */*",
+				"content-type: application/json",
+				"content-version: 1",
+				"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
+				"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
+				"accept-language: de-de",
+				"Authorization: Bearer ".$this->appTokens["refreshToken"]
+			]), true, 512, JSON_THROW_ON_ERROR);
+			var_dump($this->appTokens);
+		}catch(\Exception $exception){
+			Logger::warning("Failed to refresh token");
+			ErrorUtils::logException($exception);
+			return false;
+		}
+		return true;
 	}
 	
 	protected function onHeaderEntry(string $entryName, string $entryValue){

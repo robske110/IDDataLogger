@@ -207,7 +207,7 @@ class Main{
 	private function fetchCarStatus(){
 		Logger::debug("fetching car status...");
 		try{
-			$data = $this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
+			$dataO = $this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
 				"accept: */*",
 				"content-type: application/json",
 				"content-version: 1",
@@ -222,14 +222,10 @@ class Main{
 			return;
 		}
 		try{
-			$data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+			$data = json_decode($dataO, true, 512, JSON_THROW_ON_ERROR);
 		}catch(\JsonException $jsonException){
-			if(str_contains($data, "Unauthorized") || str_contains($data, "401")){
-				$this->login();
-			}else{
-				Logger::critical("Error while decoding car status.");
-				throw $jsonException;
-			}
+			Logger::critical("Error while decoding car status json.");
+			throw $jsonException;
 		}
 		
 		if(!empty($data["error"])){
@@ -238,8 +234,19 @@ class Main{
 		}
 		
 		if(!isset($data["data"])){
-			Logger::critical("Failed to get carStatus: ".print_r($data, true));
-			var_dump($data);
+			if(str_contains($data, "Unauthorized") || str_contains($data, "401")){
+				Logger::debug("Got: ".$dataO);
+				Logger::notice("Refreshing tokens...");
+				if (!$this->idLogin->refreshToken()){
+					Logger::notice("Failed to refresh token, now executing relogin");
+					$this->login();
+				}
+				$this->currentUpdateRate = 1; //trigger update on next tick
+			}else{
+				Logger::critical("Failed to get carStatus: " . print_r($data, true));
+				var_dump($data);
+				var_dump($dataO);
+			}
 			return;
 		}
 		
@@ -276,7 +283,7 @@ class Main{
 			}elseif($lastLevelName !== "" && $key == "carCapturedTimestamp"){
 				$resultData[$lastLevelName."Timestamp"] = new DateTime($content);
 			}else{
-				Logger::debug("Ignored content at ".$key.": "/*.print_r($content, true)*/);
+				Logger::debug("Ignored content at ".$key/*.": ".print_r($content, true)*/);
 			}
 		}
 	}
