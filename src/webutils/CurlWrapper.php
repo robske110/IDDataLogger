@@ -78,23 +78,25 @@ class CurlWrapper{
 	
 	public function getRequest(string $url, array $fields = [], array $header = []){
 		Logger::debug("GET request to ".$url.HTTPUtils::makeFieldStr($fields));
-		var_dump($fields);
 		curl_setopt($this->ch, CURLOPT_POST, false);
 		curl_setopt($this->ch, CURLOPT_URL, $url.HTTPUtils::makeFieldStr($fields));
 		#$header[] = "Connection: keep-alive";
-		#var_dump($header);
+		if(!empty($header)){
+			Logger::var_dump($header, "header");
+		}
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $header);
 		return $this->curl_exec();
 	}
 	
 	public function postRequest(string $url, $body, array $header = []){
-		Logger::debug("POST request to ".$url."body:".print_r($body));
-		var_dump($body);
+		Logger::debug("POST request to ".$url." body:".print_r($body, true));
 		curl_setopt($this->ch, CURLOPT_POST, true);
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $body);
 		curl_setopt($this->ch, CURLOPT_URL, $url);
 		#$header[] = "Connection: keep-alive";
-		var_dump($header);
+		if(!empty($header)){
+			Logger::var_dump($header, "header");
+		}
 		curl_setopt($this->ch, CURLOPT_HTTPHEADER, $header);
 		return $this->curl_exec();
 		
@@ -102,5 +104,9 @@ class CurlWrapper{
 	
 	public function getCh(){
 		return $this->ch;
+	}
+	
+	public function __destruct(){
+		curl_close($this->ch);
 	}
 }

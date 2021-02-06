@@ -43,14 +43,11 @@ class MobileAppLogin extends CurlWrapper{
 		
 		$form = new Form($dom->getElementById("emailPasswordForm"));
 		$fields = $form->getHiddenFields();
-		#var_dump($fields);
 		$fields["email"] = $this->loginInformation->username;
 		
 		Logger::debug("Sending email...");
-		var_dump($form->getAttribute("action"));
 		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		
-		#var_dump($pwdPage);
 		$dom = new DOMDocument();
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($pwdPage);
@@ -58,7 +55,7 @@ class MobileAppLogin extends CurlWrapper{
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
 		$fields["password"] = $this->loginInformation->password;
-		#var_dump($fields);
+		#Logger::var_dump($fields);
 		
 		Logger::debug("Sending password ...");
 		try{
@@ -72,7 +69,7 @@ class MobileAppLogin extends CurlWrapper{
 		if(empty($this->weConnectRedirFields)){
 			throw new VWLoginException("Unable to login. Could not find location header.");
 		}
-		var_dump($this->weConnectRedirFields);
+		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");
 		$this->appTokens = json_decode($this->postRequest(self::LOGIN_BASE."/login/v1", json_encode([
 			"state" => $this->weConnectRedirFields["state"],

@@ -127,6 +127,7 @@ class Main{
 		
 		Logger::log("Logging in...");
 		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
+		Logger::addOutputFilter($this->config["password"]);
 		$this->idLogin = new MobileAppLogin($loginInformation);
 		$this->login();
 	}
@@ -156,7 +157,6 @@ class Main{
 		$vehicles = json_decode($this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [
 			"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
 		]), true)["data"];
-		var_dump($vehicles);
 		
 		$vehicleToUse = $vehicles[0];
 		if(!empty($this->config["vin"])){
@@ -205,7 +205,7 @@ class Main{
 	}
 	
 	private function fetchCarStatus(){
-		Logger::debug("fetching car status...");
+		Logger::log("Fetching car status...");
 		try{
 			$dataO = $this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
 				"accept: */*",
@@ -262,14 +262,14 @@ class Main{
 	
 	private function readValues(array $data, array $dataMap, array &$resultData, ?string $lastLevelName = null){
 		foreach($data as $key => $content){
-			if (array_key_exists($key, $dataMap)){
-				if (is_array($dataMap[$key])){
+			if(array_key_exists($key, $dataMap)){
+				if(is_array($dataMap[$key])){
 					$this->readValues($content, $dataMap[$key], $resultData, $key);
 				}else{
-					if (!is_int($dataMap[$key])){
+					if(!is_int($dataMap[$key])){
 						$resultData[$dataMap[$key] ?? $key] = $content;
 					}else{
-						switch ($dataMap[$key]){
+						switch($dataMap[$key]){
 							case self::WINDOW_HEATING_STATUS_DYN:
 								foreach ($content as $window){
 									$resultData[$window["windowLocation"] . "WindowHeatingState"] = $window["windowHeatingState"];
