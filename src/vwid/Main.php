@@ -119,7 +119,7 @@ class Main{
 					"carStatus_write",
 					$query
 				) === false){
-				throw new \Exception("Failed to prepare the prepared statement: ".pg_last_error($this->db));
+				throw new \Exception("Failed to prepare the carStatus_write statement: ".pg_last_error($this->db));
 			}
 		}else{
 			throw new \Exception("Failed to connect to db!");
@@ -142,7 +142,7 @@ class Main{
 		if($tickCnter % $this->currentUpdateRate == 0){
 			$this->fetchCarStatus();
 			//increase update rate while charging:
-			if($this->carStatusData["chargeState"] == "readyForCharging"){
+			if($this->carStatusData["chargeState"] == "readyForCharging" && $this->carStatusData["hvacState"] == "off"){
 				$this->currentUpdateRate = 60*5;
 			}else{
 				$this->currentUpdateRate = 60;
