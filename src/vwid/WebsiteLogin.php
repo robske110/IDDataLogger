@@ -35,7 +35,6 @@ class WebsiteLogin extends CurlWrapper{
 		$fields["email"] = $loginInformation->username;
 		
 		debug("Sending email...");
-		var_dump($form->getAttribute("action"));
 		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		
 		#var_dump($pwdPage);

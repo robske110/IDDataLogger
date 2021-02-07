@@ -6,7 +6,9 @@ namespace robske_110\vwid;
 use DOMDocument;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\exception\VWLoginException;
+use robske_110\vwid\exception\IDAPIException;
+use robske_110\vwid\exception\IDAuthorizationException;
+use robske_110\vwid\exception\IDLoginException;
 use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
@@ -67,7 +69,7 @@ class MobileAppAPI extends CurlWrapper{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			throw new VWLoginException("Unable to login. Could not find location header.");
+			throw new IDLoginException("Unable to login. Could not find location header.");
 		}
 		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");
@@ -87,6 +89,42 @@ class MobileAppAPI extends CurlWrapper{
 		]), true, 512, JSON_THROW_ON_ERROR);
 	}
 	
+	protected function onHeaderEntry(string $entryName, string $entryValue){
+		if($entryName == "location"){
+			if(str_starts_with($entryValue, "weconnect://")){
+				$args = explode("&", substr($entryValue, strlen("weconnect://authenticated#")));
+				foreach($args as $field){
+					$field = explode("=", $field);
+					$this->weConnectRedirFields[$field[0]] = $field[1];
+				}
+			}
+		}
+	}
+	
+	public function apiGet(string $apiEndpoint, array $fields = [], string $apiBase = self::API_BASE): array{
+		$response = $this->getRequest($apiBase."/".$apiEndpoint, $fields, [
+			"Authorization: Bearer ".$this->appTokens["accessToken"]
+		]);
+		$httpCode = curl_getinfo($this->getCh(), CURLINFO_RESPONSE_CODE);
+		if($httpCode === 401){
+			throw new IDAuthorizationException("Not authorized to execute API request '".$apiEndpoint."' (httpCode 401)");
+		}
+		if($httpCode !== 200 && $httpCode !== 202 && $httpCode !== 207){
+			throw new IDAPIException("API request '".$apiEndpoint."' failed with httpCode ".$httpCode);
+		}
+		if(str_contains($response, "Unauthorized")){
+			Logger::debug("Got: ".$response);
+			throw new IDAuthorizationException("Not authorized to execute API request '".$apiEndpoint."' (response contained Unauthorized)");
+		}
+		try{
+			return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+		}catch(\JsonException $jsonException){
+			Logger::critical("Error while json decoding API request '".$apiEndpoint."'");
+			ErrorUtils::logException($jsonException);
+			throw new IDAPIException("Could not decode json for request '".$apiEndpoint."'");
+		}
+	}
+	
 	/**
 	 * Tries to refresh the tokens
 	 *
@@ -103,25 +141,13 @@ class MobileAppAPI extends CurlWrapper{
 				"accept-language: de-de",
 				"Authorization: Bearer ".$this->appTokens["refreshToken"]
 			]), true, 512, JSON_THROW_ON_ERROR);
-			var_dump($this->appTokens);
+			Logger::var_dump($this->appTokens, "new appTokens");
 		}catch(\Exception $exception){
 			Logger::warning("Failed to refresh token");
 			ErrorUtils::logException($exception);
 			return false;
 		}
 		return true;
-	}
-	
-	protected function onHeaderEntry(string $entryName, string $entryValue){
-		if($entryName == "location"){
-			if(str_starts_with($entryValue, "weconnect://")){
-				$args = explode("&", substr($entryValue, strlen("weconnect://authenticated#")));
-				foreach($args as $field){
-					$field = explode("=", $field);
-					$this->weConnectRedirFields[$field[0]] = $field[1];
-				}
-			}
-		}
 	}
 	
 	public function getAppTokens(): array{

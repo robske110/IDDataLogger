@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use DateTime;
-use DateTimeZone;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\vwid\exception\IDAPIException;
+use robske_110\vwid\exception\IDAuthorizationException;
 use robske_110\webutils\CurlError;
 
 class Main{
@@ -154,9 +155,7 @@ class Main{
 	private function login(){
 		$this->idAPI->login();
 		
-		$vehicles = json_decode($this->idAPI->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [
-			"Authorization: Bearer ".$this->idAPI->getAppTokens()["accessToken"]
-		]), true)["data"];
+		$vehicles = $this->idAPI->apiGet("vehicles")["data"];
 		
 		$vehicleToUse = $vehicles[0];
 		if(!empty($this->config["vin"])){
@@ -207,25 +206,24 @@ class Main{
 	private function fetchCarStatus(){
 		Logger::log("Fetching car status...");
 		try{
-			$dataO = $this->idAPI->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
-				"accept: */*",
-				"content-type: application/json",
-				"content-version: 1",
-				"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
-				"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
-				"accept-language: de-de",
-				"Authorization: Bearer ".$this->idAPI->getAppTokens()["accessToken"]
-			]);
+			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/status");
+		}catch(IDAuthorizationException $exception){
+			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
+			Logger::notice("Refreshing tokens...");
+			if (!$this->idAPI->refreshToken()){
+				Logger::notice("Failed to refresh token, trying to re-login");
+				$this->login();
+			}
+			$this->currentUpdateRate = 1; //trigger update on next tick
+			return;
+		}catch(IDAPIException $idAPIException){
+			Logger::critical("IDAPIException while trying to fetch car status");
+			ErrorUtils::logException($idAPIException);
+			return;
 		}catch(CurlError $curlError){
-			Logger::critical("Failed to fetch car status");
+			Logger::critical("CurlError while trying to fetch car status");
 			ErrorUtils::logException($curlError);
 			return;
-		}
-		try{
-			$data = json_decode($dataO, true, 512, JSON_THROW_ON_ERROR);
-		}catch(\JsonException $jsonException){
-			Logger::critical("Error while decoding car status json.");
-			throw $jsonException;
 		}
 		
 		if(!empty($data["error"])){
@@ -234,19 +232,8 @@ class Main{
 		}
 		
 		if(!isset($data["data"])){
-			if(str_contains($data, "Unauthorized") || str_contains($data, "401")){
-				Logger::debug("Got: ".$dataO);
-				Logger::notice("Refreshing tokens...");
-				if (!$this->idAPI->refreshToken()){
-					Logger::notice("Failed to refresh token, now executing relogin");
-					$this->login();
-				}
-				$this->currentUpdateRate = 1; //trigger update on next tick
-			}else{
-				Logger::critical("Failed to get carStatus: " . print_r($data, true));
-				var_dump($data);
-				var_dump($dataO);
-			}
+			Logger::critical("Failed to get carStatus: No Data in response!");
+			Logger::var_dump($data, "decoded Data");
 			return;
 		}
 		

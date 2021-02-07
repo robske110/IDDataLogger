@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace robske_110\webutils;
 
-use Exception;
+use RuntimeException;
 
-class CurlError extends Exception{
+class CurlError extends RuntimeException{
 	public int $curlErrNo;
 }
