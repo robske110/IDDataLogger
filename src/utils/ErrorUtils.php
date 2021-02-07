@@ -78,7 +78,7 @@ class ErrorUtils{
 	
 	public static function logException(\Throwable $t, $trace = null){
 		if($trace === null){
-			$trace = $e->getTrace();
+			$trace = $t->getTrace();
 		}
 		Logger::critical(self::getErrorString($t, $trace));
 		foreach(self::getTrace(0, $trace) as $i => $line){
