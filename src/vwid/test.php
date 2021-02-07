@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 use robske_110\vwid\LoginInformation;
-use robske_110\vwid\MobileAppLogin;
+use robske_110\vwid\MobileAppAPI;
 
 const BASE_DIR = __DIR__."/../../";
 
@@ -14,7 +14,7 @@ function debug($str){
 
 $config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 
-$id3Login = new MobileAppLogin(new LoginInformation($config["username"], $config["password"]));
+$id3Login = new MobileAppAPI(new LoginInformation($config["username"], $config["password"]));
 
 
 $vehicles = json_decode($id3Login->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [

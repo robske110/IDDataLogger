@@ -11,7 +11,7 @@ use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
 
-class MobileAppLogin extends CurlWrapper{
+class MobileAppAPI extends CurlWrapper{
 	const LOGIN_BASE = "https://login.apps.emea.vwapps.io";
 	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";

@@ -17,7 +17,7 @@ class Main{
 	
 	public array $config;
 	
-	private MobileAppLogin $idLogin;
+	private MobileAppAPI $idAPI;
 	private string $vin;
 	
 	private array $carStatusData;
@@ -128,7 +128,7 @@ class Main{
 		Logger::log("Logging in...");
 		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
 		Logger::addOutputFilter($this->config["password"]);
-		$this->idLogin = new MobileAppLogin($loginInformation);
+		$this->idAPI = new MobileAppAPI($loginInformation);
 		$this->login();
 	}
 	
@@ -152,10 +152,10 @@ class Main{
 	}
 	
 	private function login(){
-		$this->idLogin->login();
+		$this->idAPI->login();
 		
-		$vehicles = json_decode($this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [
-			"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
+		$vehicles = json_decode($this->idAPI->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles", [], [
+			"Authorization: Bearer ".$this->idAPI->getAppTokens()["accessToken"]
 		]), true)["data"];
 		
 		$vehicleToUse = $vehicles[0];
@@ -207,14 +207,14 @@ class Main{
 	private function fetchCarStatus(){
 		Logger::log("Fetching car status...");
 		try{
-			$dataO = $this->idLogin->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
+			$dataO = $this->idAPI->getRequest("https://mobileapi.apps.emea.vwapps.io/vehicles/".$this->vin."/status", [], [
 				"accept: */*",
 				"content-type: application/json",
 				"content-version: 1",
 				"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
 				"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
 				"accept-language: de-de",
-				"Authorization: Bearer ".$this->idLogin->getAppTokens()["accessToken"]
+				"Authorization: Bearer ".$this->idAPI->getAppTokens()["accessToken"]
 			]);
 		}catch(CurlError $curlError){
 			Logger::critical("Failed to fetch car status");
@@ -237,7 +237,7 @@ class Main{
 			if(str_contains($data, "Unauthorized") || str_contains($data, "401")){
 				Logger::debug("Got: ".$dataO);
 				Logger::notice("Refreshing tokens...");
-				if (!$this->idLogin->refreshToken()){
+				if (!$this->idAPI->refreshToken()){
 					Logger::notice("Failed to refresh token, now executing relogin");
 					$this->login();
 				}
