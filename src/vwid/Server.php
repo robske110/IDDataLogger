@@ -24,8 +24,8 @@ if(!isset($config["debug"])){
 	$config["debug"] = [];
 }
 Logger::init(
-	$config["debug"]["debug-enable"] ?? true, $config["debug"]["file-enable"] ?? true,
-	($config["debug"]["debug-dir"] ?? BASE_DIR."/debug/")
+	$config["logging"]["log-enable"] ?? true, $config["logging"]["file-enable"] ?? true,
+	($config["logging"]["log-dir"] ?? BASE_DIR."/log/")
 );
 
 function handleException(Throwable $t, $trace = null){

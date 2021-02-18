@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use robske_110\utils\Logger;
 use robske_110\vwid\LoginInformation;
 use robske_110\vwid\WebsiteLogin;
 
@@ -11,6 +12,8 @@ require(BASE_DIR."src/Autoloader.php");
 function debug($str){
 	echo($str.PHP_EOL);
 }
+
+Logger::init(false, false);
 
 $config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 
@@ -26,7 +29,11 @@ foreach(json_decode($id3Login->getRequest(
 	[],
 	["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]
 ), true)["images"] as $image){
-	if($image["viewDirection"] == "front" && $image["angle"] == "right"){ //TODO config with fallback
+	var_dump($image);
+	if(
+		$image["viewDirection"] == ($config["carpic"]["viewDirection"] ?? "front") &&
+		$image["angle"] == ($config["carpic"]["viewDirection"] ?? "right")
+	){
 		$imageUrl = $image["url"];
 	}
 }

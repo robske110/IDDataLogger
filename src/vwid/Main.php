@@ -98,7 +98,10 @@ class Main{
 		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 		
 		Logger::log("Connecting to db...");
-		$this->db = pg_connect("host=".$this->config["db"]["host"]." dbname=".$this->config["db"]["dbname"]." user=".$this->config["db"]["user"]);
+		$this->db = pg_connect(
+			"host=".$this->config["db"]["host"]." dbname=".$this->config["db"]["dbname"].
+			" user=".$this->config["db"]["user"].(isset($this->config["db"]["user"]) ? " password=".$this->config["db"]["user"] : "")
+		);
 		if($this->db !== false){
 			$query = "INSERT INTO carStatus(time";
 			foreach(self::DB_FIELDS as $dbField){
@@ -210,9 +213,11 @@ class Main{
 		}catch(IDAuthorizationException $exception){
 			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
 			Logger::notice("Refreshing tokens...");
-			if (!$this->idAPI->refreshToken()){
+			if(!$this->idAPI->refreshToken()){
 				Logger::notice("Failed to refresh token, trying to re-login");
 				$this->login();
+			}else{
+				Logger::log("Successfully refreshed token");
 			}
 			$this->currentUpdateRate = 1; //trigger update on next tick
 			return;
