@@ -69,24 +69,20 @@ class MobileAppAPI extends CurlWrapper{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			throw new IDLoginException("Unable to login. Could not find location header.");
+			throw new IDLoginException("Unable to login. Check login information! (Could not find location header.)");
 		}
 		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");
-		$this->appTokens = json_decode($this->postRequest(self::LOGIN_BASE."/login/v1", json_encode([
+		$this->appTokens = $this->apiPost("login/v1", json_encode([
 			"state" => $this->weConnectRedirFields["state"],
 			"id_token" => $this->weConnectRedirFields["id_token"],
 			"redirect_uri" => "weconnect://authenticated",
 			"region" => "emea",
 			"access_token" => $this->weConnectRedirFields["access_token"],
 			"authorizationCode" => $this->weConnectRedirFields["code"]
-		]), [
-			"accept: */*",
-			"content-type: application/json",
-			"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
-			"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
-			"accept-language: de-de",
-		]), true, 512, JSON_THROW_ON_ERROR);
+		]),self::LOGIN_BASE, [
+			"content-type: application/json"
+		]);
 	}
 	
 	protected function onHeaderEntry(string $entryName, string $entryValue){
@@ -101,10 +97,7 @@ class MobileAppAPI extends CurlWrapper{
 		}
 	}
 	
-	public function apiGet(string $apiEndpoint, array $fields = [], string $apiBase = self::API_BASE): array{
-		$response = $this->getRequest($apiBase."/".$apiEndpoint, $fields, [
-			"Authorization: Bearer ".$this->appTokens["accessToken"]
-		]);
+	public function verifyAndDecodeResponse(string $response, string $apiEndpoint = "unknown"): array{
 		$httpCode = curl_getinfo($this->getCh(), CURLINFO_RESPONSE_CODE);
 		if($httpCode === 401){
 			throw new IDAuthorizationException("Not authorized to execute API request '".$apiEndpoint."' (httpCode 401)");
@@ -125,6 +118,28 @@ class MobileAppAPI extends CurlWrapper{
 		}
 	}
 	
+	public function apiGet(string $apiEndpoint, array $fields = [], string $apiBase = self::API_BASE, ?array $header = null): array{
+		if($header === null){
+			$header = [
+				"content-type: application/json",
+				"Authorization: Bearer ".$this->appTokens["accessToken"]
+			];
+		}
+		$response = $this->getRequest($apiBase."/".$apiEndpoint, $fields, $header);
+		return $this->verifyAndDecodeResponse($response, $apiEndpoint);
+	}
+	
+	public function apiPost(string $apiEndpoint, $body, string $apiBase = self::API_BASE, ?array $header = null): array{
+		if($header === null){
+			$header = [
+				"content-type: application/json",
+				"Authorization: Bearer ".$this->appTokens["accessToken"]
+			];
+		}
+		$response = $this->postRequest($apiBase."/".$apiEndpoint, $body, $header);
+		return $this->verifyAndDecodeResponse($response, $apiEndpoint);
+	}
+	
 	/**
 	 * Tries to refresh the tokens
 	 *
@@ -132,17 +147,12 @@ class MobileAppAPI extends CurlWrapper{
 	 */
 	public function refreshToken(): bool{
 		try{
-			$this->appTokens = json_decode($this->getRequest(self::LOGIN_BASE."/refresh/v1", [], [
-				"accept: */*",
+			$this->appTokens = $this->apiGet("refresh/v1", [], self::LOGIN_BASE,  [
 				"content-type: application/json",
-				"content-version: 1",
-				"x-newrelic-id: VgAEWV9QDRAEXFlRAAYPUA==",
-				"user-agent: WeConnect/5 CFNetwork/1206 Darwin/20.1.0",
-				"accept-language: de-de",
 				"Authorization: Bearer ".$this->appTokens["refreshToken"]
-			]), true, 512, JSON_THROW_ON_ERROR);
+			]);
 			Logger::var_dump($this->appTokens, "new appTokens");
-		}catch(\Exception $exception){
+		}catch(\RuntimeException $exception){
 			Logger::warning("Failed to refresh token");
 			ErrorUtils::logException($exception);
 			return false;
