@@ -137,14 +137,14 @@ class Main{
 	}
 	
 	public function tick(int $tickCnter){
-		if(false){
-			return;
-		}elseif($this->firstTick === true){
+		if($this->firstTick === true){
 			Logger::log("Ready!");
 			$this->firstTick = false;
 		}
 		if($tickCnter % $this->currentUpdateRate == 0){
-			$this->fetchCarStatus();
+			if(!$this->fetchCarStatus()){
+				return;
+			}
 			//increase update rate while charging:
 			if($this->carStatusData["chargeState"] == "readyForCharging" && $this->carStatusData["hvacState"] == "off"){
 				$this->currentUpdateRate = 60*5;
@@ -206,7 +206,12 @@ class Main{
 		$this->lastWrittenCarStatus = $data;
 	}
 	
-	private function fetchCarStatus(){
+	/**
+	 * Fetches the new car status from the vehicles/vin/status endpoint
+	 *
+	 * @return bool Whether the fetching was successful.
+	 */
+	private function fetchCarStatus(): bool{
 		Logger::log("Fetching car status...");
 		try{
 			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/status");
@@ -220,26 +225,26 @@ class Main{
 				Logger::log("Successfully refreshed token");
 			}
 			$this->currentUpdateRate = 1; //trigger update on next tick
-			return;
+			return false;
 		}catch(IDAPIException $idAPIException){
 			Logger::critical("IDAPIException while trying to fetch car status");
 			ErrorUtils::logException($idAPIException);
-			return;
+			return false;
 		}catch(CurlError $curlError){
 			Logger::critical("CurlError while trying to fetch car status");
 			ErrorUtils::logException($curlError);
-			return;
+			return false;
 		}
 		
 		if(!empty($data["error"])){
 			Logger::critical("Error while fetching car status: ".print_r($data["error"], true));
-			return;
+			return false;
 		}
 		
 		if(!isset($data["data"])){
 			Logger::critical("Failed to get carStatus: No Data in response!");
 			Logger::var_dump($data, "decoded Data");
-			return;
+			return false;
 		}
 		
 		$data = $data["data"];
@@ -250,6 +255,7 @@ class Main{
 		$this->readValues($data, self::DATA_MAPPING, $carStatusData);
 		$this->carStatusData = $carStatusData;
 		#var_dump($carStatusData);
+		return true;
 	}
 	
 	private function readValues(array $data, array $dataMap, array &$resultData, ?string $lastLevelName = null){
