@@ -1,0 +1,224 @@
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type="text/javascript" src="https://momentjs.com/downloads/moment.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
+	<link rel="stylesheet" type="text/css" href="datepicker.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<style>
+		body{
+			color: white;
+			background: black;
+			font-family: "Avenir", sans-serif;
+			margin: 1em;
+		}
+		.container{
+			display: flex;
+			flex-direction: column;
+		}
+		.row{
+			display: flex;
+			justify-content: space-between;
+			align-content: stretch;
+		}
+		.row > *{
+			flex-grow: 1;
+			flex-shrink: 1;
+			min-width: 0;
+			width: 33%;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+		.bigvalue{
+			font-size: 5vw;
+			text-align: center;
+		}
+		.responsive {
+			width: 100%;
+			height: auto;
+		}
+	</style>
+	<title>flexxxxxxxxxxx</title>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="element">
+				<img src="car.png" class="responsive" alt="Car">
+			</div>
+			<div class="element doughnut">
+				<canvas id="soc"></canvas>
+			</div>
+			<div class="element">
+				<span class="bigvalue" id="range">300km</span>
+				<span class="bigvalue" id="heating">Heating on (00.00°C)</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="element">
+				<span class="bigvalue" id="chargingState">__chargestate__<br>__lockstate__</span>
+			</div>
+			<div class="element">
+				<span class="bigvalue" id="chargePower">000kW</span>
+				<span class="bigvalue" id="chargeKMPH">0 km/h</span>
+			</div>
+			<div class="element doughnut">
+				<canvas id="chargingTimeRemaing"></canvas>
+			</div>
+		</div>
+		<div class="row">
+			<input type="text" id="date">
+			chartttt
+		</div>
+	</div>
+	<script src="https://npmcdn.com/flatpickr/dist/l10n/de.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</body>
+<script type="text/javascript">
+	flatpickr.localize(flatpickr.l10ns.de);
+	flatpickr("#date", {mode: "range", dateFormat: "d.m.Y"});
+	Chart.defaults.global.defaultFontColor = "#fff";
+	class AnimatedValue{
+		constructor(displayElement, startValue, unit, animationLength = 1){
+			this.element = displayElement;
+			this.value = 0;
+			this.setValue(startValue);
+			this.unit = unit;
+			
+			this.animationLength = animationLength;
+		}
+		
+		animate(timestamp){
+			if(this.start == -1){
+				this.start = timestamp;
+			}
+			let elapsed = timestamp - this.start;
+			let animationProgress = elapsed / (this.animationLength*1000);
+			
+			this.element.innerHTML = Math.round(this.value + ((this.newValue-this.value)*Chart.helpers.easing.effects.easeOutQuart(animationProgress))) + this.unit;
+			
+			if(animationProgress > 1){
+				this.value = this.newValue;
+				this.element.innerHTML = this.value + this.unit;
+				this.start = -1;
+			}else{
+				window.requestAnimationFrame(this.animate.bind(this));
+			}
+		}
+		
+		setValue(value){
+			this.start = -1;
+			this.newValue = value;
+			window.requestAnimationFrame(this.animate.bind(this));
+			
+		}
+	}
+	let chargePower = new AnimatedValue(document.getElementById("chargePower"), 80, "kW");
+	let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 100, "km/h");
+	let range = new AnimatedValue(document.getElementById("range"), 300, "km");
+	class DoughnutValue{
+		constructor(canvas, value, max, unit, legendName){
+			this.canvas = canvas;
+			this.value = value;
+			this.max = max;
+			this.unit = unit;
+			this.legendName = legendName;
+			
+			this.animationProgress = 0;
+			let plugin = {
+				afterDraw: function(chart){
+					//chart.controller.chartArea
+					let ctx = chart.ctx;
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.font = Chart.helpers.fontString(this.canvas.height/(6*this.chart.currentDevicePixelRatio), Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily)
+					ctx.fillText(
+						Math.round(this.getInnerDisplayValue() * Chart.helpers.easing.effects.easeOutQuart(this.animationProgress))+this.unit,
+						this.canvas.width/(2*this.chart.currentDevicePixelRatio), this.canvas.height/(2*this.chart.currentDevicePixelRatio)-15);
+				}.bind(this)
+			};
+			
+			console.log("creating chart...");
+			this.chart = new Chart(this.canvas.getContext('2d'), {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data: [this.value, Math.max(this.max-this.value, 0)],
+						backgroundColor: ['rgba(0,255,0,1)', 'rgba(0,0,0,1)'],
+						borderColor: ['rgba(0,255,0,1)', 'rgba(255,0,0,0)']
+					}],
+					labels: [this.legendName]
+				},
+				plugins: [plugin],
+				options: {
+					aspectRatio: 1,
+					cutoutPercentage: 80,
+					tooltips: {
+						custom: function(tooltipModel) {
+							if(!tooltipModel.body || tooltipModel.body.length < 1){
+								tooltipModel.caretSize = 0;
+								tooltipModel.xPadding = 0;
+								tooltipModel.yPadding = 0;
+								tooltipModel.cornerRadius = 0;
+								tooltipModel.width = 0;
+								tooltipModel.height = 0;
+							}
+						},
+						filter: function(tooltipItem, data) {
+							return tooltipItem.index < 1;
+						},
+						callbacks: {
+							label: function(tooltipItem, data) {
+								let label = data.labels[tooltipItem.index] || '';
+						
+								let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+								if(label){
+									label += ': ';
+								}
+								label += value;
+								label += this.unit;
+
+								return label;
+							}.bind(this),
+						}
+					},
+					animation: {
+						onProgress: function(animation){
+							if(this.animationProgress == 1){
+								return;
+							}
+							this.animationProgress = animation.animationObject.currentStep / animation.animationObject.numSteps;
+						}.bind(this),
+						onComplete: function(animation){
+							this.animationProgress = 1;
+						}.bind(this)
+					},
+					legend: {
+						position: 'bottom',
+						onClick: function(e, legendItem){
+							return;
+						}
+					},
+				}
+			});
+		}
+		
+		getInnerDisplayValue(){
+			return this.value;
+		}
+		
+		update(){
+			this.chart.data.datasets[0].data=[this.value, Math.max(this.max-this.value, 0)];
+			this.chart.update();
+		}
+	}
+	class InvertedDoughnutValue extends DoughnutValue{
+		getInnerDisplayValue(){
+			return this.max - this.value;
+		}
+	}
+	let soc = new DoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
+	let chargeTimeRemaing = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaing"), 90, 100, "min", "charging progress");
+</script>
