@@ -143,17 +143,10 @@
 			console.log("creating chart...");
 			this.chart = new Chart(this.canvas.getContext('2d'), {
 				type: 'doughnut',
-				data: {
-					datasets: [{
-						data: [this.value, Math.max(this.max-this.value, 0)],
-						backgroundColor: ['rgba(0,255,0,1)', 'rgba(0,0,0,1)'],
-						borderColor: ['rgba(0,255,0,1)', 'rgba(255,0,0,0)']
-					}],
-					labels: [this.legendName]
-				},
+				data: this.generateData(),
 				plugins: [plugin],
 				options: {
-					aspectRatio: 1,
+					aspectRatio: 1.5,
 					cutoutPercentage: 80,
 					tooltips: {
 						custom: function(tooltipModel) {
@@ -166,22 +159,9 @@
 								tooltipModel.height = 0;
 							}
 						},
-						filter: function(tooltipItem, data) {
-							return tooltipItem.index < 1;
-						},
+						filter: this.onTooltipFilterCallback,
 						callbacks: {
-							label: function(tooltipItem, data) {
-								let label = data.labels[tooltipItem.index] || '';
-						
-								let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-								if(label){
-									label += ': ';
-								}
-								label += value;
-								label += this.unit;
-
-								return label;
-							}.bind(this),
+							label: this.onTooltipLabelCallback.bind(this),
 						}
 					},
 					animation: {
@@ -197,12 +177,42 @@
 					},
 					legend: {
 						position: 'bottom',
-						onClick: function(e, legendItem){
-							return;
-						}
+						onClick: this.onLegendClick.bind(this)
 					},
 				}
 			});
+		}
+		
+		onTooltipFilterCallback(tooltipItem, data) {
+			return tooltipItem.index < 1;
+		}
+		
+		onTooltipLabelCallback(tooltipItem, data){
+			let label = data.labels[tooltipItem.index] || '';
+						
+			let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+			if(label){
+				label += ': ';
+			}
+			label += value;
+			label += this.unit;
+
+			return label;
+		}
+		
+		onLegendClick(e, legendItem){
+			return;
+		}
+		
+		generateData(){
+			return {
+				datasets: [{
+					data: [this.value, Math.max(this.max-this.value, 0)],
+					backgroundColor: ['rgba(0,255,0,1)', 'rgba(0,0,0,1)'],
+					borderColor: ['rgba(0,255,0,1)', 'rgba(255,0,0,0)']
+				}],
+				labels: [this.legendName]
+			}
 		}
 		
 		getInnerDisplayValue(){
@@ -221,4 +231,66 @@
 	}
 	let soc = new DoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
 	let chargeTimeRemaing = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaing"), 90, 100, "min", "charging progress");
+	class SOCDoughnutValue extends DoughnutValue{
+		constructor(canvas, value, max, unit, legendName){
+			super(canvas, value, max, unit, legendName)
+			this.targetSOC = value
+		}
+		
+		onTooltipFilterCallback(tooltipItem, data) {
+			return tooltipItem.index < 2;
+		}
+		
+		onTooltipLabelCallback(tooltipItem, data){
+			let label = data.labels[tooltipItem.index] || '';
+			
+			let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+			if(label == "targetSOC"){
+				value = this.targetSOC;
+			}
+			if(label){
+				label += ': ';
+			}
+			label += value;
+			label += this.unit;
+			console.log(label);
+
+			return label;
+		}
+		
+		onLegendClick(e, legendItem){
+			let index = legendItem.index;
+			if(index == 0){
+				return;
+			}
+			let n, i, a;
+        	for(n = 0, i = (this.chart.data.datasets || []).length; n < i; ++n){
+        		(a = this.chart.getDatasetMeta(n)).data[index] && (a.data[index].hidden = !a.data[index].hidden);
+				if(index == 1){
+					if(a.data[index].hidden){
+						this.chart.data.datasets[0].data[2] = this.max-this.value;
+					}else{
+						this.chart.data.datasets[0].data[2] = this.max-Math.max(this.value, this.targetSOC);
+					}
+				}
+        	}
+        	this.chart.update();
+		}
+		
+		generateData(){
+			return {
+				datasets: [{
+					data: [this.value, Math.max(this.targetSOC-this.value, 0), this.max-Math.max(this.value, this.targetSOC)],
+					backgroundColor: ['rgba(0,255,0,1)', 'rgba(0,0,0,1)', 'rgba(0,0,0,0)'],
+					borderColor: ['rgba(0,255,0,1)', 'rgba(255,0,0,1)', 'rgba(0,0,0,0)']
+				}],
+				labels: [this.legendName, 'targetSOC']
+			}
+		}
+		
+		update(){
+			this.chart.data.datasets[0].data=[this.value, Math.max(this.targetSOC-this.value, 0), this.max-Math.max(this.value, this.targetSOC)];
+			this.chart.update();
+		}
+	}
 </script>
