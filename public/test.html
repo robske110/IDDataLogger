@@ -53,7 +53,8 @@
 			</div>
 			<div class="element">
 				<span class="bigvalue" id="range">300km</span>
-				<span class="bigvalue" id="heating">Heating on (00.00°C)</span>
+				<span class="bigvalue" id="heating">Heating on</span>
+				<span class="bigvalue" id="hvactargettemp">(00.0°C)</span>
 			</div>
 		</div>
 		<div class="row">
@@ -65,12 +66,11 @@
 				<span class="bigvalue" id="chargeKMPH">0 km/h</span>
 			</div>
 			<div class="element doughnut">
-				<canvas id="chargingTimeRemaing"></canvas>
+				<canvas id="chargingTimeRemaining"></canvas>
 			</div>
 		</div>
 		<div class="row">
 			<input type="text" id="date">
-			chartttt
 		</div>
 	</div>
 	<script src="https://npmcdn.com/flatpickr/dist/l10n/de.js"></script>
@@ -81,12 +81,14 @@
 	flatpickr("#date", {mode: "range", dateFormat: "d.m.Y"});
 	Chart.defaults.global.defaultFontColor = "#fff";
 	class AnimatedValue{
-		constructor(displayElement, startValue, unit, animationLength = 1){
+		constructor(displayElement, startValue, unit, decimals = 0, scale = 1, animationLength = 1){
 			this.element = displayElement;
 			this.value = 0;
 			this.setValue(startValue);
 			this.unit = unit;
 			
+			this.decimals = decimals;
+			this.scale = scale;
 			this.animationLength = animationLength;
 		}
 		
@@ -97,11 +99,11 @@
 			let elapsed = timestamp - this.start;
 			let animationProgress = elapsed / (this.animationLength*1000);
 			
-			this.element.innerHTML = Math.round(this.value + ((this.newValue-this.value)*Chart.helpers.easing.effects.easeOutQuart(animationProgress))) + this.unit;
+			this.element.innerHTML = (Math.round(this.value + ((this.newValue-this.value)*Chart.helpers.easing.effects.easeOutQuart(animationProgress))) / this.scale).toFixed(this.decimals) + this.unit;
 			
 			if(animationProgress > 1){
 				this.value = this.newValue;
-				this.element.innerHTML = this.value + this.unit;
+				this.element.innerHTML = (this.value / this.scale).toFixed(this.decimals) + this.unit;
 				this.start = -1;
 			}else{
 				window.requestAnimationFrame(this.animate.bind(this));
@@ -110,14 +112,12 @@
 		
 		setValue(value){
 			this.start = -1;
-			this.newValue = value;
+			this.newValue = parseFloat(value);
+			console.log(this.newValue);
 			window.requestAnimationFrame(this.animate.bind(this));
 			
 		}
 	}
-	let chargePower = new AnimatedValue(document.getElementById("chargePower"), 80, "kW");
-	let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 100, "km/h");
-	let range = new AnimatedValue(document.getElementById("range"), 300, "km");
 	class DoughnutValue{
 		constructor(canvas, value, max, unit, legendName){
 			this.canvas = canvas;
@@ -229,8 +229,6 @@
 			return this.max - this.value;
 		}
 	}
-	let soc = new DoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
-	let chargeTimeRemaing = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaing"), 90, 100, "min", "charging progress");
 	class SOCDoughnutValue extends DoughnutValue{
 		constructor(canvas, value, max, unit, legendName){
 			super(canvas, value, max, unit, legendName)
@@ -293,4 +291,38 @@
 			this.chart.update();
 		}
 	}
+	//let soc = new DoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
+	
+	let chargePower = new AnimatedValue(document.getElementById("chargePower"), 80, "kW");
+	let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 100, "km/h");
+	let range = new AnimatedValue(document.getElementById("range"), 300, "km");
+	let targetTemp = new AnimatedValue(document.getElementById("hvactargettemp"), 0, "°C", 1, 10);
+	let soc = new SOCDoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
+	soc.targetSOC = 90;
+	soc.update();
+	let chargeTimeRemaining = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaining"), 90, 100, "min", "charging progress");
+	
+	async function getJSON(link){
+		return (await fetch(link)).json();
+	}
+	
+	
+	updateCarStatus();
+	
+	async function updateCarStatus(){
+		const carStatus = await getJSON("carStatus.php");
+		soc.value = carStatus.batterysoc;
+		soc.targetSOC = carStatus.targetsoc;
+		soc.update();
+		//carStatus.remainingchargingtime
+		chargeTimeRemaining.max = 120;
+		chargeTimeRemaining.value = 80;
+		chargeTimeRemaining.update();
+		range.setValue(carStatus.remainingrange);
+		chargePower.setValue(carStatus.chargepower);
+		chargeKMPH.setValue(carStatus.chargeratekmph);
+		targetTemp.setValue(carStatus.hvactargettemp*10);
+	}
+	
+	
 </script>
