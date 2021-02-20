@@ -8,14 +8,21 @@ class DoughnutValue{
 		this.legendName = legendName;
 		
 		this.animationProgress = 0;
+				
+		this.createChart();
+		window.addEventListener('resize', function(){
+			setTimeout(this.update.bind(this), 100);
+		}.bind(this));
+	}
+	
+	createChart(){
 		let plugin = {
 			afterDraw: function(chart){
-				//chart.controller.chartArea
 				let ctx = chart.ctx;
 				ctx.textAlign = 'center';
 				ctx.textBaseline = 'middle';
 				ctx.fillStyle = 'white';
-				ctx.font = Chart.helpers.fontString(this.canvas.height/(6*this.chart.currentDevicePixelRatio), Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily)
+				ctx.font = Chart.helpers.fontString(this.canvas.height/(5*this.chart.currentDevicePixelRatio), Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily)
 				let legendOffset = this.chart.options.legend.display ? 15 : 0;
 				ctx.fillText(
 					Math.round(this.getInnerDisplayValue() * Chart.helpers.easing.effects.easeOutQuart(this.animationProgress))+this.unit,
@@ -23,13 +30,13 @@ class DoughnutValue{
 			}.bind(this)
 		};
 		
-		console.log("creating chart...");			
+		console.log("creating chart...");	
 		this.chart = new Chart(this.canvas.getContext('2d'), {
 			type: 'doughnut',
 			data: this.generateData(),
 			plugins: [plugin],
 			options: {
-				aspectRatio: window.innerWidth >= 400 ? 1.5 : 1.1,
+				aspectRatio: window.innerWidth >= 400 ? 1.6 : 1.1,
 				cutoutPercentage: 80,
 				tooltips: {
 					custom: function(tooltipModel) {
@@ -64,9 +71,6 @@ class DoughnutValue{
 				},
 			}
 		});
-		window.addEventListener('resize', function(){
-			setTimeout(this.update.bind(this), 100);
-		}.bind(this));
 	}
 	
 	onTooltipFilterCallback(tooltipItem, data) {
@@ -110,7 +114,19 @@ class DoughnutValue{
 	}
 	
 	update(){
-		this.updateData();
+		if(
+			(window.innerWidth >= 400 && this.chart.options.aspectRatio != 1.6) ||
+			(window.innerWidth < 400 && this.chart.options.aspectRatio != 1.1)
+		){
+			const parentEle = this.canvas.parentElement;
+			parentEle.removeChild(this.canvas);
+			this.canvas = document.createElement('canvas');
+			this.canvas.id = "soc";
+			parentEle.appendChild(this.canvas);
+			this.createChart();
+		}else{
+			this.updateData();
+		}
 		this.chart.options.legend.display = this.canvas.width >= 400;
 		this.chart.update();
 	}

@@ -18,9 +18,9 @@
 				<canvas id="soc"></canvas>
 			</div>
 			<div class="element">
-				<span class="bigvalue" id="range">300km</span>
+				<span class="bigvalue" id="range">000km</span>
 				<span class="bigvalue" id="hvacstate">-------</span>
-				<span class="bigvalue" id="hvactargettemp">(00.0°C)</span>
+				<span class="bigvalue" id="hvactargettemp">00.0°C</span>
 			</div>
 		</div>
 		<div class="row" id="chargingDisplay" style="display: none">
@@ -46,8 +46,9 @@
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
-	<script type="text/javascript" src="https://momentjs.com/downloads/moment.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.2"></script>
 	<script src="js/DoughnutValue.js"></script>
 	<script src="js/AnimatedValue.js"></script>
 	<script src="https://npmcdn.com/flatpickr/dist/l10n/de.js"></script>
