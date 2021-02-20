@@ -1,0 +1,40 @@
+body{
+	color: white;
+	background: black;
+	font-family: "Avenir", sans-serif;
+	margin: 1em;
+}
+.container{
+	display: flex;
+	flex-direction: column;
+}
+.row{
+	display: flex;
+	justify-content: space-between;
+	align-content: stretch;
+	margin-bottom: 1em;
+}
+.row > *{
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+	width: 33%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+#timetravelrow{
+	justify-content: flex-end;
+}
+.bigvalue{
+	font-size: 5vw;
+	text-align: center;
+}
+.responsive {
+	width: 100%;
+	height: auto;
+}
+.heat{
+	color: red;
+}
