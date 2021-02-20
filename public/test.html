@@ -4,7 +4,9 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
 	<link rel="stylesheet" type="text/css" href="datepicker.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 	<style>
 		body{
 			color: white;
@@ -20,6 +22,7 @@
 			display: flex;
 			justify-content: space-between;
 			align-content: stretch;
+			margin-bottom: 1em;
 		}
 		.row > *{
 			flex-grow: 1;
@@ -42,6 +45,9 @@
 			width: 100%;
 			height: auto;
 		}
+		.heat{
+			color: red;
+		}
 	</style>
 	<title>flexxxxxxxxxxx</title>
 </head>
@@ -56,7 +62,7 @@
 			</div>
 			<div class="element">
 				<span class="bigvalue" id="range">300km</span>
-				<span class="bigvalue" id="heating">Heating on</span>
+				<span class="bigvalue" id="hvacstate">-------</span>
 				<span class="bigvalue" id="hvactargettemp">(00.0°C)</span>
 			</div>
 		</div>
@@ -75,7 +81,7 @@
 		<div class="row" id="timetravelrow">
 			<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
 			<button id="timetravelclear" onclick="timetravelPicker.clear();">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
 				<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
 			</svg></button>
 		</div>
@@ -158,7 +164,7 @@
 				data: this.generateData(),
 				plugins: [plugin],
 				options: {
-					aspectRatio: 1.5,
+					aspectRatio: window.innerWidth >= 400 ? 1.5 : 1.1,
 					cutoutPercentage: 80,
 					tooltips: {
 						custom: function(tooltipModel) {
@@ -383,6 +389,23 @@
 		chargePower.setValue(carStatus.chargepower*10);
 		chargeKMPH.setValue(carStatus.chargeratekmph);
 		targetTemp.setValue(carStatus.hvactargettemp*10);
+		
+		let hvacstate;
+		switch(carStatus.hvacstate){
+			case "heating":
+				hvacstate = "heating";
+				document.getElementById("hvacstate").classList.add("heat");
+				break;
+			case "off":
+				hvacstate = "hvac off";
+				document.getElementById("hvacstate").classList.remove("heat");
+				break;
+			case "ventilation":
+				hvacstate = "ventilating";
+				document.getElementById("hvacstate").classList.remove("heat");
+				break;
+		}
+		document.getElementById("hvacstate").innerHTML = hvacstate;
 		
 		if(carStatus.plugconnectionstate == "connected"){
 			document.getElementById("chargingDisplay").style.display = "flex";
