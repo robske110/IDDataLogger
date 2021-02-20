@@ -31,6 +31,9 @@
 			justify-content: center;
 			align-items: center;
 		}
+		#timetravelrow{
+			justify-content: flex-end;
+		}
 		.bigvalue{
 			font-size: 5vw;
 			text-align: center;
@@ -57,7 +60,7 @@
 				<span class="bigvalue" id="hvactargettemp">(00.0°C)</span>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" id="chargingDisplay" style="display: none">
 			<div class="element">
 				<span class="bigvalue" id="chargingState">__chargestate__<br>__lockstate__</span>
 			</div>
@@ -69,8 +72,15 @@
 				<canvas id="chargingTimeRemaining"></canvas>
 			</div>
 		</div>
+		<div class="row" id="timetravelrow">
+			<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
+			<button id="timetravelclear" onclick="timetravelPicker.clear();">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+				<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+			</svg></button>
+		</div>
 		<div class="row">
-			<input type="text" id="date">
+			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
 	<script src="https://npmcdn.com/flatpickr/dist/l10n/de.js"></script>
@@ -78,7 +88,8 @@
 </body>
 <script type="text/javascript">
 	flatpickr.localize(flatpickr.l10ns.de);
-	flatpickr("#date", {mode: "range", dateFormat: "d.m.Y"});
+	let timetravelPicker = flatpickr("#timetravel", {dateFormat: "d.m.Y H:i", onChange: timetravelUser, enableTime: true, time_24hr: true});
+	flatpickr("#graphDateRange", {mode: "range", dateFormat: "d.m.Y"});
 	Chart.defaults.global.defaultFontColor = "#fff";
 	class AnimatedValue{
 		constructor(displayElement, startValue, unit, decimals = 0, scale = 1, animationLength = 1){
@@ -113,7 +124,6 @@
 		setValue(value){
 			this.start = -1;
 			this.newValue = parseFloat(value);
-			console.log(this.newValue);
 			window.requestAnimationFrame(this.animate.bind(this));
 			
 		}
@@ -133,14 +143,16 @@
 					let ctx = chart.ctx;
 					ctx.textAlign = 'center';
 					ctx.textBaseline = 'middle';
+					ctx.fillStyle = 'white';
 					ctx.font = Chart.helpers.fontString(this.canvas.height/(6*this.chart.currentDevicePixelRatio), Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily)
+					let legendOffset = this.chart.options.legend.display ? 15 : 0;
 					ctx.fillText(
 						Math.round(this.getInnerDisplayValue() * Chart.helpers.easing.effects.easeOutQuart(this.animationProgress))+this.unit,
-						this.canvas.width/(2*this.chart.currentDevicePixelRatio), this.canvas.height/(2*this.chart.currentDevicePixelRatio)-15);
+						this.canvas.width/(2*this.chart.currentDevicePixelRatio), this.canvas.height/(2*this.chart.currentDevicePixelRatio)-legendOffset);
 				}.bind(this)
 			};
 			
-			console.log("creating chart...");
+			console.log("creating chart...");			
 			this.chart = new Chart(this.canvas.getContext('2d'), {
 				type: 'doughnut',
 				data: this.generateData(),
@@ -181,6 +193,9 @@
 					},
 				}
 			});
+			window.addEventListener('resize', function(){
+				setTimeout(this.update.bind(this), 100);
+			}.bind(this));
 		}
 		
 		onTooltipFilterCallback(tooltipItem, data) {
@@ -219,8 +234,13 @@
 			return this.value;
 		}
 		
-		update(){
+		updateData(){
 			this.chart.data.datasets[0].data=[this.value, Math.max(this.max-this.value, 0)];
+		}
+		
+		update(){
+			this.updateData();
+			this.chart.options.legend.display = this.canvas.width >= 400;
 			this.chart.update();
 		}
 	}
@@ -286,42 +306,104 @@
 			}
 		}
 		
-		update(){
+		updateData(){
 			this.chart.data.datasets[0].data=[this.value, Math.max(this.targetSOC-this.value, 0), this.max-Math.max(this.value, this.targetSOC)];
-			this.chart.update();
 		}
 	}
 	//let soc = new DoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
 	
-	let chargePower = new AnimatedValue(document.getElementById("chargePower"), 80, "kW");
-	let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 100, "km/h");
-	let range = new AnimatedValue(document.getElementById("range"), 300, "km");
+	let chargePower = new AnimatedValue(document.getElementById("chargePower"), 0, "kW", 1, 10);
+	let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 0, "km/h");
+	let range = new AnimatedValue(document.getElementById("range"), 0, "km");
 	let targetTemp = new AnimatedValue(document.getElementById("hvactargettemp"), 0, "°C", 1, 10);
-	let soc = new SOCDoughnutValue(document.getElementById("soc"), 80, 100, "%", "soc");
-	soc.targetSOC = 90;
+	let soc = new SOCDoughnutValue(document.getElementById("soc"), 0, 100, "%", "soc");
 	soc.update();
-	let chargeTimeRemaining = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaining"), 90, 100, "min", "charging progress");
+	let chargeTimeRemaining = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaining"), 0, 0, "min", "charging progress");
 	
 	async function getJSON(link){
 		return (await fetch(link)).json();
 	}
 	
+	function timetravelUser(selectedDates, dateStr, instance){
+		console.log("select");
+		timetravel(selectedDates[0]);
+	}
+	
+	let timetravelStatus = false;
+	let timetravelDate;
+	
+	function timetravel(date){
+		console.log(date);
+		if(date == false || date == undefined || date == null){
+			timetravelStatus = false;
+			updateCarStatus();
+			return;
+		}
+	 	timetravelStatus = true;
+		timetravelDate = "@"+(date.getTime() / 1000);
+		updateCarStatus();
+	}
 	
 	updateCarStatus();
 	
 	async function updateCarStatus(){
-		const carStatus = await getJSON("carStatus.php");
+		const carStatus = await getJSON("carStatus.php"+(timetravelStatus ? "?at="+timetravelDate : ""));
+		if(carStatus == undefined){
+			alert("JSON fail");
+			return;
+		}
+		if(carStatus.error != undefined){
+			alert("fail");
+			return;
+		}
+		processCarStatus(carStatus);
+	}
+	
+	function processCarStatus(carStatus){
 		soc.value = carStatus.batterysoc;
 		soc.targetSOC = carStatus.targetsoc;
 		soc.update();
-		//carStatus.remainingchargingtime
-		chargeTimeRemaining.max = 120;
-		chargeTimeRemaining.value = 80;
+		
+		let now;
+		if(timetravel){
+			now = Date.parse(carStatus.time);
+		}else{
+			now = Date.now();
+		}
+		const elapsedMinutes = Math.round((now - Date.parse(carStatus.lastChargeStartTime)) / 60000);
+		//console.log(elapsedMinutes);
+		//console.log(carStatus.remainingchargingtime);
+		//console.log(carStatus.lastChargeStartTime);
+		const realTimeRemaining = now - Date.parse(carStatus.time) + parseInt(carStatus.remainingchargingtime);
+		chargeTimeRemaining.max = elapsedMinutes + realTimeRemaining;
+		chargeTimeRemaining.value = chargeTimeRemaining.max - realTimeRemaining;
 		chargeTimeRemaining.update();
+		
 		range.setValue(carStatus.remainingrange);
-		chargePower.setValue(carStatus.chargepower);
+		chargePower.setValue(carStatus.chargepower*10);
 		chargeKMPH.setValue(carStatus.chargeratekmph);
 		targetTemp.setValue(carStatus.hvactargettemp*10);
+		
+		if(carStatus.plugconnectionstate == "connected"){
+			document.getElementById("chargingDisplay").style.display = "flex";
+			let chargeState;
+			switch(carStatus.chargestate){
+				case "charging":
+					chargeState = "charging...";
+					break;
+				case "chargePurposeReachedAndConservation":
+					chargeState = "holding charge";
+					break;
+				case "readyForCharging":
+					chargeState = "not charging";
+					break;
+				default:
+					chargeState = "unknown: "+carStatus.chargeState;
+			}
+			document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.pluglockstate;
+		}else{
+			document.getElementById("chargingDisplay").style.display = "none";
+		}
 	}
 	
 	
