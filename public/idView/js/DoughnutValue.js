@@ -30,7 +30,7 @@ class DoughnutValue{
 			}.bind(this)
 		};
 		
-		console.log("creating chart...");	
+		console.log("creating chart...");
 		this.chart = new Chart(this.canvas.getContext('2d'), {
 			type: 'doughnut',
 			data: this.generateData(),

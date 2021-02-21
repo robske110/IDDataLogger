@@ -29,14 +29,14 @@ function timetravel(date){
 		return;
 	}
 	timetravelStatus = true;
-	timetravelDate = "@"+(date.getTime() / 1000);
+	timetravelDate = "@"+Math.round(date.getTime() / 1000);
 	updateCarStatus();
 }
 	
 updateCarStatus();
 	
 async function updateCarStatus(){
-	const carStatus = await getJSON("carStatus.php"+(timetravelStatus ? "?at="+timetravelDate : ""));
+	const carStatus = await getJSON("../carStatus.php"+(timetravelStatus ? "?at="+timetravelDate : ""));
 	if(carStatus == undefined){
 		alert("JSON fail");
 		return;
