@@ -24,3 +24,9 @@ CREATE TABLE carStatus (
   frontWindowHeatingState   text,
   rearWindowHeatingState    text
 );
+
+CREATE TABLE users (
+    userid serial NOT NULL PRIMARY KEY,
+    username text UNIQUE NOT NULL,
+    hash text NOT NULL
+);
