@@ -1,3 +1,16 @@
+<?php
+require "../login/loginCheck.php";
+require "carGraphDataProvider.php";
+spl_autoload_register(function ($class){
+	if(class_exists($class, false) || interface_exists($class, false) || trait_exists($class, false)){
+		return false;
+	}
+	
+	$dirNamespace = str_replace("\\", DIRECTORY_SEPARATOR, $class);
+	include __DIR__."/ChartJS/".substr($dirNamespace, strpos($dirNamespace, '/')).".php";
+	return true;
+});
+?>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
@@ -43,15 +56,53 @@
 			</svg></button>
 		</div>
 		<div class="row">
+			<?php
+			$carGraphData = (new carGraphDataProvider(0, time(), true))->getGraphData();
+			
+			$graph = (new Graph("carGraph", GraphDisplayType::LINE))->setLineTension(0);
+
+			$xAxis = new Xaxis($carGraphData->time);
+
+			$batterySOC = new Dataset("batterySOC", $carGraphData->batterySOC, new Colour(0, 255, 255));
+			$xAxis->addDataset($batterySOC);
+			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
+			
+			$remainingRange = new Dataset("remainingRange", $carGraphData->remainingRange, new Colour(0, 128, 255));
+			$xAxis->addDataset($remainingRange);
+			$graph->addYaxis((new Yaxis("r", "km"))->addDataset($remainingRange)->displayGridLines(false));
+			
+			$remainingChargingTime = new Dataset("remainingChargingTime", $carGraphData->remainingChargingTime, new Colour(128, 0, 255), null, true);
+			$xAxis->addDataset($remainingChargingTime);
+			$graph->addYaxis((new Yaxis("t", "min"))->addDataset($remainingChargingTime)->displayGridLines(false)->display(false));
+
+			$chargePower = new Dataset("chargePower", $carGraphData->chargePower, new Colour(0, 255, 0));
+			$chargePower->setSteppedLine();
+			$xAxis->addDataset($chargePower);
+			$graph->addYaxis((new Yaxis("p", "kW"))->addDataset($chargePower)->setMinMax(0));
+
+			$chargeRateKMPH = new Dataset("chargeRateKMPH", $carGraphData->chargeRateKMPH, new Colour(0, 255, 0), null, true);
+			$chargeRateKMPH->setSteppedLine();
+			$xAxis->addDataset($chargeRateKMPH);
+			$graph->addYaxis((new Yaxis("k", "km/h"))->addDataset($chargeRateKMPH)->setMinMax(0)->display(false));
+
+			$graph->setXaxis($xAxis);
+
+			$graph->canvas();
+			?>
+		</div>
+		<div class="row">
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>
 	<script src="js/DoughnutValue.js"></script>
 	<script src="js/AnimatedValue.js"></script>
 	<script src="https://npmcdn.com/flatpickr/dist/l10n/de.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<?php
+	$graph->render();
+	?>
 	<script src="js/idView.js"></script>
 </body>
