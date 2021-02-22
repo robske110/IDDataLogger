@@ -24,9 +24,17 @@ class Main{
 		$this->db = new DatabaseConnection(
 			$this->config["db"]["host"], $this->config["db"]["dbname"], $this->config["db"]["user"], $this->config["db"]["password"] ?? null);
 		
+		$didWizard = false;
 		if(($this->db->query("SELECT to_regclass('public.carStatus')")[0]["to_regclass"] ?? null) !== "carstatus"){
 			Logger::log("Initializing db tables...");
 			$this->db->query(file_get_contents(BASE_DIR."db.sql"));
+			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
+				new SetupWizard($this);
+				$didWizard = true;
+			}
+		}
+		if(!$didWizard && ($_SERVER['argv'][1] ?? "") == "wizard"){
+			new SetupWizard($this);
 		}
 		
 		new CarPictureHandler($this);
