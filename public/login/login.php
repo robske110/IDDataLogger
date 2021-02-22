@@ -1,4 +1,6 @@
 <?php
+ini_set("session.gc_maxlifetime", 7*24*60*60);
+ini_set("session.cookie_lifetime", 7*24*60*60);
 session_start();
 @session_destroy();
 session_start();

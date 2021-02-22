@@ -1,5 +1,7 @@
 <?php
 $start = microtime(true);
+ini_set("session.gc_maxlifetime", 7*24*60*60);
+ini_set("session.cookie_lifetime", 7*24*60*60);
 
 if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 	echo("WRONG_REQUEST_METHOD");

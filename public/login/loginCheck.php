@@ -1,4 +1,6 @@
 <?php
+ini_set("session.gc_maxlifetime", 7*24*60*60);
+ini_set("session.cookie_lifetime", 7*24*60*60);
 require_once __DIR__."/../env.php";
 if(!session_start()){
 	fail();
