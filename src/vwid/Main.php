@@ -13,12 +13,11 @@ use robske_110\vwid\api\MobileAppAPI;
 use robske_110\webutils\CurlError;
 
 class Main{
-	/** @var resource */
-	private $db;
-	
 	private bool $firstTick = true;
 	
 	public array $config;
+	
+	private DatabaseConnection $db;
 	
 	private MobileAppAPI $idAPI;
 	private string $vin;
@@ -98,47 +97,47 @@ class Main{
 	public function __construct(){
 		Logger::log("Reading config...");
 		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
+		Logger::addOutputFilter($this->config["password"]);
 		
 		Logger::log("Connecting to db...");
-		$this->connectDB();
+		$this->db = new DatabaseConnection(
+			$this->config["db"]["host"], $this->config["db"]["dbname"], $this->config["db"]["user"], $this->config["db"]["password"] ?? null);
+		$this->initQuery();
+		
+		new CarPictureHandler($this);
 		
 		Logger::log("Logging in...");
 		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
-		Logger::addOutputFilter($this->config["password"]);
 		$this->idAPI = new MobileAppAPI($loginInformation);
 		$this->login();
 	}
 	
-	public function connectDB(){
-		$this->db = pg_connect(
-			"host=".$this->config["db"]["host"]." dbname=".$this->config["db"]["dbname"].
-			" user=".$this->config["db"]["user"].(isset($this->config["db"]["user"]) ? " password=".$this->config["db"]["user"] : "")
-		);
-		if($this->db !== false){
-			$query = "INSERT INTO carStatus(time";
-			foreach(self::DB_FIELDS as $dbField){
-				$query .= ", ".$dbField;
-			}
-			$query .= ") VALUES(";
-			for($i = 1; $i <= count(self::DB_FIELDS); ++$i){
-				$query .= "$".$i.", ";
-			}
-			$query .= "$".($i).") ON CONFLICT (time) DO UPDATE SET ";
-			foreach(self::DB_FIELDS as $dbField){
-				$query .= $dbField." = excluded.".$dbField.", ";
-			}
-			$query = substr($query, 0, strlen($query)-2);
-			$query .= ";";
-			Logger::debug("Preparing query ".$query."...");
-			if(pg_prepare(
-					$this->db,
-					"carStatus_write",
-					$query
-				) === false){
-				throw new \Exception("Failed to prepare the carStatus_write statement: ".pg_last_error($this->db));
-			}
-		}else{
-			throw new \Exception("Failed to connect to db!");
+	public function getDB(){
+		return $this->db;
+	}
+	
+	public function initQuery(){
+		$query = "INSERT INTO carStatus(time";
+		foreach(self::DB_FIELDS as $dbField){
+			$query .= ", ".$dbField;
+		}
+		$query .= ") VALUES(";
+		for($i = 1; $i <= count(self::DB_FIELDS); ++$i){
+			$query .= "$".$i.", ";
+		}
+		$query .= "$".($i).") ON CONFLICT (time) DO UPDATE SET ";
+		foreach(self::DB_FIELDS as $dbField){
+			$query .= $dbField." = excluded.".$dbField.", ";
+		}
+		$query = substr($query, 0, strlen($query)-2);
+		$query .= ";";
+		Logger::debug("Preparing query ".$query."...");
+		if(pg_prepare(
+				$this->db->getConnection(),
+				"carStatus_write",
+				$query
+			) === false){
+			throw new \Exception("Failed to prepare the carStatus_write statement: ".pg_last_error($this->db));
 		}
 	}
 	
@@ -204,10 +203,10 @@ class Main{
 		Logger::log("Writing new data for timestamp ".$data[0]);
 		#var_dump($data);
 		
-		$res = pg_execute($this->db, "carStatus_write", $data);
+		$res = pg_execute($this->db->getConnection(), "carStatus_write", $data);
 		if($res === false){
 			Logger::critical("Could not write to db!");
-			$this->connectDB();
+			$this->db->connect();
 			return;
 		}
 		$this->lastWrittenCarStatus = $data;
