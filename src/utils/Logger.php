@@ -82,7 +82,7 @@ abstract class Logger{
 			case self::LOG_LVL_NOTICE: $lvl = "\e[93m[NOTICE] "; break;
 			case self::LOG_LVL_WARNING: $lvl = "\e[91m[WARNING] "; break;
 			case self::LOG_LVL_CRITICAL: $lvl = "\e[31m[CRITICAL] "; break;
-			case self::LOG_LVL_EMERGENCY: $lvl = "\e[41m\e[37m[EMERGENCY] "; break;
+			case self::LOG_LVL_EMERGENCY: $lvl = "\e[41m\e[39m[EMERGENCY] "; break;
 			case self::LOG_LVL_DEBUG: $lvl = "[DEBUG] "; break;
 		}
 		if(self::$outputEnabled){
@@ -110,15 +110,15 @@ abstract class Logger{
 	}
 	
 	public static function debug(string $msg, int $debugType = self::DEBUG_TYPE_NORMAL){
-		if(self::$debugEnabled){
-			if($debugType !== self::DEBUG_TYPE_IMPORTED){
+		if($debugType !== self::DEBUG_TYPE_IMPORTED){
+			if(self::$debugEnabled){
 				self::log($msg, self::LOG_LVL_DEBUG);
-				return;
 			}
-			if(self::$debugFileEnabled){
-				$msg = self::filterString($msg);
-				fwrite(self::$debugFile, $msg);
-			}
+			return;
+		}
+		if(self::$debugFileEnabled){
+			$msg = self::filterString($msg);
+			fwrite(self::$debugFile, $msg);
 		}
 	}
 	
