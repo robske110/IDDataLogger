@@ -57,7 +57,7 @@ spl_autoload_register(function ($class){
 		</div>
 		<div class="row">
 			<?php
-			$carGraphData = (new carGraphDataProvider(0, time(), true))->getGraphData();
+			$carGraphData = (new carGraphDataProvider((new DateTime)->sub(new DateInterval("P7D"))->setTime(0, 0)->getTimestamp(), time(), true))->getGraphData();
 			
 			$graph = (new Graph("carGraph", GraphDisplayType::LINE))->setLineTension(0);
 

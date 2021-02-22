@@ -1,18 +1,7 @@
 <?php
 require "login/loginCheck.php";
 
-switch($_GET['attemptRefresh'] ?? "false"){
-	case "false":
-	case "no":
-		$attemptRefresh = false;
-		break;
-	case "true":
-	case "yes":
-		$attemptRefresh = true;
-		break;
-	default:
-		$attemptRefresh = false;
-}
+$attemptRefresh = ($_GET['attemptRefresh'] ?? false) == "true";
 
 $statusAt = null;
 if(isset($_GET['at'])){

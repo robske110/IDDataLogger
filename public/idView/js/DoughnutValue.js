@@ -158,7 +158,6 @@ class SOCDoughnutValue extends DoughnutValue{
 		}
 		label += value;
 		label += this.unit;
-		console.log(label);
 
 		return label;
 	}

@@ -122,19 +122,27 @@ function processCarStatus(carStatus){
 }
 
 function carGraphRangeUser(selectedDates, dateStr, instance){
-	beginTime = selectedDates[0];
+	if(selectedDates[0] != null){
+		beginTime = selectedDates[0];
+	}else{
+		beginTime = new Date();
+		beginTime.setDate(beginTime.getDate()-7);
+		beginTime.setHours(0,0,0,0);
+	}
 	if(selectedDates.length > 1){
 		endTime = selectedDates[1];
 		endTime.setHours(24);
+	}else{
+		endTime = null;
 	}
 	updateCarGraph();
 }
 
 let beginTime = new Date();
-beginTime.setHours(0,0,0,0);
 let endTime = null;	
 	
 async function updateCarGraph(){
+	console.log(beginTime);
 	const graphData = await getJSON("carGraphData.php?beginTime="+Math.round(beginTime.getTime()/1000)+(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000)));
 	if(graphData == undefined){
 		alert("JSON fail");
