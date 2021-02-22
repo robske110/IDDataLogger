@@ -58,8 +58,8 @@ async function updateCarStatus(){
 }
 	
 function processCarStatus(carStatus){
-	soc.value = carStatus.batterysoc;
-	soc.targetSOC = carStatus.targetsoc;
+	soc.value = carStatus.batterySOC;
+	soc.targetSOC = carStatus.targetSOC;
 	soc.update();
 		
 	let now;
@@ -72,18 +72,18 @@ function processCarStatus(carStatus){
 	//console.log(elapsedMinutes);
 	//console.log(carStatus.remainingchargingtime);
 	//console.log(carStatus.lastChargeStartTime);
-	const realTimeRemaining = now - Date.parse(carStatus.time) + parseInt(carStatus.remainingchargingtime);
+	const realTimeRemaining = now - Date.parse(carStatus.time) + parseInt(carStatus.remainingChargingTime);
 	chargeTimeRemaining.max = elapsedMinutes + realTimeRemaining;
 	chargeTimeRemaining.value = chargeTimeRemaining.max - realTimeRemaining;
 	chargeTimeRemaining.update();
 		
-	range.setValue(carStatus.remainingrange);
-	chargePower.setValue(carStatus.chargepower*10);
-	chargeKMPH.setValue(carStatus.chargeratekmph);
-	targetTemp.setValue(carStatus.hvactargettemp*10);
+	range.setValue(carStatus.remainingRange);
+	chargePower.setValue(carStatus.chargePower*10);
+	chargeKMPH.setValue(carStatus.chargeRateKMPH);
+	targetTemp.setValue(carStatus.hvacTargetTemp*10);
 		
 	let hvacstate;
-	switch(carStatus.hvacstate){
+	switch(carStatus.hvacState){
 	case "heating":
 		hvacstate = "heating";
 		document.getElementById("hvacstate").classList.add("heat");
@@ -99,10 +99,10 @@ function processCarStatus(carStatus){
 	}
 	document.getElementById("hvacstate").innerHTML = hvacstate;
 		
-	if(carStatus.plugconnectionstate == "connected"){
+	if(carStatus.plugConnectionState == "connected"){
 		document.getElementById("chargingDisplay").style.display = "flex";
 		let chargeState;
-		switch(carStatus.chargestate){
+		switch(carStatus.chargeState){
 		case "charging":
 			chargeState = "charging...";
 			break;
@@ -115,7 +115,7 @@ function processCarStatus(carStatus){
 		default:
 			chargeState = "unknown: "+carStatus.chargeState;
 		}
-		document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.pluglockstate;
+		document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.plugLockState;
 	}else{
 		document.getElementById("chargingDisplay").style.display = "none";
 	}
