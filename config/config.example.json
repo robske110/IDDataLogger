@@ -2,6 +2,8 @@
     "username": "",
     "password": "",
     "vin": null,
+    "base-updaterate": 600,
+    "increased-updaterate": 60,
     "db": {
         "host": "",
         "dbname": "",
@@ -13,7 +15,7 @@
         "angle": "right",
         "flip": true
     },
-    "timezone": "Europe/Berlin",
+    "timezone": null,
     "log": {
         "debug-enable": false,
         "file-enable": false,

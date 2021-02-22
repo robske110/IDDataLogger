@@ -10,20 +10,6 @@ Can be `null`, which causes the first vehicle to be used. (Recommended when you 
 
 `increased-updaterate` This updaterate will be used while the car is charging or hvac is active.
 
-`carpic.flip` Whether to flip the carpic (default: true)
-
-side, right
-side, left
-back, left
-back, right
-front, center
-front, left
-front, right
-
-`carpic.viewDirection` 
-
-`carpic.angle` 
-
 `db.host` The host of the postgres db server
 
 `db.dbname` The name of the database that this application can use
@@ -31,6 +17,23 @@ front, right
 `db.user` The username for the database
 
 `db.password` The password for the database
+
+`carpic.flip` Whether to flip the carpic (default: true)
+
+The keys
+`carpic.viewDirection` and
+`carpic.angle`
+can have the following values:
+
+| viewDirection | angle |
+| ----- | ------ |
+| side  | right  |
+| side  | left   |
+| back  | left   |
+| back  | right  |
+| front | center |
+| front | left   |
+| front | right  |
 
 `timezone` Server timezone. This is used for correct timestamps in logs.
 
