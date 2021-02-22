@@ -55,7 +55,11 @@ class WebsiteAPI extends API{
 	}
 	
 	public function getAPtoken(){
-		return $this->apToken = $this->apiGetCSRF("https://www.volkswagen.de/app/authproxy/vw-de/tokens")["access_token"];
+		if(!isset($this->apToken)){
+			sleep(1); //If we just logged in VW servers might not have synced all login information correctly yet
+			$this->apToken = $this->apiGetCSRF("https://www.volkswagen.de/app/authproxy/vw-de/tokens")["access_token"];
+		}
+		return $this->apToken;
 	}
 	
 	public function apiGetAP(string $uri, array $fields = [], ?array $header = null): array{

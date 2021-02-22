@@ -294,6 +294,6 @@ class Main{
 	
 	public function shutdown(){
 		Logger::debug(">Closing DataBase connection...");
-		pg_close($this->db);
+		$this->db->close();
 	}
 }

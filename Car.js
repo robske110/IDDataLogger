@@ -5,12 +5,13 @@
 //CONFIGURATION
 
 const baseURL = "http://192.168.1.23:8080/vwid3/"
+***REMOVED***
 const apiKey = ""
-
-const socThreshold = 95
 
 const forceImageRefresh = false //set to true to refresh the image
 const exampleData = false
+
+const socThreshold = 95 //not implemented
 
 // Created by robske_110 24.01.2020
 // This script is orginally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
@@ -58,7 +59,7 @@ async function createWidget(items) {
 	
 	carColumn.addSpacer(5)
 
-	const carImage = await getImage("car.png", baseURL+"car.png")
+	const carImage = await getImage("car.png", baseURL+"/carPicture.php?key="+apiKey)
 	let carImageElement = carColumn.addImage(carImage)
 		
 	//carColumn.addSpacer(5)
@@ -197,7 +198,6 @@ async function getJSON(){
 
 // get images from local filestore or download them once
 // credits: https://gist.github.com/marco79cgn (for example https://gist.github.com/marco79cgn/c3410c8ecc8cb0e9f87409cee7b87338#file-ffp2-masks-availability-js-L234)
-//imageName MUST BE the image name in the url!
 async function getImage(imageName, imgUrl){
 	let fm = FileManager.local()
 	let dir = fm.documentsDirectory()
@@ -213,6 +213,7 @@ async function getImage(imageName, imgUrl){
 }
 
 async function loadImage(imgUrl){
+	console.log("fetching_pic");
 	const req = new Request(imgUrl)
 	return await req.loadImage()
 }

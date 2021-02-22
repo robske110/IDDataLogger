@@ -38,4 +38,8 @@ class DatabaseConnection{
 	public function getConnection(){
 		return $this->connection;
 	}
+	
+	public function close(){
+		pg_close($this->connection);
+	}
 }

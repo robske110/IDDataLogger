@@ -34,3 +34,8 @@ CREATE TABLE users (
 CREATE TABLE authKeys (
     key text NOT NULL
 );
+
+CREATE TABLE carPictures (
+    id text NOT NULL PRIMARY KEY,
+    carPicture text NOT NULL
+);
