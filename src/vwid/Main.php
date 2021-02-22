@@ -98,6 +98,16 @@ class Main{
 		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 		
 		Logger::log("Connecting to db...");
+		$this->connectDB();
+		
+		Logger::log("Logging in...");
+		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
+		Logger::addOutputFilter($this->config["password"]);
+		$this->idAPI = new MobileAppAPI($loginInformation);
+		$this->login();
+	}
+	
+	public function connectDB(){
 		$this->db = pg_connect(
 			"host=".$this->config["db"]["host"]." dbname=".$this->config["db"]["dbname"].
 			" user=".$this->config["db"]["user"].(isset($this->config["db"]["user"]) ? " password=".$this->config["db"]["user"] : "")
@@ -128,12 +138,6 @@ class Main{
 		}else{
 			throw new \Exception("Failed to connect to db!");
 		}
-		
-		Logger::log("Logging in...");
-		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
-		Logger::addOutputFilter($this->config["password"]);
-		$this->idAPI = new MobileAppAPI($loginInformation);
-		$this->login();
 	}
 	
 	public function tick(int $tickCnter){
@@ -145,7 +149,7 @@ class Main{
 			if(!$this->fetchCarStatus()){
 				return;
 			}
-			//increase update rate while charging:
+			//increase update rate while charging or hvac active:
 			if($this->carStatusData["chargeState"] == "readyForCharging" && $this->carStatusData["hvacState"] == "off"){
 				$this->currentUpdateRate = 60*5;
 			}else{
@@ -201,6 +205,7 @@ class Main{
 		$res = pg_execute($this->db, "carStatus_write", $data);
 		if($res === false){
 			Logger::critical("Could not write to db!");
+			$this->connectDB();
 			return;
 		}
 		$this->lastWrittenCarStatus = $data;
