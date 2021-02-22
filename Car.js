@@ -64,22 +64,48 @@ async function createWidget(items) {
 	//carColumn.addSpacer(5)
 	
 	let chargeStatus
-			
-	switch (data.chargeStatus){
-		case "readyForCharging":
+	
+	switch (data.plugConnectionState){
+		case "disconnected":
 			chargeStatus = "⚫ Entkoppelt"
 			break;
-		case "yes":
-			chargeStatus = "🟢 Verbunden"
-			break;
-		case "slurping":
-			chargeStatus = "⚡ Lädt…"
+		case "connected":
 			//widget.refreshAfterDate = new Date(Date.now() + 300) //increase refresh rate?
+			switch (data.chargeStatus){
+				case "readyForCharging":
+					chargeStatus = "🟠 Ladezustand halten"
+					break;
+				case "chargePurposeReachedAndConservation":
+					chargeStatus = "🟢 Verbunden"
+					break;
+				case "charging":
+					chargeStatus = "⚡ Lädt…"
+					break;
+				default:
+					chargeStatus = "unknown cS: "+data.chargeStatus
+			}
 			break;
 		default:
-			chargeStatus = "unknown: "+data.chargeStatus
+			chargeStatus = "unknown pCS: "+data.plugConnectionState+" cS: "+data.chargeStatus
 	}
-					
+	
+	let plugLockStatus;
+	switch (data.plugLockState){
+		case "locked":
+			plugLockStatus = " (🔒)"
+			break;
+		case "unlocked":
+			plugLockStatus = " (🔓)"
+			break;
+		case "invalid":
+			plugLockStatus = " (❌)"
+			break;
+		default:
+			plugLockStatus = "unknown pLS: "+data.plugConnectionState
+		break;
+	}
+	chargeStatus = chargeStatus + plugLockStatus;
+			
 	//const chargeInfo = verticalStack(carColumn)
 	//chargeInfo.setPadding(0,10,0,10)
 	const chargeInfo = carColumn
