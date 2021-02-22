@@ -1,0 +1,22 @@
+{
+    "username": "",
+    "password": "",
+    "vin": null,
+    "db": {
+        "host": "",
+        "dbname": "",
+        "user": "",
+        "password": null
+    },
+    "carpic": {
+        "viewDirection": "front",
+        "angle": "right",
+        "flip": true
+    },
+    "timezone": "Europe/Berlin",
+    "log": {
+        "debug-enable": false,
+        "file-enable": false,
+        "log-dir": null
+    }
+}

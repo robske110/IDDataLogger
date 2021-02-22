@@ -1,5 +1,6 @@
 .idea/
 vendor/
 data/
-config/
+config.json
+.env
 log/
