@@ -19,19 +19,13 @@ $config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 
 $id3Login = new WebsiteAPI(new LoginInformation($config["username"], $config["password"]));
 
-debug("accesstokencar:");
-$tokens = json_decode($id3Login->getRequest("https://www.volkswagen.de/app/authproxy/vw-de/tokens", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true);
-var_dump($tokens);
-$accessTokenCar = $tokens["access_token"];
 debug("carlist:");
-$cars = json_decode($id3Login->getRequest("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars", [], ["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]));
+$cars = $id3Login->apiGetAP("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars");
 var_dump($cars);
 debug("vehicleimages:");
-foreach(json_decode($id3Login->getRequest(
-	"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$cars[0]->vin."?viewDirection=side&angle=right",
-	[],
-	["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]
-), true)["images"] as $image){
+foreach($id3Login->apiGetAP(
+	"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$cars[0]["vin"]
+)["images"] as $image){
 	var_dump($image);
 	if(
 		$image["viewDirection"] == ($config["carpic"]["viewDirection"] ?? "front") &&

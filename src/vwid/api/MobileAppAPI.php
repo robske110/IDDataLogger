@@ -13,7 +13,7 @@ use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
 
-class MobileAppAPI extends CurlWrapper{
+class MobileAppAPI extends API{
 	const LOGIN_BASE = "https://login.apps.emea.vwapps.io";
 	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";
@@ -57,7 +57,6 @@ class MobileAppAPI extends CurlWrapper{
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
 		$fields["password"] = $this->loginInformation->password;
-		#Logger::var_dump($fields);
 		
 		Logger::debug("Sending password ...");
 		try{
@@ -97,31 +96,10 @@ class MobileAppAPI extends CurlWrapper{
 		}
 	}
 	
-	public function verifyAndDecodeResponse(string $response, string $apiEndpoint = "unknown"): array{
-		$httpCode = curl_getinfo($this->getCh(), CURLINFO_RESPONSE_CODE);
-		if($httpCode === 401){
-			throw new IDAuthorizationException("Not authorized to execute API request '".$apiEndpoint."' (httpCode 401)");
-		}
-		if($httpCode !== 200 && $httpCode !== 202 && $httpCode !== 207){
-			throw new IDAPIException("API request '".$apiEndpoint."' failed with httpCode ".$httpCode);
-		}
-		if(str_contains($response, "Unauthorized")){
-			Logger::debug("Got: ".$response);
-			throw new IDAuthorizationException("Not authorized to execute API request '".$apiEndpoint."' (response contained Unauthorized)");
-		}
-		try{
-			return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
-		}catch(\JsonException $jsonException){
-			Logger::critical("Error while json decoding API request '".$apiEndpoint."'");
-			ErrorUtils::logException($jsonException);
-			throw new IDAPIException("Could not decode json for request '".$apiEndpoint."'");
-		}
-	}
-	
 	public function apiGet(string $apiEndpoint, array $fields = [], string $apiBase = self::API_BASE, ?array $header = null): array{
 		if($header === null){
 			$header = [
-				"content-type: application/json",
+				"Accept: application/json",
 				"Authorization: Bearer ".$this->appTokens["accessToken"]
 			];
 		}
