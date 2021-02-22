@@ -113,13 +113,13 @@ async function createWidget(items) {
 	chargeStatus = chargeInfo.addText(chargeStatus)
 	chargeStatus.font = Font.regularSystemFont(10)
 	chargeInfo.addSpacer(5)
+	let dF = new DateFormatter();
+	dF.dateFormat = "yyyy-MM-dd HH:mm:ss";
+	const dataTimestamp = dF.date(data.time);
 	if(data.chargeStatus == "charging" || data.chargeStatus == "chargePurposeReachedAndConservation"){
-		let dF = new DateFormatter();
-		dF.dateFormat = "yyyy-MM-dd HH:mm:ss";
-		const ret = dF.date(data.timestamp);
 		let realRemainChgTime = data.remainingChargingTime;
-		if(ret != null){
-			realRemainChgTime -= (Date.now() - ret.getTime()) / 60000;
+		if(dataTimestamp != null){
+			realRemainChgTime -= (Date.now() - dataTimestamp.getTime()) / 60000;
 		}
 		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(realRemainChgTime % 60).padStart(2, '0') + "h"
 		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr)
@@ -140,10 +140,10 @@ async function createWidget(items) {
 	dataCol2.addSpacer(10)
 	addFormattedData(dataCol2, "Heizung", data.hvacState+" ("+data.hvacTargetTemp+"°C)")	
 	
-	let dF = new DateFormatter()
+	dF = new DateFormatter()
 	dF.useNoDateStyle()
 	dF.useShortTimeStyle()
-	timedebug = widget.addText("carUpdate: "+data.timestamp+" lastUpdate: "+dF.string(scriptRun))
+	timedebug = widget.addText("carUpdate: "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" lastUpdate: "+dF.string(scriptRun))
 	timedebug.font = Font.lightSystemFont(8)
 	timedebug.textColor = Color.dynamic(Color.lightGray(), Color.darkGray())
 	timedebug.rightAlignText()
@@ -168,7 +168,7 @@ async function getData() {
 		state["plugLockState"] = "locked"
 		state["chargePower"] = "300"
 		
-		state["timestamp"] = "simulated"
+		state["time"] = "simulated"
 	}else{
 		state = getJSON()
 	}
@@ -187,7 +187,7 @@ async function getData() {
 }
 
 async function getJSON(){
-	url = baseURL+"/datadirect.php?key="+apiKey
+	url = baseURL+"/carStatus.php?key="+apiKey
 	req = new Request(url)
 	req.method = "GET"
 	apiResult = await req.loadString()

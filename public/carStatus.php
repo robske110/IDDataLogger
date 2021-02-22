@@ -17,7 +17,8 @@ if($attemptRefresh){
 }
 
 $inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
-$sqlCmd = "SELECT time, batterySOC, remainingRange, remainingChargingTime, chargeState, chargePower, chargeRateKMPH, targetSOC, plugConnectionState, plugLockState, remainClimatisationTime, hvacState, hvacTargetTemp FROM carStatus".($statusAt ?? "")." ORDER BY time DESC LIMIT 1";
+$columns = "time, batterySOC, remainingRange, remainingChargingTime, chargeState, chargePower, chargeRateKMPH, targetSOC, plugConnectionState, plugLockState, remainClimatisationTime, hvacState, hvacTargetTemp";
+$sqlCmd = "SELECT ".$columns." FROM carStatus".($statusAt ?? "")." ORDER BY time DESC LIMIT 1";
 
 $carStatusRes = pg_query($inst, $sqlCmd);
 
@@ -35,6 +36,16 @@ $chargeStartRes = pg_query($inst, $sqlChargeStart);
 $carStatus = pg_fetch_assoc($carStatusRes);
 if($carStatus == false){
 	error("no data");
+}
+$columns = explode(", ", $columns);
+foreach($carStatus as $key => $value){
+	foreach($columns as $columnName){
+		if($key === strtolower($columnName) && $key !== $columnName){
+			$carStatus[$columnName] = $value;
+			unset($carStatus[$key]);
+			break;
+		}
+	}
 }
 $carStatus["time"] = (new DateTime($carStatus["time"]))->format(DateTimeInterface::ATOM);
 $carStatus["lastChargeStartTime"] = (new DateTime(pg_fetch_assoc($chargeStartRes)["time"]))->format(DateTimeInterface::ATOM);
