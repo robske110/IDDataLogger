@@ -84,27 +84,26 @@ async function createWidget(items) {
 				default:
 					chargeStatus = "unknown cS: "+data.chargeStatus
 			}
+			let plugLockStatus;
+			switch (data.plugLockState){
+				case "locked":
+					plugLockStatus = " (🔒)"
+					break;
+				case "unlocked":
+					plugLockStatus = " (🔓)"
+					break;
+				case "invalid":
+					plugLockStatus = " (❌)"
+					break;
+				default:
+					plugLockStatus = "unknown pLS: "+data.plugConnectionState
+				break;
+			}
+			chargeStatus = chargeStatus + plugLockStatus;
 			break;
 		default:
 			chargeStatus = "unknown pCS: "+data.plugConnectionState+" cS: "+data.chargeStatus
 	}
-	
-	let plugLockStatus;
-	switch (data.plugLockState){
-		case "locked":
-			plugLockStatus = " (🔒)"
-			break;
-		case "unlocked":
-			plugLockStatus = " (🔓)"
-			break;
-		case "invalid":
-			plugLockStatus = " (❌)"
-			break;
-		default:
-			plugLockStatus = "unknown pLS: "+data.plugConnectionState
-		break;
-	}
-	chargeStatus = chargeStatus + plugLockStatus;
 			
 	//const chargeInfo = verticalStack(carColumn)
 	//chargeInfo.setPadding(0,10,0,10)
