@@ -39,6 +39,14 @@ class DatabaseConnection{
 		return $this->connection;
 	}
 	
+	public function query(string $sql){
+		$res = pg_query($this->connection, $sql);
+		if($res === false){
+			throw new \Exception("Query ".$sql." failed");
+		}
+		return pg_fetch_all($res);
+	}
+	
 	public function close(){
 		pg_close($this->connection);
 	}

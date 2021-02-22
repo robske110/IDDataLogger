@@ -102,6 +102,12 @@ class Main{
 		Logger::log("Connecting to db...");
 		$this->db = new DatabaseConnection(
 			$this->config["db"]["host"], $this->config["db"]["dbname"], $this->config["db"]["user"], $this->config["db"]["password"] ?? null);
+		
+		if(($this->db->query("SELECT to_regclass('public.carStatus')")[0]["to_regclass"] ?? null) !== "carstatus"){
+			Logger::log("Initializing db tables...");
+			$this->db->query(file_get_contents(BASE_DIR."db.sql"));
+		}
+		
 		$this->initQuery();
 		
 		new CarPictureHandler($this);

@@ -4,8 +4,8 @@ CREATE TABLE carStatus (
   remainingRange            smallint,
   remainingChargingTime     smallint,
   chargeState               text,
-  chargePower               text, #todo
-  chargeRateKMPH            text, #todo
+  chargePower               decimal(4, 1),
+  chargeRateKMPH            smallint,
   maxChargeCurrentAC        text,
   autoUnlockPlugWhenCharged text,
   targetSOC                 decimal(3, 0),
