@@ -113,8 +113,15 @@ async function createWidget(items) {
 	chargeStatus = chargeInfo.addText(chargeStatus)
 	chargeStatus.font = Font.regularSystemFont(10)
 	chargeInfo.addSpacer(5)
-	if(data.chargeStatus == "slurping"){
-		let timeStr = Math.floor(data.chargeMinutesToCompletion / 60) + ":" + String(data.chargeMinutesToCompletion % 60).padStart(2, '0') + "h"
+	if(data.chargeStatus == "charging" || data.chargeStatus == "chargePurposeReachedAndConservation"){
+		let dF = new DateFormatter();
+		dF.dateFormat = "yyyy-MM-dd HH:mm:ss";
+		const ret = dF.date(data.timestamp);
+		let realRemainChgTime = data.remainingChargingTime;
+		if(ret != null){
+			realRemainChgTime -= (Date.now() - ret.getTime()) / 60000;
+		}
+		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(realRemainChgTime % 60).padStart(2, '0') + "h"
 		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr)
 		chargeStateLabel.font = Font.regularSystemFont(10)
 	}else{
@@ -125,13 +132,13 @@ async function createWidget(items) {
 	
 	addFormattedData(dataCol1, "Ladestand", data.batterySOC.toString()+"%")	
 	dataCol1.addSpacer(10)
-	addFormattedData(dataCol1, "Reichweite", data.remainRange+ "km")
+	addFormattedData(dataCol1, "Reichweite", data.remainingRange+ "km")
 	
 	const dataCol2 = verticalStack(wrap)
 		
 	addFormattedData(dataCol2, "Zielladung", data.targetSOC+"%")	
 	dataCol2.addSpacer(10)
-	addFormattedData(dataCol2, "Heizung", data.hvacStatus+" ("+data.hvacTargetTemp+"°C)")	
+	addFormattedData(dataCol2, "Heizung", data.hvacState+" ("+data.hvacTargetTemp+"°C)")	
 	
 	let dF = new DateFormatter()
 	dF.useNoDateStyle()
@@ -151,13 +158,16 @@ async function getData() {
 	if(exampleData){
 		state = {};
 		state["batterySOC"] = "100"
-		state["remainRange"] = "999"
+		state["remainingRange"] = "999"
+		state["remainingChargingTime"] = "500"
 		state["targetSOC"] = "100"
-		state["hvacStatus"] = "on"
+		state["hvacState"] = "on"
 		state["hvacTargetTemp"] = "99"
-		state["chargeStatus"] = "slurping"
+		state["chargeStatus"] = "charging"
+		state["plugConnectionState"] = "connected"
+		state["plugLockState"] = "locked"
 		state["chargePower"] = "300"
-		state["chargeMinutesToCompletion"] = "500"
+		
 		state["timestamp"] = "simulated"
 	}else{
 		state = getJSON()
