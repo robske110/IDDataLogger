@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 use robske_110\utils\Logger;
-use robske_110\vwid\LoginInformation;
-use robske_110\vwid\WebsiteLogin;
+use robske_110\vwid\api\LoginInformation;
+use robske_110\vwid\api\WebsiteAPI;
 
 const BASE_DIR = __DIR__."/../../";
 
@@ -17,15 +17,18 @@ Logger::init(false, false);
 
 $config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 
-$id3Login = new WebsiteLogin(new LoginInformation($config["username"], $config["password"]));
+$id3Login = new WebsiteAPI(new LoginInformation($config["username"], $config["password"]));
 
 debug("accesstokencar:");
 $tokens = json_decode($id3Login->getRequest("https://www.volkswagen.de/app/authproxy/vw-de/tokens", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true);
 var_dump($tokens);
 $accessTokenCar = $tokens["access_token"];
+debug("carlist:");
+$cars = json_decode($id3Login->getRequest("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars", [], ["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]));
+var_dump($cars);
 debug("vehicleimages:");
 foreach(json_decode($id3Login->getRequest(
-	"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/***REMOVED***?viewDirection=side&angle=right",
+	"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$cars[0]->vin."?viewDirection=side&angle=right",
 	[],
 	["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]
 ), true)["images"] as $image){
@@ -44,8 +47,6 @@ debug("user:");
 $userInfo = json_decode($id3Login->getRequest("https://www.volkswagen.de/app/authproxy/vw-de/user", [], ["Accept: application/json", "X-csrf-token: ".$id3Login->getCsrf()]), true);
 var_dump($userInfo);
 
-debug("carlist:");
-var_dump($id3Login->getRequest("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars", [], ["Accept: application/json", "Authorization: Bearer ".$accessTokenCar]));
 #https://w1hub-backend-production.apps.emea.vwapps.io/cars is empty ???
 
 debug("accesstokenweconnect:");

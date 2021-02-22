@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace robske_110\vwid;
+namespace robske_110\vwid\api;
 
 use DOMDocument;
 use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
 
-class WebsiteLogin extends CurlWrapper{
+class WebsiteAPI extends CurlWrapper{
 	const LOGIN_PAGE = "https://www.volkswagen.de/app/authproxy/login?fag=vw-de,vwag-weconnect&scope-vw-de=profile,address,phone,carConfigurations,dealers,cars,vin,profession&scope-vwag-weconnect=openid&prompt-vw-de=login&prompt-vwag-weconnect=none&redirectUrl=https://www.volkswagen.de/de/besitzer-und-nutzer/myvolkswagen/garage.html";
 	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";

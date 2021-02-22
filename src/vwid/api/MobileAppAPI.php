@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace robske_110\vwid;
+namespace robske_110\vwid\api;
 
 use DOMDocument;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\exception\IDAPIException;
-use robske_110\vwid\exception\IDAuthorizationException;
-use robske_110\vwid\exception\IDLoginException;
+use robske_110\vwid\api\exception\IDAPIException;
+use robske_110\vwid\api\exception\IDAuthorizationException;
+use robske_110\vwid\api\exception\IDLoginException;
 use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;

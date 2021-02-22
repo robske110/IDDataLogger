@@ -6,8 +6,10 @@ namespace robske_110\vwid;
 use DateTime;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\exception\IDAPIException;
-use robske_110\vwid\exception\IDAuthorizationException;
+use robske_110\vwid\api\exception\IDAPIException;
+use robske_110\vwid\api\exception\IDAuthorizationException;
+use robske_110\vwid\api\LoginInformation;
+use robske_110\vwid\api\MobileAppAPI;
 use robske_110\webutils\CurlError;
 
 class Main{
