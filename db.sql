@@ -30,3 +30,7 @@ CREATE TABLE users (
     username text UNIQUE NOT NULL,
     hash text NOT NULL
 );
+
+CREATE TABLE authKeys (
+    key text NOT NULL
+);

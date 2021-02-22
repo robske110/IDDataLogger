@@ -1,7 +1,19 @@
 <?php
+require_once __DIR__."/../env.php";
+if(defined("ALLOW_KEY_AUTHENTICATION") && ALLOW_KEY_AUTHENTICATION === true){
+	if(isset($_GET['key']) && is_string($_GET['key'])){
+		$inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
+		$keys = pg_fetch_all_columns(pg_query($inst, "SELECT key FROM authKeys"));
+		foreach($keys as $key){
+			if(hash_equals($key, $_GET['key'])){
+				return;
+			}
+		}
+	}
+}
+
 ini_set("session.gc_maxlifetime", 7*24*60*60);
 ini_set("session.cookie_lifetime", 7*24*60*60);
-require_once __DIR__."/../env.php";
 if(!session_start()){
 	fail();
 }

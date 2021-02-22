@@ -1,4 +1,5 @@
 <?php
+define("ALLOW_KEY_AUTHENTICATION", true);
 require "login/loginCheck.php";
 
 $attemptRefresh = ($_GET['attemptRefresh'] ?? false) == "true";
