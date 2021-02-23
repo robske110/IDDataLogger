@@ -25,7 +25,7 @@ spl_autoload_register(function ($class){
 	<div class="container">
 		<div class="row">
 			<div class="element">
-				<img src="car.png" class="responsive" alt="Car">
+				<img src="../carPicture.php" class="responsive" alt="Car">
 			</div>
 			<div class="element doughnut">
 				<canvas id="soc"></canvas>
