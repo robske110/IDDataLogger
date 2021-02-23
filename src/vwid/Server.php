@@ -3,10 +3,19 @@ declare(strict_types=1);
 
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\LoginInformation;
 use robske_110\vwid\Main;
 
 $startTime = microtime(true);
+
+const MIN_PHP_VERSION = "8.0.0";
+if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
+	echo("At least PHP ".MIN_PHP_VERSION." is required. Your installed version is ".PHP_VERSION."!");
+	exit(1);
+}
+if(php_sapi_name() !== "cli"){
+	echo("This script is to be run in cli!");
+	exit(1);
+}
 
 #ini_set('memory_limit','1024M');
 
