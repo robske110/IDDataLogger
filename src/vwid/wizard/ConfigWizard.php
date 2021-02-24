@@ -31,12 +31,12 @@ class ConfigWizard extends InteractiveWizard{
 			$dbname = $this->get("What is the name of the database for the ID DataLogger?");
 		}
 		if(isset($options["user"])){
-			$dbname = $options["user"];
+			$username = $options["user"];
 		}else{
 			$username = $this->get("What is the username of the user to connect to the database server?");
 		}
 		if(isset($options["password"])){
-			$dbname = $options["password"];
+			$password = $options["password"];
 		}else{
 			$password = $this->get("What is the password of the user to connect to the database server? (If no password is needed leave this blank or enter null.)", "null");
 		}
