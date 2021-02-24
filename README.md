@@ -6,7 +6,7 @@ It includes an iOS widget (using Scriptable) and a webpage for seeing current st
 
 <p align="center">
   <img src="docs/img/idView.png" width="500">
-  <img src="docs/img/widget.png" width="400">
+  <img src="docs/img/widget.png" width="300">
 </p>
 
 ## Setup
@@ -18,7 +18,7 @@ Don't worry though, the [beginners guide](docs/beginnerguide.md) tries to help y
 
 ### Setup for advanced users.
 
-Prerequisites are: 
+Prerequisites are:
 - PHP 8 cli
 - A webserver serving .php files (PHP 8)
 - (strongly recommended) HTTPS enabled server with certificate
@@ -26,7 +26,7 @@ Prerequisites are:
 
 Clone this project.
 
-`cloneurl`
+`git clone https://github.com/robske110/IDDataLogger.git`
 
 Create a database (and a user) in your postgresql server for this project and fill in the details into config/config.example.json and .env.example. We'll need these files later.
 You can alternatively use the config setup wizard by running the setup-config.sh script.
