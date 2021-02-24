@@ -14,6 +14,7 @@ class CarPictureHandler{
 	
 	public function __construct(Main $main){
 		$this->main = $main;
+		@mkdir(BASE_DIR."data/");
 		if(!file_exists(BASE_DIR."data/carPic.png")){
 			Logger::log("Fetching carPicture (this will take a while...)");
 			$this->fetchCarPicture();
