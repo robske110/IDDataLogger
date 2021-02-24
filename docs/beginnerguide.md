@@ -37,7 +37,7 @@ It assumes you have a fresh OS, especially without any existing postgres or webs
 
 Enter the following command to download and run the install script:
 
-`wget -q -O - https://raw.githubusercontent.com/robske110/IDDataLogger/master/docs/install.sh | bash -s -`
+`wget https://raw.githubusercontent.com/robske110/IDDataLogger/master/docs/install.sh; bash install.sh; rm install.sh`
 
 The install script will produce a lot of output. After about a minute you will be prompted for your VW account login information.
 After you enter the information you should see `Installation complete, ...`.
