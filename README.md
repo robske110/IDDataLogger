@@ -19,8 +19,8 @@ Don't worry though, the [beginners guide](docs/beginnerguide.md) tries to help y
 ### Setup for advanced users.
 
 Prerequisites are:
-- PHP 8 cli
-- A webserver serving .php files (PHP 8)
+- PHP 8 cli with pgsql, curl, gd and dom
+- A webserver serving .php files (PHP 8 with pgsql)
 - (strongly recommended) HTTPS enabled server with certificate
 - A postgresql server (Any version from 9 and up should work, although testing has only been done on 11 and up)
 

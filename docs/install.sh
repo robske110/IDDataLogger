@@ -3,7 +3,7 @@
 
 cd ~ || exit
 wget -q -O - https://packages.sury.org/php/README.txt | bash -s -
-sudo apt -y install php8.0
+sudo apt -y install php8.0 php8.0-pgsql php8.0-curl php8.0-gd php8.0-dom
 sudo apt -y install postgresql
 pg_pw=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 sudo su postgres -c "psql -c \"CREATE USER vwiddatalogger WITH PASSWORD '$pg_pw';\"; createdb vwid"
