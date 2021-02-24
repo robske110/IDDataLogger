@@ -1,0 +1,3 @@
+[submodule "public/idView/ChartJS"]
+	path = public/idView/ChartJS
+	url = https://github.com/robske110/php-chartjs.git
