@@ -51,7 +51,7 @@ async function updateCarStatus(){
 		return;
 	}
 	if(carStatus.error != undefined){
-		alert("fail");
+		alert("no data");
 		return;
 	}
 	processCarStatus(carStatus);

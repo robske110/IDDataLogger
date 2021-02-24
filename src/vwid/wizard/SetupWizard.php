@@ -41,8 +41,8 @@ class SetupWizard extends InteractiveWizard{
 	}
 	
 	private function setupUser(){
-		$password = $this->get("Enter the username for the new user");
-		$username = $this->get("Now enter the password for the new user");
+		$username = $this->get("Enter the username for the new user");
+		$password = $this->get("Now enter the password for the new user");
 		
 		if(pg_prepare($this->main->getDB()->getConnection(), "putUser", "INSERT INTO users(username, hash) VALUES($1, $2)") === false){
 			throw new RuntimeException("Failed to prepare putUser");

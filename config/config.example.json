@@ -16,7 +16,7 @@
         "flip": true
     },
     "timezone": null,
-    "log": {
+    "logging": {
         "debug-enable": false,
         "file-enable": false,
         "log-dir": null

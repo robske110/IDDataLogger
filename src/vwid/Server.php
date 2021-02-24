@@ -38,7 +38,7 @@ if(!isset($config["debug"])){
 	$config["debug"] = [];
 }
 Logger::init(
-	$config["logging"]["log-enable"] ?? true, $config["logging"]["file-enable"] ?? true,
+	$config["logging"]["debug-enable"] ?? true, $config["logging"]["file-enable"] ?? true,
 	($config["logging"]["log-dir"] ?? BASE_DIR."/log/")
 );
 

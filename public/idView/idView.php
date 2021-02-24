@@ -15,7 +15,7 @@ spl_autoload_register(function ($class){
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
 	<link rel="stylesheet" type="text/css" href="css/datepicker.css">
-	<link rel="stylesheet" type="text/css" href="css/idview.css">
+	<link rel="stylesheet" type="text/css" href="css/idView.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
