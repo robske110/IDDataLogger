@@ -47,9 +47,9 @@ For more information on setting up the iOS widget using the API key see [Setting
 After creating the API key and the user you should see `Done. Ready! Fetching car status...` and `Writing new data for timestamp`.
 This means you have successfully setup the ID DataLogger!
 
-You can now access the ID DataLogger by entering the IP of your raspberrypi into your browser or using the iOS widget.
+You can now access the ID DataLogger by entering `IP/vwid` into your browser where `IP` is the ip or hostname of your raspberry or using the iOS widget.
 
-To find the IP of your raspberrypi simply enter the command `hostname -I`
+To find the ip of your raspberrypi simply enter the command `hostname -I`
 
 If you want to view the website and have the iOS widget update outside your home network, please refer to [making the ID DataLogger available from the internet](#making-the-id-datalogger-available-from-the-internet).
 

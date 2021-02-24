@@ -59,7 +59,7 @@ if(!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])){
 		exit;
 	}
 }
-$uri .= $_SERVER['HTTP_HOST'];
+$uri .= $_SERVER['HTTP_HOST'].dirname($_SERVER['REQUEST_URI'], 2);
 ?>
 <body>
 	<div class="loginform">
