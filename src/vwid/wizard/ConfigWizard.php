@@ -16,7 +16,7 @@ class ConfigWizard extends InteractiveWizard{
 		$idUsername = $this->get("What is the username of your VW ID account?");
 		$idPassword = $this->get("What is the password of your VW ID account?");
 		
-		$options = getopt("", ["host:", "dbname:", "user:", "password:"]);
+		$options = getopt("", ["host:", "dbname:", "user:", "password:", "allow-insecure-http", "quiet"]);
 		if(empty($options)){
 			$this->message("You will now be asked for your database connection information");
 		}
@@ -57,6 +57,13 @@ class ConfigWizard extends InteractiveWizard{
 		}
 		
 		$ini = parse_ini_file(BASE_DIR.".env.example", false, INI_SCANNER_RAW);
+		if(isset($options["allow-insecure-http"])){
+			$this->message(<<<WARN
+WARNING: FORCE_ALLOW_HTTP is enabled. This will prevent the frontend from blocking and redirecting http requests.
+Make sure to disable this should you eventually enable https and expose this project to the internet!
+WARN);
+			$ini["FORCE_ALLOW_HTTP"] = "true";
+		}
 		$newIni = "";
 		foreach($ini as $key => $value){
 			switch($key){
@@ -82,12 +89,14 @@ class ConfigWizard extends InteractiveWizard{
 		}
 		file_put_contents(BASE_DIR.".env", $newIni);
 		
-		$this->message("Perfect! The configuration has been written to config/config.json and the .env file.");
-		$this->message(<<<LOL
+		if(!isset($options["quiet"])){
+			$this->message("Perfect! The configuration has been written to config/config.json and the .env file.");
+			$this->message(<<<INFO
 You can now copy the contents of the public/ folder to the appropriate place in your webroot (recommended: webroot/some-folder/)
 and then copy the .env file outside your webroot. Please refer to the installation documentation for other ways of setting the
 environment variables or placing the content of public in another level of your webroot.
-LOL);
+INFO);
+		}
 	}
 	
 	private function writeDBconfig(
