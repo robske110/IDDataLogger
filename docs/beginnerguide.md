@@ -11,7 +11,7 @@ This project contains a long-running program which will fetch data from VW APIs 
 It also provides a website where you can view this data. Furthermore, it provides an API itself to quickly fetch the current car Status for displaying in, e.g. the iOS widget.
 
 So we have three components: The long-running programm, the database and a webserver to serve you the stats website or the data for the iOS widget.
-All off this can run on a raspberrypi.
+All of this can run on a raspberrypi.
 
 Let's get to work then.
 
@@ -35,11 +35,11 @@ There is a one-line command which attempts to install this project automagically
 The install script works and is tested on raspbian and debian.
 It assumes you have a fresh OS, especially without any existing postgres or webserver installations.
 
-Enter the following command to download and run the install script:
+Enter (or copy) the following command to download and run the install script:
 
 `wget https://raw.githubusercontent.com/robske110/IDDataLogger/master/docs/install.sh; bash install.sh; rm install.sh`
 
-The install script will produce a lot of output. After about a minute you will be prompted for your VW account login information.
+The install script will produce a lot of output. After a few minutes you will be prompted for your VW account login information.
 After you enter the information you should see `Installation complete, ...`.
 You can now enter `./start.sh`, which will start the ID DataLogger and help you create an API key for your widget and a user for the web interface.
 For more information on setting up the iOS widget using the API key see [Setting up the iOS Widget](ioswidget.md).

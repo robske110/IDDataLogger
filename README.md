@@ -26,7 +26,7 @@ Prerequisites are:
 
 Clone this project.
 
-`git clone https://github.com/robske110/IDDataLogger.git`
+`git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
 Create a database (and a user) in your postgresql server for this project and fill in the details into config/config.example.json and .env.example. We'll need these files later.
 You can alternatively use the config setup wizard by running the setup-config.sh script.
