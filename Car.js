@@ -1,15 +1,13 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: car;
-
 //CONFIGURATION
 
-const baseURL = "http://192.168.1.23:8080/vwid3/"
-***REMOVED***
+const baseURL = ""
 const apiKey = ""
 
 const forceImageRefresh = false //set to true to refresh the image
-const exampleData = false
+const exampleData = true
 
 const socThreshold = 95 //not implemented
 
@@ -47,25 +45,25 @@ function addFormattedData(widgetStack, dataTitle, dataValue){
 async function createWidget(items) {
 	let widget = new ListWidget()
 	const data = await getData()
-	
+
 	widget.setPadding(20, 15, 20, 15) //top, leading, bottom, trailing
 	widget.backgroundColor = Color.dynamic(new Color("eee"), new Color("111"))
-		
+
 	const wrap = widget.addStack()
 	//wrap.centerAlignContent()
 	wrap.spacing = 15
-		
+
 	const carColumn = verticalStack(wrap)
-	
+
 	carColumn.addSpacer(5)
 
 	const carImage = await getImage("car.png", baseURL+"/carPicture.php?key="+apiKey)
 	let carImageElement = carColumn.addImage(carImage)
-		
+
 	//carColumn.addSpacer(5)
-	
+
 	let chargeStatus
-	
+
 	switch (data.plugConnectionState){
 		case "disconnected":
 			chargeStatus = "⚫ Entkoppelt"
@@ -98,24 +96,25 @@ async function createWidget(items) {
 					break;
 				default:
 					plugLockStatus = "unknown pLS: "+data.plugConnectionState
-				break;
+					break;
 			}
 			chargeStatus = chargeStatus + plugLockStatus;
 			break;
 		default:
 			chargeStatus = "unknown pCS: "+data.plugConnectionState+" cS: "+data.chargeStatus
 	}
-			
+
 	//const chargeInfo = verticalStack(carColumn)
 	//chargeInfo.setPadding(0,10,0,10)
 	const chargeInfo = carColumn
-	
+
 	chargeStatus = chargeInfo.addText(chargeStatus)
 	chargeStatus.font = Font.regularSystemFont(10)
 	chargeInfo.addSpacer(5)
-	let dF = new DateFormatter();
-	dF.dateFormat = "yyyy-MM-dd HH:mm:ss";
-	const dataTimestamp = dF.date(data.time);
+	let dataTimestamp = null;
+	if(!Number.isNaN(Date.parse(data.time))){
+		dataTimestamp = new Date(Date.parse(data.time));
+	}
 	if(data.chargeStatus == "charging" || data.chargeStatus == "chargePurposeReachedAndConservation"){
 		let realRemainChgTime = data.remainingChargingTime;
 		if(dataTimestamp != null){
@@ -127,20 +126,20 @@ async function createWidget(items) {
 	}else{
 		chargeInfo.addSpacer(10)
 	}
-	
+
 	const dataCol1 = verticalStack(wrap)
-	
-	addFormattedData(dataCol1, "Ladestand", data.batterySOC.toString()+"%")	
+
+	addFormattedData(dataCol1, "Ladestand", data.batterySOC.toString()+"%")
 	dataCol1.addSpacer(10)
 	addFormattedData(dataCol1, "Reichweite", data.remainingRange+ "km")
-	
+
 	const dataCol2 = verticalStack(wrap)
-		
-	addFormattedData(dataCol2, "Zielladung", data.targetSOC+"%")	
+
+	addFormattedData(dataCol2, "Zielladung", data.targetSOC+"%")
 	dataCol2.addSpacer(10)
-	addFormattedData(dataCol2, "Heizung", data.hvacState+" ("+data.hvacTargetTemp+"°C)")	
-	
-	dF = new DateFormatter()
+	addFormattedData(dataCol2, "Heizung", data.hvacState+" ("+data.hvacTargetTemp+"°C)")
+
+	let dF = new DateFormatter()
 	dF.useNoDateStyle()
 	dF.useShortTimeStyle()
 	timedebug = widget.addText("carUpdate: "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" lastUpdate: "+dF.string(scriptRun))
@@ -157,22 +156,22 @@ async function getData() {
 	let state
 	if(exampleData){
 		state = {};
-		state["batterySOC"] = "100"
-		state["remainingRange"] = "999"
-		state["remainingChargingTime"] = "500"
+		state["batterySOC"] = "40"
+		state["remainingRange"] = "150"
+		state["remainingChargingTime"] = "61"
 		state["targetSOC"] = "100"
-		state["hvacState"] = "on"
-		state["hvacTargetTemp"] = "99"
+		state["hvacState"] = "heating"
+		state["hvacTargetTemp"] = "21.5"
 		state["chargeStatus"] = "charging"
 		state["plugConnectionState"] = "connected"
 		state["plugLockState"] = "locked"
-		state["chargePower"] = "300"
-		
+		state["chargePower"] = "100"
+
 		state["time"] = "simulated"
 	}else{
 		state = getJSON()
 	}
-	
+
 	/*let currentDate = ;
     let newDate = new Date((new Date).getTime()+1000);
 	chargeReached = new Notification()
@@ -182,7 +181,7 @@ async function getData() {
 	chargeReached.sound = "complete"
 	chargeReached.setTriggerDate(newDate)
 	chargeReached.schedule()*/
-		
+
 	return state
 }
 
