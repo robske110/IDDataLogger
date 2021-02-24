@@ -47,7 +47,7 @@ If you place the files deeper inside the webroot, please consider editing env.ph
 
 You can alternatively set the environment variables through your webserver. (Or anything else that populates php's `$_ENV`)
 
-After successful start you can now visit idView.php or use the iOS widget after [setting it up](docs/iosWidget.md)!
+After successful start you can now visit idView.php or use the iOS widget after [setting it up](docs/ioswidget.md)!
 
 ## Disclaimer
 
