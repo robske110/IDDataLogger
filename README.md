@@ -13,9 +13,8 @@ It includes an iOS widget (using Scriptable) and a webpage for seeing current st
 
 ### Setup for beginners
 
-A quick heads-up beforehand: Setting this up for someone who has never setup a webserver before can be challenging.
-Don't worry though, the beginners guide tries to help you as much as possible and guides you through every step.
-The guide for beginners is currently being written. Please check back later!
+A quick heads-up beforehand: Setting this up for someone who has never set up a webserver before can be challenging.
+Don't worry though, the [beginners guide](docs/beginnerguide.md) tries to help you as much as possible and guides you through every step.
 
 ### Setup for advanced users.
 
@@ -41,7 +40,7 @@ It is recommended to place them in the second level (not directly in webroot).
 
 Then copy the `.env.example` file as `.env` outside the webroot and edit the options within it.
 
-`env.php` looks for a `.env file two folders up from its location.
+`env.php` looks for a `.env` file two folders up from its location.
 (If you put the contents of the public folder in `/path/to/webroot/vwid/` it will look in `/path/to/.env`)
 If you place the files deeper inside the webroot, please consider editing env.php and configuring the correct path in the first line. It is strongly recommended keeping the .env file out of the webroot.
 
