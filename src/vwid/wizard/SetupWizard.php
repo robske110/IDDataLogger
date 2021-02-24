@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace robske_110\vwid;
+namespace robske_110\vwid\wizard;
 
+use robske_110\vwid\Main;
+use RuntimeException;
 
-use http\Exception\RuntimeException;
-
-class SetupWizard{
+class SetupWizard extends InteractiveWizard{
 	private Main $main;
 	
 	public function __construct(Main $main){
 		$this->main = $main;
-		$this->initalSetup();
+		$this->initialSetup();
 	}
 	
-	public function initalSetup(){
-		$this->message("Welcome to the vwid DataLogger! This setup wizard guides you through the last setup steps!");
+	public function initialSetup(){
+		$this->message("Welcome to the ID DataLogger! This setup wizard guides you through the last setup steps!");
 		$this->message("A connection to the database has already been established and tables have been initialized.");
 		
 		$this->message("We can now generate an API key for accessing the carStatus and carPicture API. This is needed for the iOS widget.");
@@ -54,32 +54,5 @@ class SetupWizard{
 		}else{
 			throw new RuntimeException("Failed to create the user");
 		}
-	}
-	
-	private function readLine(): string{
-		return trim((string) fgets(STDIN));
-	}
-	
-	private function message(string $message): void{
-		echo($message.PHP_EOL);
-	}
-	
-	private function get(string $msg, ?string $default = null, array $options = []): ?string{
-		$msg = "> ".$msg;
-		
-		
-		if(!empty($options)){
-			$msg .= " (".implode(",", $options).")";
-		}
-		if($default !== null){
-			$msg .= " [".$default."]";
-		}
-		$msg .= ": ";
-		
-		echo $msg;
-		
-		$input = $this->readLine();
-		
-		return $input === "" ? $default : $input;
 	}
 }

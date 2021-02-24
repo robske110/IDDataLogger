@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use robske_110\utils\Logger;
+use robske_110\vwid\wizard\SetupWizard;
 
 class Main{
 	private bool $firstTick = true;

@@ -23,6 +23,11 @@ const BASE_DIR = __DIR__."/../../";
 
 require(BASE_DIR."src/Autoloader.php");
 
+if(($_SERVER['argv'][1] ?? "") == "configwizard"){
+	new \robske_110\vwid\wizard\ConfigWizard();
+	exit;
+}
+
 $config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
 
 if(isset($config["timezone"])){
