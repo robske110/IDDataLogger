@@ -7,7 +7,7 @@ const baseURL = ""
 const apiKey = ""
 
 const forceImageRefresh = false //set to true to refresh the image
-const exampleData = true
+const exampleData = false
 
 const socThreshold = 95 //not implemented
 
@@ -154,7 +154,7 @@ async function createWidget(items) {
 // fetch all data
 async function getData() {
 	let state
-	if(exampleData){
+	if(exampleData || baseURL == ""){
 		state = {};
 		state["batterySOC"] = "40"
 		state["remainingRange"] = "150"
