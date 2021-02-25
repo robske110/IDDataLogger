@@ -88,7 +88,7 @@ class MobileAppAPI extends API{
 	}
 	
 	protected function onHeaderEntry(string $entryName, string $entryValue){
-		if($entryName == "location"){
+		if(strtolower($entryName) == "location"){ //curl sometimes has headers in all lowercase
 			if(str_starts_with($entryValue, "weconnect://")){
 				$args = explode("&", substr($entryValue, strlen("weconnect://authenticated#")));
 				foreach($args as $field){

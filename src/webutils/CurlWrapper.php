@@ -41,16 +41,18 @@ class CurlWrapper{
 	}
 	
 	private function curlHeader(CurlHandle $ch, string $headerLine){
+		//Logger::debug("Curl header: ".$headerLine);
 		$headerEntry = self::parseHeaderLine($headerLine);
 		if($headerEntry !== null){
 			$this->onHeaderEntry(...$headerEntry);
-		}
-		if(($setCookiePos = strpos($headerLine, "set-cookie: ")) !== false){
-			$posAssign = strpos($headerLine, "=");
-			$cookieName = substr($headerLine, strlen("set-cookie: "), $posAssign-strlen("set-cookie: "));
-			$posSemicolon = strpos($headerLine, ";");
-			$cookieContent = substr($headerLine, $posAssign+1, $posSemicolon-$posAssign-1);
-			$this->onCookie($cookieName, $cookieContent);
+			if(strtolower($headerEntry[0]) == "set-cookie"){
+				$cookieStr = $headerEntry[1];
+				$posAssign = strpos($cookieStr, "=");
+				$cookieName = substr($cookieStr, 0, $posAssign);
+				$posSemicolon = strpos($cookieStr, ";");
+				$cookieContent = substr($cookieStr, $posAssign+1, $posSemicolon-$posAssign-1);
+				$this->onCookie($cookieName, $cookieContent);
+			}
 		}
 		return strlen($headerLine);
 	}
