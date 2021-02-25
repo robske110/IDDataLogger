@@ -16,7 +16,7 @@ class ConfigWizard extends InteractiveWizard{
 		$idUsername = $this->get("What is the username of your VW ID account?");
 		$idPassword = $this->get("What is the password of your VW ID account?");
 		
-		$options = getopt("", ["host:", "dbname:", "user:", "password:", "allow-insecure-http", "quiet"]);
+		$options = getopt("", ["host:", "dbname:", "user:", "password:", "driver:", "allow-insecure-http", "quiet"]);
 		if(empty($options)){
 			$this->message("You will now be asked for your database connection information");
 		}
@@ -43,17 +43,22 @@ class ConfigWizard extends InteractiveWizard{
 		if($password == "null" || empty($password)){
 			$password = null;
 		}
+		if(isset($options["driver"])){
+			$driver = $options["driver"];
+		}else{
+			$driver = $this->get("What is the driver we should use for connecting to the database server?", "pgsql");
+		}
 		
 		if(file_exists(BASE_DIR."config/config.json")){
 			if($this->get("A config.json already exists. Do you want to overwrite it with the defaults from config.example.json?", "N", ["Y", "N"]) != "Y"){
 				if($this->get("Do you want to only update the database connection parameters in your existing config?", "Y", ["Y", "N"]) == "Y"){
-					$config = $this->writeDBconfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, "config.json");
+					$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver, "config.json");
 				}
 			}else{
-				$config = $this->writeDBconfig($idUsername, $idPassword, $hostname, $dbname, $username, $password);
+				$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
 			}
 		}else{
-			$config = $this->writeDBconfig($idUsername, $idPassword, $hostname, $dbname, $username, $password);
+			$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
 		}
 		
 		$ini = parse_ini_file(BASE_DIR.".env.example", false, INI_SCANNER_RAW);
@@ -79,6 +84,9 @@ WARN);
 				case "DB_PASSWORD":
 					$cfgKey = "password";
 					break;
+				case "DB_DRIVER":
+					$cfgKey = "driver";
+					break;
 				default:
 					$cfgKey = null;
 			}
@@ -99,9 +107,9 @@ INFO);
 		}
 	}
 	
-	private function writeDBconfig(
+	private function writeJsonConfig(
 		?string $idUsername, ?string $idPassword, string $hostname, string $dbname, string $username, ?string $password,
-		string $filename = "config.example.json"
+		string $driver, string $filename = "config.example.json"
 	): array{
 		$config = json_decode(file_get_contents(BASE_DIR."config/".$filename), true);
 		if(!empty($idUsername)){
@@ -114,6 +122,7 @@ INFO);
 		$config["db"]["dbname"] = $dbname;
 		$config["db"]["user"] = $username;
 		$config["db"]["password"] = $password;
+		$config["db"]["driver"] = $driver;
 		
 		file_put_contents(BASE_DIR."config/config.json", json_encode($config, JSON_PRETTY_PRINT));
 		return $config;

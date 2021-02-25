@@ -1,6 +1,7 @@
 <?php
 define("ALLOW_KEY_AUTHENTICATION", true);
 require "login/loginCheck.php";
+require_once "DatabaseConnection.php";
 
 $attemptRefresh = ($_GET['attemptRefresh'] ?? false) == "true";
 
@@ -17,10 +18,10 @@ if($attemptRefresh){
 }
 
 $inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
+
 $columns = "time, batterySOC, remainingRange, remainingChargingTime, chargeState, chargePower, chargeRateKMPH, targetSOC, plugConnectionState, plugLockState, remainClimatisationTime, hvacState, hvacTargetTemp";
 $sqlCmd = "SELECT ".$columns." FROM carStatus".($statusAt ?? "")." ORDER BY time DESC LIMIT 1";
 
-$carStatusRes = pg_query($inst, $sqlCmd);
 
 $sqlChargeStart = "WITH chargeState_wprev AS (
   SELECT time, chargeState, lag(chargeState) over(ORDER BY time ASC) AS prev_chargeState
@@ -31,10 +32,10 @@ SELECT time, chargeState, prev_chargeState
 FROM chargeState_wprev
 WHERE prev_chargeState = 'readyForCharging' AND chargeState = 'charging' LIMIT 1";
 
-$chargeStartRes = pg_query($inst, $sqlChargeStart);
+$chargeStartRes = DatabaseConnection::getInstance()->queryStatement($sqlCmd)->fetch(PDO::FETCH_ASSOC);
 
-$carStatus = pg_fetch_assoc($carStatusRes);
-if($carStatus == false){
+$carStatus = DatabaseConnection::getInstance()->queryStatement($sqlCmd)->fetch(PDO::FETCH_ASSOC);
+if(empty($carStatus)){
 	error("no data");
 }
 $columns = explode(", ", $columns);
@@ -48,7 +49,7 @@ foreach($carStatus as $key => $value){
 	}
 }
 $carStatus["time"] = (new DateTime($carStatus["time"]))->format(DateTimeInterface::ATOM);
-$carStatus["lastChargeStartTime"] = (new DateTime(pg_fetch_assoc($chargeStartRes)["time"]))->format(DateTimeInterface::ATOM);
+$carStatus["lastChargeStartTime"] = (new DateTime($chargeStartRes["time"]))->format(DateTimeInterface::ATOM);
 #var_dump($carStatus);
 
 echo(json_encode($carStatus));

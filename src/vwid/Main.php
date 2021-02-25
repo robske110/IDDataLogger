@@ -23,10 +23,13 @@ class Main{
 		
 		Logger::log("Connecting to db...");
 		$this->db = new DatabaseConnection(
-			$this->config["db"]["host"], $this->config["db"]["dbname"], $this->config["db"]["user"], $this->config["db"]["password"] ?? null);
+			$this->config["db"]["host"], $this->config["db"]["dbname"],
+			$this->config["db"]["user"], $this->config["db"]["password"] ?? null,
+			$this->config["db"]["driver"] ?? "pgsql"
+		);
 		
 		$didWizard = false;
-		if(($this->db->query("SELECT to_regclass('public.carStatus')")[0]["to_regclass"] ?? null) !== "carstatus"){
+		if(($this->db->query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus'")[0]["table_name"] ?? null) !== "carstatus"){
 			Logger::log("Initializing db tables...");
 			$this->db->query(file_get_contents(BASE_DIR."db.sql"));
 			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
@@ -61,7 +64,5 @@ class Main{
 	}
 	
 	public function shutdown(){
-		Logger::debug(">Closing DataBase connection...");
-		$this->db->close();
 	}
 }

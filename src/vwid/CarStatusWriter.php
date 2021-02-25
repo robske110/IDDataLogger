@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
+use PDOException;
+use PDOStatement;
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 
 class CarStatusWriter{
@@ -34,6 +37,8 @@ class CarStatusWriter{
 	
 	private Main $main;
 	
+	private PDOStatement $carStatusWrite;
+	
 	private array $lastWrittenCarStatus = [];
 	
 	public function __construct(Main $main){
@@ -48,22 +53,16 @@ class CarStatusWriter{
 		}
 		$query .= ") VALUES(";
 		for($i = 1; $i <= count(self::DB_FIELDS); ++$i){
-			$query .= "$".$i.", ";
+			$query .= "?, ";
 		}
-		$query .= "$".($i).") ON CONFLICT (time) DO UPDATE SET ";
+		$query .= "?) ON CONFLICT (time) DO UPDATE SET ";
 		foreach(self::DB_FIELDS as $dbField){
 			$query .= $dbField." = excluded.".$dbField.", ";
 		}
 		$query = substr($query, 0, strlen($query)-2);
 		$query .= ";";
 		Logger::debug("Preparing query ".$query."...");
-		if(pg_prepare(
-				$this->main->getDB()->getConnection(),
-				"carStatus_write",
-				$query
-			) === false){
-			throw new \Exception("Failed to prepare the carStatus_write statement: ".pg_last_error($this->db));
-		}
+		$this->carStatusWrite = $this->main->getDB()->getConnection()->prepare($query);
 	}
 	
 	/**
@@ -97,10 +96,13 @@ class CarStatusWriter{
 		Logger::log("Writing new data for timestamp ".$data[0]);
 		#var_dump($data);
 		
-		$res = pg_execute($this->main->getDB()->getConnection(), "carStatus_write", $data);
-		if($res === false){
-			Logger::critical("Could not write to db!");
+		try{
+			$this->carStatusWrite->execute($data);
+		}catch(PDOException $e){
+			ErrorUtils::logException($e);
+			Logger::critical("Could not write to db, attempting reconnect...");
 			$this->main->getDB()->connect();
+			$this->initQuery();
 			return false;
 		}
 		$this->lastWrittenCarStatus = $data;

@@ -8,7 +8,8 @@
         "host": "",
         "dbname": "",
         "user": "",
-        "password": null
+        "password": null,
+        "driver": "pgsql"
     },
     "carpic": {
         "viewDirection": "front",

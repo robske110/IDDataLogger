@@ -16,30 +16,32 @@ It includes an iOS widget (using Scriptable) and a webpage for seeing current st
 A quick heads-up beforehand: Setting this up for someone who has never set up a webserver before can be challenging.
 Don't worry though, the [beginners guide](docs/beginnerguide.md) tries to help you as much as possible and guides you through every step.
 
-### Setup for advanced users.
+### Setup for advanced users
 
 Prerequisites are:
-- PHP 8 cli with pgsql, curl, gd and dom
-- A webserver serving .php files (PHP 8 with pgsql)
+- PHP 8 cli with pgsql (or mysql), curl, gd and dom
+- A webserver serving .php files (PHP 8 with pgsql (or mysql))
 - (strongly recommended) HTTPS enabled server with certificate
 - A postgresql server (Any version from 9 and up should work, although testing has only been done on 11 and up)
+    - alternatively mysql / mariadb is supported (alternative db servers may also work)
 
 Clone this project.
 
 `git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
 Create a database (and a user) in your postgresql server for this project and fill in the details into config/config.example.json and .env.example. We'll need these files later.
-You can alternatively use the config setup wizard by running the setup-config.sh script.
+You can alternatively use the config setup wizard by running the `config-wizard.sh` script.
 Note: for a detailed description of the possible config values visit [config.md](docs/config.md).
 
-After creating the config.json from config.example.json run start.sh.
+After creating the config.json from config.example.json run `./start.sh`.
 After a successful connection the the db the setup wizard will help you create an API key for the widget and a user for the website.
 
-All files in the `public directory of this repository must now be placed somewhere in the webroot.
+All files in the `public` directory of this repository must now be placed somewhere in the webroot.
 It is recommended to place them in the second level (not directly in webroot).
 
-Then copy the `.env.example` file as `.env` outside the webroot and edit the options within it.
+Then copy the `.env.example` file as `.env` outside the webroot with the db credentials set in it.
 
+Note:
 `env.php` looks for a `.env` file two folders up from its location.
 (If you put the contents of the public folder in `/path/to/webroot/vwid/` it will look in `/path/to/.env`)
 If you place the files deeper inside the webroot, please consider editing env.php and configuring the correct path in the first line. It is strongly recommended keeping the .env file out of the webroot.

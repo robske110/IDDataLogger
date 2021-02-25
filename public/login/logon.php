@@ -29,19 +29,15 @@ if(!isset($_POST['passwd']) || empty($_POST['passwd']) || !is_string($_POST['pas
 }
 
 require_once __DIR__."/../env.php";
+require_once __DIR__."/../DatabaseConnection.php";
 
 $username = $_POST['username'];
 $password = $_POST['passwd'];
 
-$db = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
+$getUser = DatabaseConnection::getInstance()->prepare("SELECT * FROM users WHERE username = $1");
 
-if(pg_prepare($db, "getUser", "SELECT * FROM users WHERE username = $1") === false){
-	authFail();
-}
-
-$res = pg_execute($db, "getUser", [$username]);
-	
-$users = pg_fetch_all($res);
+$getUser->execute([$username]);
+$users = $getUser->fetchAll();
 
 if(!isset($users[0])){
 	authFail();
@@ -51,16 +47,15 @@ $hash = $users[0]["hash"];
 if(password_verify($password, $hash)){
     if(password_needs_rehash($hash, PASSWORD_DEFAULT)){
         $newHash = password_hash($password, PASSWORD_DEFAULT);
-		
-		if(pg_prepare($db, "putUser", "INSERT INTO users(username, hash) VALUES($1, $2)") === false){
-			exit;
-		}
+	
+	    $putUser = DatabaseConnection::getInstance()->prepare("INSERT INTO users(username, hash) VALUES($1, $2)");
 
-		$res = pg_execute($db, "putUser", [$username, $newHash]);
+	    $putUser->execute([$username, $newHash]);
     }
 	session_start();
 	$_SESSION['loggedin'] = true;
 	echo("success");
+	exit;
 }
 authFail();
 function authFail(){

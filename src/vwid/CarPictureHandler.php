@@ -19,8 +19,7 @@ class CarPictureHandler{
 			Logger::log("Fetching carPicture (this will take a while...)");
 			$this->fetchCarPicture();
 		}
-		pg_query(
-			$main->getDB()->getConnection(),
+		$this->main->getDB()->query(
 			"INSERT INTO carPictures(id, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."')".
 			"ON CONFLICT (id) DO UPDATE SET carPicture = excluded.carPicture"
 		);

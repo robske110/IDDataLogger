@@ -14,9 +14,9 @@ if(!$ssl && (!isset($_ENV["FORCE_ALLOW_HTTP"]) || $_ENV["FORCE_ALLOW_HTTP"] !== 
 }
 
 if(defined("ALLOW_KEY_AUTHENTICATION") && ALLOW_KEY_AUTHENTICATION === true){
+	require_once __DIR__."/../DatabaseConnection.php";
 	if(isset($_GET['key']) && is_string($_GET['key'])){
-		$inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
-		$keys = pg_fetch_all_columns(pg_query($inst, "SELECT key FROM authKeys"));
+		$keys = DatabaseConnection::getInstance()->query("SELECT key FROM authKeys");
 		foreach($keys as $key){
 			if(hash_equals($key, $_GET['key'])){
 				return;

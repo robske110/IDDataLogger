@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__."/../DatabaseConnection.php";
 
 class carGraphData{
 	public array $time = [];
@@ -114,18 +115,14 @@ class carGraphDataProvider{
 	}
 	
 	private function fetchFromDB(int $beginTime, int $endTime): array{
-		$inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
 		$beginTime = new DateTime("@".$beginTime, new DateTimeZone("UTC"));
 		$endTime = new DateTime("@".$endTime, new DateTimeZone("UTC"));
-		$res = pg_query($inst,
+		$data = DatabaseConnection::getInstance()->query(
 			"SELECT time, batterysoc, remainingrange, remainingchargingtime, chargepower, chargeratekmph FROM carStatus WHERE time >= TIMESTAMP '".
 			$beginTime->format(DateTimeInterface::ATOM).
 			"' AND time <= TIMESTAMP '".$endTime->format(DateTimeInterface::ATOM)."' ORDER BY time ASC"
 		);
-		if(!$res){
-			return [];
-		}
-		#var_dump($res);
-		return pg_fetch_all($res);
+		#var_dump($data);
+		return $data;
 	}
 }
