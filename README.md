@@ -50,6 +50,13 @@ You can alternatively set the environment variables through your webserver. (Or 
 
 After successful start you can now visit idView.php or use the iOS widget after [setting it up](docs/ioswidget.md)!
 
+## Contributing
+
+Contributions are always welcome! You can help to improve the documentation, fix bugs in the code or even add new features.
+
+Creating a containerized version (for example docker and especially with letsencrypt/certbot support) or
+improving the beginners guide are currently something I would love to have help with. Feel free to open a PR!
+
 ## Disclaimer
 
 This project is not endorsed by Volkswagen in any way, shape or form. This project is to be used entirely at your own risk.
