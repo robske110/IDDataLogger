@@ -31,7 +31,7 @@ class Main{
 		$didWizard = false;
 		if(($this->db->query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus'")[0]["table_name"] ?? null) !== "carstatus"){
 			Logger::log("Initializing db tables...");
-			$this->db->query(file_get_contents(BASE_DIR."db.sql"));
+			$this->db->getConnection()->exec(file_get_contents(BASE_DIR."db.sql"));
 			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
 				new SetupWizard($this);
 				$didWizard = true;
