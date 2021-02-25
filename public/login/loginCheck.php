@@ -18,7 +18,7 @@ if(defined("ALLOW_KEY_AUTHENTICATION") && ALLOW_KEY_AUTHENTICATION === true){
 	if(isset($_GET['key']) && is_string($_GET['key'])){
 		$keys = DatabaseConnection::getInstance()->query("SELECT key FROM authKeys");
 		foreach($keys as $key){
-			if(hash_equals($key, $_GET['key'])){
+			if(hash_equals($key["key"], $_GET['key'])){
 				return;
 			}
 		}
