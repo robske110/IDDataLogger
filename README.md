@@ -29,17 +29,18 @@ Clone this project.
 
 `git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
-Create a database (and a user) in your postgresql server for this project and fill in the details into config/config.example.json and .env.example. We'll need these files later.
-You can alternatively use the config setup wizard by running the `config-wizard.sh` script.
+Create a database (and a user) in your postgresql (or other) server for this project and fill in the details into `config/config.example.json` and `.env.example.` We'll need these files later.
+You can do this using the config setup wizard by running the `config-wizard.sh` script, or manually.
 Note: for a detailed description of the possible config values visit [config.md](docs/config.md).
 
 After creating the config.json from config.example.json run `./start.sh`.
+The necessary tables in the database will be automatically created.
 After a successful connection the the db the setup wizard will help you create an API key for the widget and a user for the website.
 
 All files in the `public` directory of this repository must now be placed somewhere in the webroot.
 It is recommended to place them in the second level (not directly in webroot).
 
-Then copy the `.env.example` file as `.env` outside the webroot with the db credentials set in it.
+Then copy the `.env` file (created from `.env.example`) outside the webroot with the db credentials set in it.
 
 Note:
 `env.php` looks for a `.env` file two folders up from its location.
