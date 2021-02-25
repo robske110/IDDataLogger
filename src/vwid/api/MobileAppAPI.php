@@ -54,6 +54,9 @@ class MobileAppAPI extends API{
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($pwdPage);
 		
+		if($dom->getElementById("credentialsForm") === null){
+			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
+		}
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
 		$fields["password"] = $this->loginInformation->password;
@@ -68,7 +71,7 @@ class MobileAppAPI extends API{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			throw new IDLoginException("Unable to login. Check login information! (Could not find location header.)");
+			throw new IDLoginException("Unable to login. Check login information (password)! (Could not find location header.)");
 		}
 		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");

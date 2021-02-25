@@ -47,11 +47,11 @@ setInterval(updateCarStatus, 15000);
 async function updateCarStatus(){
 	const carStatus = await getJSON("../carStatus.php"+(timetravelStatus ? "?at="+timetravelDate : ""));
 	if(carStatus == undefined){
-		alert("JSON fail");
+		alert("failed to decode carStatus JSON");
 		return;
 	}
 	if(carStatus.error != undefined){
-		alert("no data");
+		alert(carStatus.error);
 		return;
 	}
 	processCarStatus(carStatus);
@@ -145,7 +145,7 @@ async function updateCarGraph(){
 	console.log(beginTime);
 	const graphData = await getJSON("carGraphData.php?beginTime="+Math.round(beginTime.getTime()/1000)+(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000)));
 	if(graphData == undefined){
-		alert("JSON fail");
+		alert("failed to decode carGraphData JSON");
 		return;
 	}
 	processCarGraphUpdate(graphData);
