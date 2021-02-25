@@ -62,7 +62,7 @@ class CarStatusWriter{
 		$query = substr($query, 0, strlen($query)-2);
 		$query .= ";";
 		Logger::debug("Preparing query ".$query."...");
-		$this->carStatusWrite = $this->main->getDB()->getConnection()->prepare($query);
+		$this->carStatusWrite = $this->main->getDB()->prepare($query);
 	}
 	
 	/**

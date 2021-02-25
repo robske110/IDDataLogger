@@ -34,7 +34,7 @@ require_once __DIR__."/../DatabaseConnection.php";
 $username = $_POST['username'];
 $password = $_POST['passwd'];
 
-$getUser = DatabaseConnection::getInstance()->prepare("SELECT * FROM users WHERE username = $1");
+$getUser = DatabaseConnection::getInstance()->prepare("SELECT * FROM users WHERE username = ?");
 
 $getUser->execute([$username]);
 $users = $getUser->fetchAll();
@@ -48,7 +48,7 @@ if(password_verify($password, $hash)){
     if(password_needs_rehash($hash, PASSWORD_DEFAULT)){
         $newHash = password_hash($password, PASSWORD_DEFAULT);
 	
-	    $putUser = DatabaseConnection::getInstance()->prepare("INSERT INTO users(username, hash) VALUES($1, $2)");
+	    $putUser = DatabaseConnection::getInstance()->prepare("INSERT INTO users(username, hash) VALUES(?, ?)");
 
 	    $putUser->execute([$username, $newHash]);
     }
