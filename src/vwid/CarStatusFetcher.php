@@ -93,11 +93,18 @@ class CarStatusFetcher{
 		$vehicles = $this->idAPI->apiGet("vehicles")["data"];
 		
 		$vehicleToUse = $vehicles[0];
-		if(!empty($this->config["vin"])){
+		if(!empty($this->main->config["vin"])){
 			foreach($vehicles as $vehicle){
-				if($vehicle["vin"] == $this->main->config["vin"]){
+				if($vehicle["vin"] === $this->main->config["vin"]){
 					$vehicleToUse = $vehicle;
 				}
+			}
+			if($vehicleToUse["vin"] !== $this->main->config["vin"]){
+				Logger::var_dump($vehicles, "vehicles");
+				Logger::warning(
+					"Could not find the vehicle with the specified vin ('".$this->main->config["vin"]
+					."')! If fetching fails, please double check your vin!"
+				);
 			}
 		}
 		$this->vin = $vehicleToUse["vin"];
