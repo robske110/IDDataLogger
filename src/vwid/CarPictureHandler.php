@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use robske_110\utils\Logger;
+use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\api\LoginInformation;
 use robske_110\vwid\api\WebsiteAPI;
 
@@ -20,8 +21,8 @@ class CarPictureHandler{
 			$this->fetchCarPicture();
 		}
 		$this->main->getDB()->query(
-			"ON CONFLICT (id) DO UPDATE SET carPicture = excluded.carPicture"
 			"INSERT INTO carPictures(pictureID, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."') ".
+			QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "pictureID", ["carPicture"])
 		);
 	}
 	

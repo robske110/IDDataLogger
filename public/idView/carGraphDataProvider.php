@@ -119,8 +119,8 @@ class carGraphDataProvider{
 		$endTime = new DateTime("@".$endTime, new DateTimeZone("UTC"));
 		$data = DatabaseConnection::getInstance()->query(
 			"SELECT time, batterysoc, remainingrange, remainingchargingtime, chargepower, chargeratekmph FROM carStatus WHERE time >= TIMESTAMP '".
-			$beginTime->format(DateTimeInterface::ATOM).
-			"' AND time <= TIMESTAMP '".$endTime->format(DateTimeInterface::ATOM)."' ORDER BY time ASC"
+			$beginTime->format("Y-m-d\TH:i:s").
+			"' AND time <= TIMESTAMP '".$endTime->format("Y-m-d\TH:i:s")."' ORDER BY time ASC"
 		);
 		#var_dump($data);
 		return $data;

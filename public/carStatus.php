@@ -7,7 +7,7 @@ $attemptRefresh = ($_GET['attemptRefresh'] ?? false) == "true";
 
 $statusAt = null;
 if(isset($_GET['at'])){
-	$statusAt = " WHERE time <= '".(new DateTime($_GET['at'], new DateTimeZone("UTC")))->format(DateTimeInterface::ATOM)."'";
+	$statusAt = " WHERE time <= '".(new DateTime($_GET['at'], new DateTimeZone("UTC")))->format("Y-m-d\TH:i:s")."'";
 }
 
 if($attemptRefresh){
@@ -17,11 +17,8 @@ if($attemptRefresh){
 	echo("not implemented");
 }
 
-$inst = pg_connect("host=".$_ENV["DB_HOST"]." dbname=".$_ENV["DB_NAME"]." user=".$_ENV["DB_USER"].(isset($_ENV["DB_PASSWORD"]) ? " password=".$_ENV["DB_PASSWORD"] : ""));
-
 $columns = "time, batterySOC, remainingRange, remainingChargingTime, chargeState, chargePower, chargeRateKMPH, targetSOC, plugConnectionState, plugLockState, remainClimatisationTime, hvacState, hvacTargetTemp";
 $sqlCmd = "SELECT ".$columns." FROM carStatus".($statusAt ?? "")." ORDER BY time DESC LIMIT 1";
-
 
 $sqlChargeStart = "WITH chargeState_wprev AS (
   SELECT time, chargeState, lag(chargeState) over(ORDER BY time ASC) AS prev_chargeState

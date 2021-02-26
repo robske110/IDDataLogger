@@ -41,6 +41,10 @@ class DatabaseConnection{
 		return $this->connection;
 	}
 	
+	public function getDriver(): string{
+		return $this->driver;
+	}
+	
 	public function query(string $sql){
 		try{
 			$res = $this->connection->query($sql);

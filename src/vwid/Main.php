@@ -29,15 +29,19 @@ class Main{
 		);
 		
 		$didWizard = false;
-		if(($this->db->query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus'")[0]["table_name"] ?? null) !== "carstatus"){
+		if(($this->db->query("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus'")[0]["table_name"] ?? null) !== "carstatus"){
 			Logger::log("Initializing db tables...");
-			$this->db->getConnection()->exec(file_get_contents(BASE_DIR."db.sql"));
+			$sqlFilename = match($this->db->getDriver()){
+				'mysql' => 'db_mysql.sql',
+				'pgsql' => 'db.sql'
+			};
+			$this->db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
 			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
 				new SetupWizard($this);
 				$didWizard = true;
 			}
 		}
-		if(!$didWizard && ($_SERVER['argv'][1] ?? "") == "wizard"){
+		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "wizard"){
 			new SetupWizard($this);
 		}
 		

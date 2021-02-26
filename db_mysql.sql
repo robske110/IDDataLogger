@@ -37,5 +37,5 @@ CREATE TABLE IF NOT EXISTS authKeys (
 
 CREATE TABLE IF NOT EXISTS carPictures (
     pictureID varchar(128) NOT NULL PRIMARY KEY,
-    carPicture text NOT NULL
+    carPicture mediumtext NOT NULL
 );

@@ -7,6 +7,7 @@ use PDOException;
 use PDOStatement;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\utils\QueryCreationHelper;
 
 class CarStatusWriter{
 	const DB_FIELDS = [
@@ -55,12 +56,8 @@ class CarStatusWriter{
 		for($i = 1; $i <= count(self::DB_FIELDS); ++$i){
 			$query .= "?, ";
 		}
-		$query .= "?) ON CONFLICT (time) DO UPDATE SET ";
-		foreach(self::DB_FIELDS as $dbField){
-			$query .= $dbField." = excluded.".$dbField.", ";
-		}
-		$query = substr($query, 0, strlen($query)-2);
-		$query .= ";";
+		$query .= "?) ";
+		$query .= QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "time", self::DB_FIELDS);
 		Logger::debug("Preparing query ".$query."...");
 		$this->carStatusWrite = $this->main->getDB()->prepare($query);
 	}
@@ -85,7 +82,7 @@ class CarStatusWriter{
 		$data[] = $dateTime->format('Y\-m\-d\TH\:i\:s');
 		foreach(self::DB_FIELDS as $dbField){
 			if(is_bool($carStatusData[$dbField])){
-				$data[] = $carStatusData[$dbField] ? "true" : "false";
+				$data[] = $carStatusData[$dbField] ? "1" : "0";
 				continue;
 			}
 			$data[] = $carStatusData[$dbField];
