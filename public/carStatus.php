@@ -29,7 +29,7 @@ SELECT time, chargeState, prev_chargeState
 FROM chargeState_wprev
 WHERE prev_chargeState = 'readyForCharging' AND chargeState = 'charging' LIMIT 1";
 
-$chargeStartRes = DatabaseConnection::getInstance()->queryStatement($sqlCmd)->fetch(PDO::FETCH_ASSOC);
+$chargeStartRes = DatabaseConnection::getInstance()->queryStatement($sqlChargeStart)->fetch(PDO::FETCH_ASSOC);
 
 $carStatus = DatabaseConnection::getInstance()->queryStatement($sqlCmd)->fetch(PDO::FETCH_ASSOC);
 if(empty($carStatus)){
@@ -45,8 +45,8 @@ foreach($carStatus as $key => $value){
 		}
 	}
 }
+$carStatus["lastChargeStartTime"] = (new DateTime($chargeStartRes["time"] ?? $carStatus["time"]))->format(DateTimeInterface::ATOM);
 $carStatus["time"] = (new DateTime($carStatus["time"]))->format(DateTimeInterface::ATOM);
-$carStatus["lastChargeStartTime"] = (new DateTime($chargeStartRes["time"]))->format(DateTimeInterface::ATOM);
 #var_dump($carStatus);
 
 echo(json_encode($carStatus));
