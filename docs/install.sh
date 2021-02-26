@@ -10,8 +10,24 @@ sudo su postgres -c "psql -c \"CREATE USER vwiddatalogger WITH PASSWORD '$pg_pw'
 sudo apt -y install git
 git clone https://github.com/robske110/IDDataLogger.git --recursive
 cd IDDataLogger || exit
-./config-wizard.sh --host localhost --user vwiddatalogger --dbname vwid --password $pg_pw --driver pgsql --allow-insecure-http --quiet
+./config-wizard.sh --host localhost --user vwiddatalogger --dbname vwid --password "$pg_pw" --driver pgsql --allow-insecure-http --quiet
 sudo mkdir /var/www/html/vwid/
 sudo cp -r ./public/. /var/www/html/vwid
 sudo cp ./.env /var/www/
+echo "[Unit]
+Description=ID DataLogger php backend
+After=network.target
+Requires=postgresql.service
+
+[Service]
+ExecStart=/home/$(whoami)/IDDataLogger/start.sh
+WorkingDirectory=/home/$(whoami)/IDDataLogger
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=iddatalogger
+User=$(whoami)
+
+[Install]
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/iddatalogger.service > /dev/null
+sudo systemctl enable iddatalogger.service
 echo "Installation complete! You can now enter cd IDDataLogger && ./start.sh to finish setting up."
