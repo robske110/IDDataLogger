@@ -20,8 +20,8 @@ class CarPictureHandler{
 			$this->fetchCarPicture();
 		}
 		$this->main->getDB()->query(
-			"INSERT INTO carPictures(id, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."')".
 			"ON CONFLICT (id) DO UPDATE SET carPicture = excluded.carPicture"
+			"INSERT INTO carPictures(pictureID, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."') ".
 		);
 	}
 	

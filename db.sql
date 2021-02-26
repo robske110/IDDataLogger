@@ -32,10 +32,10 @@ CREATE TABLE users (
 );
 
 CREATE TABLE authKeys (
-    key text NOT NULL
+    authKey text NOT NULL
 );
 
 CREATE TABLE carPictures (
-    id text NOT NULL PRIMARY KEY,
+    pictureID varchar(128) NOT NULL PRIMARY KEY,
     carPicture text NOT NULL
 );

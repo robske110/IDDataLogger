@@ -35,7 +35,7 @@ class SetupWizard extends InteractiveWizard{
 	
 	private function generateAPIkey(){
 		$apiKey = bin2hex(random_bytes(32));
-		$this->main->getDB()->query("INSERT INTO authKeys(key) VALUES('".$apiKey."')");
+		$this->main->getDB()->query("INSERT INTO authKeys(authKey) VALUES('".$apiKey."')");
 		$this->message("Successfully generated the API key ".$apiKey."");
 		$this->message("Please enter this API key in the apiKey setting at the top of the iOS widget!");
 	}
