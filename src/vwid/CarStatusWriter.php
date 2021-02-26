@@ -71,6 +71,10 @@ class CarStatusWriter{
 		$data = [];
 		$dateTime = null;
 		foreach(CarStatusFetcher::DATA_MAPPING as $key => $val){
+			if(!isset($carStatusData[$key."Timestamp"])){
+				Logger::notice("Could not find expected key '".$key."Timestamp' in carStatusData. Unexpected changes in older or newer car software can cause this!");
+				continue;
+			}
 			if($dateTime === null){
 				$dateTime = $carStatusData[$key."Timestamp"];
 			}else{
@@ -81,6 +85,11 @@ class CarStatusWriter{
 		}
 		$data[] = $dateTime->format('Y\-m\-d\TH\:i\:s');
 		foreach(self::DB_FIELDS as $dbField){
+			if(!isset($carStatusData[$dbField])){
+				Logger::notice("Could not find expected key '".$dbField."' in carStatusData. Unexpected changes in older or newer car software can cause this!");
+				$data[] = null;
+				continue;
+			}
 			if(is_bool($carStatusData[$dbField])){
 				$data[] = $carStatusData[$dbField] ? "1" : "0";
 				continue;

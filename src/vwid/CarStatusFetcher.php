@@ -142,8 +142,9 @@ class CarStatusFetcher{
 		}
 		
 		if(!empty($data["error"])){
-			Logger::critical("Error while fetching car status: ".print_r($data["error"], true));
-			return false;
+			Logger::var_dump($data, "decoded Data");
+			Logger::warning("VW API reported error while fetching car status: ".print_r($data["error"], true));
+			Logger::notice("Ignoring these errors and continuing to attempt to decode data...");
 		}
 		
 		if(!isset($data["data"])){
