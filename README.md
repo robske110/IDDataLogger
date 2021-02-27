@@ -14,22 +14,26 @@ It includes an iOS widget (using Scriptable) and a webpage for seeing current st
 ### Setup for beginners
 
 A quick heads-up beforehand: Setting this up for someone who has never set up a webserver before can be challenging.
-Don't worry though, the [beginners guide](docs/beginnerguide.md) tries to help you as much as possible and guides you through every step.
+Don't worry though, the [beginners guide](docs/beginnerguide.md) guides you through every step you need to take.
+Should you have any remaining questions or issues please see [getting help](https://github.com/robske110/IDDataLogger/wiki/Getting-help).
 
 ### Setup for advanced users
 
-Prerequisites are:
+#### Prerequisites
+
 - PHP 8 cli with pgsql (or mysql), curl, gd and dom
 - A webserver serving .php files (PHP 8 with pgsql (or mysql))
 - (strongly recommended) HTTPS enabled server with certificate
-- A postgresql server (Any version from 9 and up should work, although testing has only been done on 11 and up)
-    - alternatively mysql / mariadb is supported (alternative db servers may also work)
+- A PostgreSQL server (Any version from 9 and up should work, although testing has only been done on 11 and up)
+    - alternatively MySQL / MariaDB is supported, but PostgreSQL is recommended.
 
-Clone this project.
+#### Overview of the setup process
 
+Clone this repository.
+   
 `git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
-Create a database (and a user) in your postgresql (or other) server for this project and fill in the details into `config/config.example.json` and `.env.example.` We'll need these files later.
+Create a database (and a user) in your PostgreSQL (or other) server for this project and fill in the details into `config/config.example.json` and `.env.example.` We'll need these files later.
 You can do this using the config setup wizard by running the `config-wizard.sh` script, or manually.
 Note: for a detailed description of the possible config values visit [config.md](docs/config.md).
 
@@ -53,10 +57,14 @@ After successful start you can now visit idView.php or use the iOS widget after 
 
 ## Contributing
 
-Contributions are always welcome! You can help to improve the documentation, fix bugs in the code or even add new features.
+Contributions are always welcome! You can help to improve the documentation, fix bugs in the code or add new features.
 
 Creating a containerized version (for example docker and especially with letsencrypt/certbot support) or
 improving the beginners guide are currently something I would love to have help with. Feel free to open a PR!
+
+### A big 'Thank you!' to the following contributors
+
+- @drego83 - Invaluable help with general testing and MySQL support
 
 ## Disclaimer
 

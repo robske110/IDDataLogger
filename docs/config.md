@@ -1,4 +1,7 @@
 # Config
+
+## config.json
+
 `username` The E-Mail Address used for your VW ID account
 
 `password` The password used for your VW ID account
@@ -18,6 +21,8 @@ Can be `null`, which causes the first vehicle to be used. (Recommended when you 
 
 `db.password` The password for the database
 
+`db.driver` The driver for the database. See https://www.php.net/manual/en/pdo.drivers.php for possible values.
+
 `carpic.flip` Whether to flip the carpic (default: true)
 
 The keys
@@ -35,10 +40,27 @@ can have the following values:
 | front | left   |
 | front | right  |
 
-`timezone` Server timezone. This is used for correct timestamps in logs.
+Note: For changes to the carpic settings to apply, delete data/carPic.png
+
+`timezone` Server timezone. This is used for correct timestamps in logs. (Overrides settings in php.ini)
 
 `logging.debug-enable` Enables debug output
 
 `logging.file-enable` Enables debug output
 
-`logging.log-dir` The directory in which to store log files. Can be `null` for default directory. (`program_directory/log`)
+`logging.log-dir` The directory in which to store log files. Can be `null` for default directory (`program_directory/log`).
+
+## .env file
+
+`DB_HOST` The host of the postgres db server
+
+`DB_NAME` The name of the database that this application can use
+
+`DB_USER` The username for the database
+
+`DB_PASSWORD` The password for the database
+
+`DB_DRIVER` The driver for the database. See https://www.php.net/manual/en/pdo.drivers.php for possible values.
+
+`FORCE_ALLOW_HTTP` Set this option to true to force the login system to allow http access.
+It is strongly recommended to omit this option whenever possible, especially on installations accessible over the internet.
