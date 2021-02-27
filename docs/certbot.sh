@@ -13,5 +13,5 @@ sudo certbot --apache --agree-tos -n -m $email -d $domain
 cd ..
 
 sudo rm /var/www/.env
-./config-wizard.sh --secure
+./config-wizard.sh --secure --quiet
 sudo cp ./.env /var/www/

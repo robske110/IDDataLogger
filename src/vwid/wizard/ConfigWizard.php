@@ -7,6 +7,12 @@ class ConfigWizard extends InteractiveWizard{
 	public function __construct(){
 		if(isset(getopt("", ["secure"])["secure"])){
 			$ini = parse_ini_file(BASE_DIR.".env", false, INI_SCANNER_TYPED);
+			if(isset($ini["FORCE_ALLOW_HTTP"])){
+				unset($ini["FORCE_ALLOW_HTTP"]);
+				if(!isset(getopt("", ["quiet"])["quiet"])){
+					$this->message("Successfully removed FORCE_ALLOW_HTTP from .env. Please make sure to replace the .env file!");
+				}
+			}
 			$this->writeDotEnv($ini);
 			exit;
 		}
