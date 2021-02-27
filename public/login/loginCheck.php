@@ -16,9 +16,9 @@ if(!$ssl && (!isset($_ENV["FORCE_ALLOW_HTTP"]) || $_ENV["FORCE_ALLOW_HTTP"] !== 
 if(defined("ALLOW_KEY_AUTHENTICATION") && ALLOW_KEY_AUTHENTICATION === true){
 	require_once __DIR__."/../DatabaseConnection.php";
 	if(isset($_GET['key']) && is_string($_GET['key'])){
-		$keys = DatabaseConnection::getInstance()->query("SELECT authKey FROM authKeys");
+		$keys = DatabaseConnection::getInstance()->query("SELECT authkey FROM authKeys");
 		foreach($keys as $key){
-			if(hash_equals($key["authKey"], $_GET['key'])){
+			if(hash_equals($key["authkey"], $_GET['key'])){
 				return;
 			}
 		}
