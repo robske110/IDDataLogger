@@ -16,22 +16,67 @@ const socThreshold = 95 //not implemented
 
 const scriptRun = new Date()
 
+// Translations
+const translations = {
+	en: {
+		chargeStatus: {
+			disconnected: "Disconnected",
+			holdingCharge: "holding charge",
+			connected: "connected",
+			charging: "charging…"
+		},
+		soc: "SOC",
+		range: "Range",
+		targetSOC: "Target SOC",
+		hvac: "HVAC"
+	},
+	de: {
+		chargeStatus: {
+			disconnected: "Entkoppelt",
+			holdingCharge: "Ladezustand halten",
+			connected: "Verbunden",
+			charging: "Lädt…"
+		},
+		soc: "Ladezustand",
+		range: "Reichweite",
+		targetSOC: "Zielladung",
+		hvac: "Heizung"
+	}
+}
+
+function getTranslatedText(key){
+	let lang = Device.language();
+	let translation = translations[lang];
+	if(translation == undefined){
+		translation = translations.en;
+	}
+	let nested = key.split(".");
+	key.split(".").forEach(function(element){
+		translation = translation[element];
+	});
+	return translation;
+}
+
+console.log(Device.locale())
+console.log(Device.language())
+
 let widget = await createWidget()
 
-// used for debugging if script runs inside the app
+// present the widget in app
 if (!config.runsInWidget) {
 	await widget.presentMedium()
 }
 Script.setWidget(widget)
 Script.complete()
 
-
+// adds a vertical stack to widgetStack
 function verticalStack(widgetStack){
 	let stack = widgetStack.addStack()
 	stack.layoutVertically()
 	return stack
 }
 
+// adds a value - title pair
 function addFormattedData(widgetStack, dataTitle, dataValue){
 	let stack = widgetStack.addStack()
 	stack.layoutVertically()
@@ -42,7 +87,7 @@ function addFormattedData(widgetStack, dataTitle, dataValue){
 }
 
 // build the widget
-async function createWidget(items) {
+async function createWidget() {
 	let widget = new ListWidget()
 	const data = await getData()
 
@@ -66,19 +111,19 @@ async function createWidget(items) {
 
 	switch (data.plugConnectionState){
 		case "disconnected":
-			chargeStatus = "⚫ Entkoppelt"
+			chargeStatus = "⚫ "+getTranslatedText("chargeStatus.disconnected")
 			break;
 		case "connected":
 			//widget.refreshAfterDate = new Date(Date.now() + 300) //increase refresh rate?
 			switch (data.chargeStatus){
 				case "readyForCharging":
-					chargeStatus = "🟠 Ladezustand halten"
+					chargeStatus = "🟠 "+getTranslatedText("chargeStatus.connected")
 					break;
 				case "chargePurposeReachedAndConservation":
-					chargeStatus = "🟢 Verbunden"
+					chargeStatus = "🟢 "+getTranslatedText("chargeStatus.holdingCharge")
 					break;
 				case "charging":
-					chargeStatus = "⚡ Lädt…"
+					chargeStatus = "⚡ "+getTranslatedText("chargeStatus.charging")
 					break;
 				default:
 					chargeStatus = "unknown cS: "+data.chargeStatus
@@ -129,20 +174,20 @@ async function createWidget(items) {
 
 	const dataCol1 = verticalStack(wrap)
 
-	addFormattedData(dataCol1, "Ladestand", data.batterySOC.toString()+"%")
+	addFormattedData(dataCol1, getTranslatedText("soc"), data.batterySOC.toString()+"%")
 	dataCol1.addSpacer(10)
-	addFormattedData(dataCol1, "Reichweite", data.remainingRange+ "km")
+	addFormattedData(dataCol1, getTranslatedText("range"), data.remainingRange+ "km")
 
 	const dataCol2 = verticalStack(wrap)
 
-	addFormattedData(dataCol2, "Zielladung", data.targetSOC+"%")
+	addFormattedData(dataCol2, getTranslatedText("targetSOC"), data.targetSOC+"%")
 	dataCol2.addSpacer(10)
-	addFormattedData(dataCol2, "Heizung", data.hvacState+" ("+data.hvacTargetTemp+"°C)")
+	addFormattedData(dataCol2, getTranslatedText("hvac"), data.hvacState+" ("+data.hvacTargetTemp+"°C)")
 
 	let dF = new DateFormatter()
 	dF.useNoDateStyle()
 	dF.useShortTimeStyle()
-	timedebug = widget.addText("carUpdate: "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" lastUpdate: "+dF.string(scriptRun))
+	timedebug = widget.addText("carUpdate "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" (widget "+dF.string(scriptRun)+")")
 	timedebug.font = Font.lightSystemFont(8)
 	timedebug.textColor = Color.dynamic(Color.lightGray(), Color.darkGray())
 	timedebug.rightAlignText()
@@ -150,8 +195,7 @@ async function createWidget(items) {
 }
 
 
-
-// fetch all data
+// fetch data
 async function getData() {
 	let state
 	if(exampleData || baseURL == ""){
