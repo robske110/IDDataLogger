@@ -26,6 +26,8 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=iddatalogger
 User=$(whoami)
+RestartSec=5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target" | sudo tee /etc/systemd/system/iddatalogger.service > /dev/null
