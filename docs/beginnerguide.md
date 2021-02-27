@@ -53,7 +53,8 @@ You can now access the ID DataLogger by entering `http://IP/vwid` into your brow
 
 To find the ip address of your Raspberry Pi simply enter the command `hostname -I`
 
-If you want to view the website and have the iOS widget update outside your home network, please refer to [making the ID DataLogger available from the internet](#making-the-id-datalogger-available-from-the-internet).
+If you want to view the website and have the iOS widget update outside your home network,
+please refer to [making the ID DataLogger available from the internet](https://github.com/robske110/IDDataLogger/wiki/Making-the-ID-DataLogger-available-from-the-internet).
 
 ## Installing manually
 
@@ -85,7 +86,3 @@ cd
 `setup-config.sh`
 
 Here you will have to enter your db credentials created in the previous step
-
-## Making the ID DataLogger available from the internet
-
-**THIS SECTION IS NOT COMPLETED YET**

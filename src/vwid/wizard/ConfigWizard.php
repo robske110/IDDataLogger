@@ -5,6 +5,11 @@ namespace robske_110\vwid\wizard;
 
 class ConfigWizard extends InteractiveWizard{
 	public function __construct(){
+		if(isset(getopt("", ["secure"])["secure"])){
+			$ini = parse_ini_file(BASE_DIR.".env", false, INI_SCANNER_TYPED);
+			$this->writeDotEnv($ini);
+			exit;
+		}
 		$this->interactiveDBconfig();
 	}
 	
@@ -66,6 +71,7 @@ class ConfigWizard extends InteractiveWizard{
 			$this->message(<<<WARN
 WARNING: FORCE_ALLOW_HTTP is enabled. This will prevent the frontend from blocking and redirecting http requests.
 Make sure to disable this should you eventually enable https and expose this project to the internet!
+To disable run ./config-wizard.sh --secure and make sure to replace the old .env file with the newly generated one!
 WARN);
 			$ini["FORCE_ALLOW_HTTP"] = true;
 		}
