@@ -11,6 +11,7 @@ sudo apt -y install git
 git clone https://github.com/robske110/IDDataLogger.git --recursive
 cd IDDataLogger || exit
 ./config-wizard.sh --host localhost --user vwiddatalogger --dbname vwid --password "$pg_pw" --driver pgsql --allow-insecure-http --quiet
+sudo rm /var/www/html/index.html
 sudo mkdir /var/www/html/vwid/
 sudo cp -r ./public/. /var/www/html/vwid
 sudo cp ./.env /var/www/
