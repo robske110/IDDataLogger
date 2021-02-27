@@ -52,50 +52,31 @@ class ConfigWizard extends InteractiveWizard{
 		if(file_exists(BASE_DIR."config/config.json")){
 			if($this->get("A config.json already exists. Do you want to overwrite it with the defaults from config.example.json?", "N", ["Y", "N"]) != "Y"){
 				if($this->get("Do you want to only update the database connection parameters in your existing config?", "Y", ["Y", "N"]) == "Y"){
-					$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver, "config.json");
+					$this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver, "config.json");
 				}
 			}else{
-				$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
+				$this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
 			}
 		}else{
-			$config = $this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
+			$this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
 		}
 		
-		$ini = parse_ini_file(BASE_DIR.".env.example", false, INI_SCANNER_RAW);
+		$ini = parse_ini_file(BASE_DIR.".env.example", false, INI_SCANNER_TYPED);
 		if(isset($options["allow-insecure-http"])){
 			$this->message(<<<WARN
 WARNING: FORCE_ALLOW_HTTP is enabled. This will prevent the frontend from blocking and redirecting http requests.
 Make sure to disable this should you eventually enable https and expose this project to the internet!
 WARN);
-			$ini["FORCE_ALLOW_HTTP"] = "true";
+			$ini["FORCE_ALLOW_HTTP"] = true;
 		}
-		$newIni = "";
-		foreach($ini as $key => $value){
-			switch($key){
-				case "DB_HOST":
-					$cfgKey = "host";
-				break;
-				case "DB_NAME":
-					$cfgKey = "dbname";
-					break;
-				case "DB_USER":
-					$cfgKey = "user";
-					break;
-				case "DB_PASSWORD":
-					$cfgKey = "password";
-					break;
-				case "DB_DRIVER":
-					$cfgKey = "driver";
-					break;
-				default:
-					$cfgKey = null;
-			}
-			if(!empty($config["db"][$cfgKey])){
-				$value = $config["db"][$cfgKey];
-			}
-			$newIni .= $key."=".$value."\n";
-		}
-		file_put_contents(BASE_DIR.".env", $newIni);
+		
+		$ini["DB_HOST"] = $hostname;
+		$ini["DB_NAME"] = $dbname;
+		$ini["DB_USER"] = $username;
+		$ini["DB_PASSWORD"] = $password;
+		$ini["DB_DRIVER"] = $driver;
+		
+		$this->writeDotEnv($ini);
 		
 		if(!isset($options["quiet"])){
 			$this->message("Perfect! The configuration has been written to config/config.json and the .env file.");
@@ -105,6 +86,23 @@ and then copy the .env file outside your webroot. Please refer to the installati
 environment variables or placing the content of public in another level of your webroot.
 INFO);
 		}
+	}
+	
+	private function writeDotEnv(array $iniValues){
+		$newIni = "";
+		foreach($iniValues as $key => $value){
+			if(is_string($value)){
+				$value = "\"".$value."\"";
+			}
+			if($value === null){
+				$value = "null";
+			}
+			if(is_bool($value)){
+				$value = $value ? "true" : "false";
+			}
+			$newIni .= $key."=".$value."\n";
+		}
+		file_put_contents(BASE_DIR.".env", $newIni);
 	}
 	
 	private function writeJsonConfig(
