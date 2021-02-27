@@ -7,7 +7,7 @@ define("ALLOW_KEY_AUTHENTICATION", true);
 require "login/loginCheck.php";
 require_once "DatabaseConnection.php";
 
-$carPics = DatabaseConnection::getInstance()->query("SELECT carPicture FROM carPictures WHERE pictureID = 'default'");
+$carPics = DatabaseConnection::getInstance()->query("SELECT carpicture FROM carPictures WHERE pictureID = 'default'");
 
 $pic = base64_decode($carPics[0]["carpicture"]);
 header("Content-Type: image/png");
