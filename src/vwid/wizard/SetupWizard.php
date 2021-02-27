@@ -43,6 +43,9 @@ class SetupWizard extends InteractiveWizard{
 	private function setupUser(){
 		$username = $this->get("Enter the username for the new user");
 		$password = $this->get("Now enter the password for the new user");
+		if(strlen($username) > 64 && $this->main->getDB()->getDriver() !== "pgsql"){
+			throw new RuntimeException("The username cannot be longer than 64 chars!");
+		}
 		
 		$putUser = $this->main->getDB()->prepare("INSERT INTO users(username, hash) VALUES(?, ?)");
 		

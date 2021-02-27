@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS carStatus (
 
 CREATE TABLE IF NOT EXISTS users (
     userid serial NOT NULL PRIMARY KEY,
-    username text UNIQUE NOT NULL,
+    username varchar(64) UNIQUE NOT NULL,
     hash text NOT NULL
 );
 
