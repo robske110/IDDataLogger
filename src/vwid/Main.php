@@ -29,7 +29,10 @@ class Main{
 		);
 		
 		$didWizard = false;
-		if(($this->db->query("SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus'")[0]["table_name"] ?? null) !== "carstatus"){
+		if(strtolower($this->db->query(
+			"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus' OR TABLE_NAME = 'carStatus'"
+			)[0]["table_name"] ?? "") !== "carstatus"
+		){
 			Logger::log("Initializing db tables...");
 			$sqlFilename = match($this->db->getDriver()){
 				'mysql' => 'db_mysql.sql',
