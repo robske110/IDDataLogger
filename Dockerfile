@@ -2,13 +2,16 @@ FROM php:8.0-cli AS base
 
 # install needed php extensions
 RUN apt-get update && apt-get install -y \
+         libpng-dev \
+         zlib1g-dev \
          libpq-dev \
+         && docker-php-ext-install gd \
          && docker-php-ext-install pgsql \
          && docker-php-ext-install pdo_pgsql \
          && docker-php-ext-install pcntl
 
 # install vim for config work on docker volume
-RUN apt-get install vim
+RUN apt-get install -y vim
 
 # copy all source files and scripts
 COPY . /usr/src/IDDataLogger
