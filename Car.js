@@ -115,7 +115,7 @@ async function createWidget() {
 			break;
 		case "connected":
 			//widget.refreshAfterDate = new Date(Date.now() + 300) //increase refresh rate?
-			switch (data.chargeStatus){
+			switch (data.chargeState){
 				case "readyForCharging":
 					chargeStatus = "🟠 "+getTranslatedText("chargeStatus.connected")
 					break;
@@ -126,7 +126,7 @@ async function createWidget() {
 					chargeStatus = "⚡ "+getTranslatedText("chargeStatus.charging")
 					break;
 				default:
-					chargeStatus = "unknown cS: "+data.chargeStatus
+					chargeStatus = "unknown cS: "+data.chargeState
 			}
 			let plugLockStatus;
 			switch (data.plugLockState){
@@ -146,7 +146,7 @@ async function createWidget() {
 			chargeStatus = chargeStatus + plugLockStatus;
 			break;
 		default:
-			chargeStatus = "unknown pCS: "+data.plugConnectionState+" cS: "+data.chargeStatus
+			chargeStatus = "unknown pCS: "+data.plugConnectionState+" cS: "+data.chargeState
 	}
 
 	//const chargeInfo = verticalStack(carColumn)
@@ -160,7 +160,7 @@ async function createWidget() {
 	if(!Number.isNaN(Date.parse(data.time))){
 		dataTimestamp = new Date(Date.parse(data.time));
 	}
-	if(data.chargeStatus == "charging" || data.chargeStatus == "chargePurposeReachedAndConservation"){
+	if(data.chargeState == "charging" || data.chargeState == "chargePurposeReachedAndConservation"){
 		let realRemainChgTime = data.remainingChargingTime;
 		if(dataTimestamp != null){
 			realRemainChgTime -= (Date.now() - dataTimestamp.getTime()) / 60000;
@@ -203,13 +203,13 @@ async function getData() {
 		state["batterySOC"] = "40"
 		state["remainingRange"] = "150"
 		state["remainingChargingTime"] = "61"
+		state["chargeState"] = "charging"
+		state["chargePower"] = "100"
 		state["targetSOC"] = "100"
+		state["plugConnectionState"] = "connected"
+		state["plugLockState"] = "locked"	
 		state["hvacState"] = "heating"
 		state["hvacTargetTemp"] = "21.5"
-		state["chargeStatus"] = "charging"
-		state["plugConnectionState"] = "connected"
-		state["plugLockState"] = "locked"
-		state["chargePower"] = "100"
 
 		state["time"] = "simulated"
 	}else{
