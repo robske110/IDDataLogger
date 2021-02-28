@@ -16,6 +16,28 @@ if(php_sapi_name() !== "cli"){
 	echo("This script is to be run in cli!");
 	exit(1);
 }
+$extensions = ["curl", "json", "gd", "dom", "pdo", ["pdo_pgsql", "pdo_mysql"]];
+
+$missingExtensions = "";
+foreach($extensions as $ext){
+	if(is_array($ext)){
+		$ok = false;
+		foreach($ext as $possibleExt){
+			$ok = $ok ? true : extension_loaded($possibleExt);
+		}
+		if(!$ok){
+			$missingExtensions .= "At least one of the following php extensions is required: ".implode(", ", $ext);
+		}
+		continue;
+	}
+	if(!extension_loaded($ext)){
+		$missingExtensions .= "The php extension ".$ext." is required!".PHP_EOL;
+	}
+}
+if(!empty($missingExtensions)){
+	echo($missingExtensions);
+	exit(1);
+}
 
 #ini_set('memory_limit','1024M');
 
