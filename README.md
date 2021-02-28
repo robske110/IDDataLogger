@@ -21,13 +21,16 @@ Should you have any remaining questions or issues please see [getting help](http
 
 #### Prerequisites
 
-- PHP 8 cli with pgsql (or mysql), curl, gd and dom
-- A webserver serving .php files (PHP 8 with pgsql (or mysql))
+- PHP 8 cli with pdo-pgsql (or pdo-mysql), curl, gd, pcntl and dom
+- A webserver serving .php files (PHP 8 with pdo-pgsql (or pdo-mysql))
 - (strongly recommended) HTTPS enabled server with certificate
 - A PostgreSQL server (Any version from 9 and up should work, although testing has only been done on 11 and up)
     - alternatively MySQL / MariaDB is supported, but PostgreSQL is recommended.
 
 #### Overview of the setup process
+
+Looking at the automated install script for debian [install.sh](docs/install.sh) alongside the following instructions
+might be helpful.
 
 Clone this repository.
    

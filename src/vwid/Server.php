@@ -16,7 +16,7 @@ if(php_sapi_name() !== "cli"){
 	echo("This script is to be run in cli!");
 	exit(1);
 }
-$extensions = ["curl", "json", "gd", "dom", "pdo", ["pdo_pgsql", "pdo_mysql"]];
+$extensions = ["curl", "json", "gd", "dom", "pdo", "pcntl", ["pdo_pgsql", "pdo_mysql"]];
 
 $missingExtensions = "";
 foreach($extensions as $ext){

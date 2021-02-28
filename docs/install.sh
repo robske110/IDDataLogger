@@ -6,12 +6,12 @@ wget -q -O - https://packages.sury.org/php/README.txt | bash -s -
 sudo apt -y install php8.0 php8.0-pgsql php8.0-curl php8.0-gd php8.0-dom
 sudo apt -y install postgresql
 pg_pw=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-sudo su postgres -c "psql -c \"CREATE USER vwiddatalogger WITH PASSWORD '$pg_pw';\"; createdb vwid"
+sudo su postgres -c "psql -c \"CREATE USER iddatalogger WITH PASSWORD '$pg_pw';\"; createdb vwid"
 sudo apt -y install git
 git clone https://github.com/robske110/IDDataLogger.git --recursive
 cd IDDataLogger || exit
-./config-wizard.sh --host localhost --user vwiddatalogger --dbname vwid --password "$pg_pw" --driver pgsql --allow-insecure-http --quiet
-sudo rm /var/www/html/index.html
+./config-wizard.sh --host localhost --user iddatalogger --dbname vwid --password "$pg_pw" --driver pgsql --allow-insecure-http --quiet
+sudo rm /var/www/html/index.html #remove default "It works!" page
 sudo mkdir /var/www/html/vwid/
 sudo cp -r ./public/. /var/www/html/vwid
 sudo cp ./.env /var/www/
