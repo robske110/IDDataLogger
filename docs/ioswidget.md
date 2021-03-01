@@ -34,6 +34,7 @@ Further settings available are described in the following table:
 | setting | explanation |
 | ------- | ----------- |
 | rangeInMiles      | set this to true if you want to have the range displayed in miles |
+| showFinishTime    | set this to false if you want to hide the charge finish time and only display charge time remaining |
 | forceImageRefresh | set this to true after you've changed the carPicture (data/carPic.png) to force the widget to update it |
 | exampleData       | set this to true to force the widget to display example data and not to fetch from baseURL   |
 | socThreshold      | not implemented  |

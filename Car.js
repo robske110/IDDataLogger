@@ -7,6 +7,7 @@ const baseURL = ""
 const apiKey = ""
 
 const rangeInMiles = false //set to true to show range in miles
+const showFinishTime = true //set to false to hide charge finish time
 const forceImageRefresh = false //set to true to refresh the image
 
 const exampleData = false
@@ -157,6 +158,10 @@ async function createWidget() {
 	//chargeInfo.setPadding(0,10,0,10)
 	const chargeInfo = carColumn
 
+	let dF = new DateFormatter()
+	dF.useNoDateStyle()
+	dF.useShortTimeStyle()
+
 	chargeStatus = chargeInfo.addText(chargeStatus)
 	chargeStatus.font = Font.regularSystemFont(10)
 	chargeInfo.addSpacer(5)
@@ -166,11 +171,13 @@ async function createWidget() {
 	}
 	if(data.chargeState == "charging" || data.chargeState == "chargePurposeReachedAndConservation"){
 		let realRemainChgTime = data.remainingChargingTime;
+		let finishTime = ""
 		if(dataTimestamp != null){
 			realRemainChgTime -= (Date.now() - dataTimestamp.getTime()) / 60000;
+			finishTime = " ("+dF.string(new Date(dataTimestamp.getTime() + realRemainChgTime))+")";
 		}
-		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(realRemainChgTime % 60).padStart(2, '0') + "h"
-		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr)
+		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(Math.round(realRemainChgTime % 60)).padStart(2, '0') + "h"
+		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr + (showFinishTime ? finishTime : ""))
 		chargeStateLabel.font = Font.regularSystemFont(10)
 	}else{
 		chargeInfo.addSpacer(10)
@@ -194,9 +201,6 @@ async function createWidget() {
 	dataCol2.addSpacer(10)
 	addFormattedData(dataCol2, getTranslatedText("hvac"), data.hvacState+" ("+data.hvacTargetTemp+"°C)")
 
-	let dF = new DateFormatter()
-	dF.useNoDateStyle()
-	dF.useShortTimeStyle()
 	timedebug = widget.addText("carUpdate "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" (widget "+dF.string(scriptRun)+")")
 	timedebug.font = Font.lightSystemFont(8)
 	timedebug.textColor = Color.dynamic(Color.lightGray(), Color.darkGray())
@@ -217,7 +221,7 @@ async function getData() {
 		state["chargePower"] = "100"
 		state["targetSOC"] = "100"
 		state["plugConnectionState"] = "connected"
-		state["plugLockState"] = "locked"	
+		state["plugLockState"] = "locked"
 		state["hvacState"] = "heating"
 		state["hvacTargetTemp"] = "21.5"
 
