@@ -33,7 +33,12 @@ const translations = {
 		soc: "SOC",
 		range: "Range",
 		targetSOC: "Target SOC",
-		hvac: "HVAC"
+		hvac: "HVAC",
+		hvacStatus: {
+			heating: "heating",
+			ventilation: "ventilating",
+			off: "off"
+		}
 	},
 	de: {
 		chargeStatus: {
@@ -45,12 +50,18 @@ const translations = {
 		soc: "Ladezustand",
 		range: "Reichweite",
 		targetSOC: "Zielladung",
-		hvac: "Heizung"
+		hvac: "Klimaanlage",
+		hvacStatus: {
+			heating: "Heizt",
+			ventilation: "Lüftet",
+			off: "Aus"
+		}
 	}
 }
 
 function getTranslatedText(key){
 	let lang = Device.language();
+	lang = "de";
 	let translation = translations[lang];
 	if(translation == undefined){
 		translation = translations.en;
@@ -199,7 +210,21 @@ async function createWidget() {
 
 	addFormattedData(dataCol2, getTranslatedText("targetSOC"), data.targetSOC+"%")
 	dataCol2.addSpacer(10)
-	addFormattedData(dataCol2, getTranslatedText("hvac"), data.hvacState+" ("+data.hvacTargetTemp+"°C)")
+	let hvacStatus;
+	switch (data.hvacState){
+		case "heating":
+			hvacStatus = getTranslatedText("hvacStatus.heating");
+			break;
+		case "ventilation":
+			hvacStatus = getTranslatedText("hvacStatus.ventilation");
+			break;
+		case "off":
+			hvacStatus = getTranslatedText("hvacStatus.off");
+			break;
+		default:
+			hvacStatus = "unknown hS: "+date.hvacState;
+	}
+	addFormattedData(dataCol2, getTranslatedText("hvac"), hvacStatus+" ("+data.hvacTargetTemp+"°C)")
 
 	timedebug = widget.addText("carUpdate "+(dataTimestamp == null ? data.time : dF.string(dataTimestamp))+" (widget "+dF.string(scriptRun)+")")
 	timedebug.font = Font.lightSystemFont(8)
