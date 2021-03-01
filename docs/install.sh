@@ -14,7 +14,7 @@ cd IDDataLogger || exit
 sudo rm /var/www/html/index.html #remove default "It works!" page
 sudo mkdir /var/www/html/vwid/
 sudo cp -r ./public/. /var/www/html/vwid
-sudo cp ./.env /var/www/
+sudo ln -s "$PWD/.env" /var/www/
 echo "[Unit]
 Description=ID DataLogger php backend
 After=network.target
