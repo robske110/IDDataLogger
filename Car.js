@@ -6,10 +6,14 @@
 const baseURL = ""
 const apiKey = ""
 
+const rangeInMiles = false //set to true to show range in miles
 const forceImageRefresh = false //set to true to refresh the image
+
 const exampleData = false
 
 const socThreshold = 95 //not implemented
+
+// WIDGET VERSION: v0.0.3-InDev
 
 // Created by robske_110 24.01.2020
 // This script is orginally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
@@ -176,7 +180,13 @@ async function createWidget() {
 
 	addFormattedData(dataCol1, getTranslatedText("soc"), data.batterySOC.toString()+"%")
 	dataCol1.addSpacer(10)
-	addFormattedData(dataCol1, getTranslatedText("range"), data.remainingRange+ "km")
+	let range = ""
+	if(!rangeInMiles){
+		range = data.remainingRange+"km";
+	}else{
+		range = Math.round(data.remainingRange/1.609344)+"mi";
+	}
+	addFormattedData(dataCol1, getTranslatedText("range"), range)
 
 	const dataCol2 = verticalStack(wrap)
 
