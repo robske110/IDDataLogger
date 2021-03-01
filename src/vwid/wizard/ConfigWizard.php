@@ -62,8 +62,10 @@ class ConfigWizard extends InteractiveWizard{
 		
 		if(file_exists(BASE_DIR."config/config.json")){
 			if($this->get("A config.json already exists. Do you want to overwrite it with the defaults from config.example.json?", "N", ["Y", "N"]) != "Y"){
-				if($this->get("Do you want to only update the database connection parameters in your existing config?", "Y", ["Y", "N"]) == "Y"){
+				if($this->get("Do you want to update your existing config with the parameters you entered in this wizard? (Answering N will exit this Wizard)", "Y", ["Y", "N"]) == "Y"){
 					$this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver, "config.json");
+				}else{
+					exit;
 				}
 			}else{
 				$this->writeJsonConfig($idUsername, $idPassword, $hostname, $dbname, $username, $password, $driver);
