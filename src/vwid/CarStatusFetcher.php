@@ -147,7 +147,7 @@ class CarStatusFetcher{
 			Logger::notice("Ignoring these errors and continuing to attempt to decode data...");
 		}
 		
-		if(!isset($data["data"])){
+		if(empty($data["data"])){
 			Logger::critical("Failed to get carStatus: No Data in response!");
 			Logger::var_dump($data, "decoded Data");
 			return false;

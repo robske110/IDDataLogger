@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
+use http\Exception\RuntimeException;
 use PDOException;
 use PDOStatement;
 use robske_110\utils\ErrorUtils;
@@ -82,6 +83,10 @@ class CarStatusWriter{
 					$dateTime = $carStatusData[$key."Timestamp"];
 				}
 			}
+		}
+		if($dateTime == null){
+			Logger::var_dump($carStatusData, "carStatusData");
+			throw new RuntimeException("Data does not contain any timestamps, unable to write to db!");
 		}
 		$data[] = $dateTime->format('Y\-m\-d\TH\:i\:s');
 		foreach(self::DB_FIELDS as $dbField){
