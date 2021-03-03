@@ -64,6 +64,17 @@ Logger::init(
 	($config["logging"]["log-dir"] ?? BASE_DIR."/log/")
 );
 
+const VERSION = "v0.0.4";
+const IS_RELEASE = false;
+
+$hash = exec("git -C ".BASE_DIR." rev-parse HEAD 2>/dev/null");
+$exitCode = -1;
+exec("git -C ".BASE_DIR." diff --quiet 2>/dev/null", $out, $exitCode);
+if($exitCode == 1){
+	$hash .= "-dirty";
+}
+Logger::log("Starting ID DataLogger Version ".VERSION.(IS_RELEASE ? "" : "-InDev").(!empty($hash) ? " (".$hash.")" : "")."...");
+
 function handleException(Throwable $t, $trace = null){
 	if($trace === null){
 		$trace = $t->getTrace();
