@@ -138,18 +138,44 @@ function carGraphRangeUser(selectedDates, dateStr, instance){
 	updateCarGraph();
 }
 
+let currUCStimeout;
+chartStore.carGraph.chart.options.onHover = function(ev, objects){
+	if(objects.length === 0){
+		return;
+	}
+	chart = objects[0]._chart;
+	index = objects[0]._index;
+	timetravelPicker.setDate(Date.parse(chart.options.scales.xAxes[0].labels[index]));
+	let timestamp = "@"+Math.round(Date.parse(chart.options.scales.xAxes[0].labels[index]) / 1000);
+	if(timetravelDate != timestamp){
+		timetravelDate = timestamp;
+		timetravelStatus = true;
+		clearTimeout(currUCStimeout);
+		currUCStimeout = setTimeout(updateCarStatus, 100);
+	}
+};
+chartStore.carGraph.chart.update();
+
 let beginTime = new Date();
+beginTime.setDate(beginTime.getDate()-7);
+beginTime.setHours(0,0,0,0);
 let endTime = null;	
 	
 async function updateCarGraph(){
 	console.log(beginTime);
-	const graphData = await getJSON("carGraphData.php?beginTime="+Math.round(beginTime.getTime()/1000)+(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000)));
+	const graphData = await getJSON(
+		"carGraphData.php?beginTime="+Math.round(beginTime.getTime()/1000)+
+		(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000))+
+		"&dataBracketing=true"
+	);
 	if(graphData == undefined){
 		alert("failed to decode carGraphData JSON");
 		return;
 	}
 	processCarGraphUpdate(graphData);
 }
+
+setInterval(updateCarGraph, 60000);
 
 function processCarGraphUpdate(graphData){
 	const chart = chartStore.carGraph.chart;
