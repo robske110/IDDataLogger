@@ -33,8 +33,8 @@ if(($_ENV["DB_DRIVER"] ?? "pgsql") != "pgsql"){
 	if($statusAt !== null){
 		$statusAt = " AND ".substr($statusAt, 6);
 	}
-	$sqlChargeStart =
-		"SELECT time from (
+	$sqlChargeStart = 
+"SELECT time from (
   SELECT t.time, t.chargeState, p.chargeState prev_chargeState
   FROM
   (

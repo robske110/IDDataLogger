@@ -42,7 +42,7 @@ Note: for a detailed description of the possible config values visit [config.md]
 
 After creating the config.json from config.example.json run `./start.sh`.
 The necessary tables in the database will be automatically created.
-After a successful connection the the db the setup wizard will help you create an API key for the widget and a user for the website.
+After a successful connection to the db, the setup wizard will help you create an API key for the widget and a user for the website.
 
 All files in the `public` directory of this repository must now be placed somewhere in the webroot.
 It is recommended to place them in the second level (not directly in webroot).
