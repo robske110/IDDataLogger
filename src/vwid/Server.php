@@ -67,9 +67,9 @@ Logger::init(
 const VERSION = "v0.0.4";
 const IS_RELEASE = false;
 
-$hash = exec("git -C ".BASE_DIR." rev-parse HEAD 2>/dev/null");
+$hash = exec("git -C \"".BASE_DIR."\" rev-parse HEAD 2>/dev/null");
 $exitCode = -1;
-exec("git -C ".BASE_DIR." diff --quiet 2>/dev/null", $out, $exitCode);
+exec("git -C \"".BASE_DIR."\" diff --quiet 2>/dev/null", $out, $exitCode);
 if($exitCode == 1){
 	$hash .= "-dirty";
 }
