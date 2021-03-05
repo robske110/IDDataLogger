@@ -1,7 +1,7 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-green; icon-glyph: car;
-//CONFIGURATION
+// CONFIGURATION
 
 const baseURL = ""
 const apiKey = ""
@@ -52,8 +52,8 @@ const translations = {
 		targetSOC: "Zielladung",
 		hvac: "Klimaanlage",
 		hvacStatus: {
-			heating: "Heizt",
-			ventilation: "Lüftet",
+			heating: "Heizen",
+			ventilation: "Lüften",
 			off: "Aus"
 		}
 	}
@@ -61,7 +61,6 @@ const translations = {
 
 function getTranslatedText(key){
 	let lang = Device.language();
-	lang = "de";
 	let translation = translations[lang];
 	if(translation == undefined){
 		translation = translations.en;
@@ -72,9 +71,6 @@ function getTranslatedText(key){
 	});
 	return translation;
 }
-
-console.log(Device.locale())
-console.log(Device.language())
 
 let widget = await createWidget()
 
