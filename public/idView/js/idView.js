@@ -15,12 +15,12 @@ let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 0, "km
 let range = new AnimatedValue(document.getElementById("range"), 0, "km");
 let targetTemp = new AnimatedValue(document.getElementById("hvactargettemp"), 0, "°C", 1, 10);
 let soc = new SOCDoughnutValue(document.getElementById("soc"), 0, 100, "%", "soc");
-let chargeTimeRemaining = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaining"), 0, 0, "min", "charging progress");
+let chargeTimeRemaining = null;
 	
 async function getJSON(link){
 	return (await fetch(link)).json();
 }
-	
+
 function timetravelUser(selectedDates, dateStr, instance){
 	timetravel(selectedDates[0]);
 }
@@ -58,10 +58,31 @@ async function updateCarStatus(){
 }
 	
 function processCarStatus(carStatus){
+	if(carStatus.plugConnectionState == "connected"){
+		document.getElementById("chargingDisplay").style.display = "flex";
+		let chargeState;
+		switch(carStatus.chargeState){
+		case "charging":
+			chargeState = "charging...";
+			break;
+		case "chargePurposeReachedAndConservation":
+			chargeState = "holding charge";
+			break;
+		case "readyForCharging":
+			chargeState = "not charging";
+			break;
+		default:
+			chargeState = "unknown: "+carStatus.chargeState;
+		}
+		document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.plugLockState;
+		//setTimeout(.bind(chargeTimeRemaining), 50);
+	}else{
+		document.getElementById("chargingDisplay").style.display = "none";
+	}
 	soc.value = carStatus.batterySOC;
 	soc.targetSOC = carStatus.targetSOC;
 	soc.update();
-		
+	
 	let now;
 	if(timetravel){
 		now = Date.parse(carStatus.time);
@@ -73,10 +94,13 @@ function processCarStatus(carStatus){
 	//console.log(carStatus.remainingchargingtime);
 	//console.log(carStatus.lastChargeStartTime);
 	const realTimeRemaining = now - Date.parse(carStatus.time) + parseInt(carStatus.remainingChargingTime);
+	if(chargeTimeRemaining === null){
+		chargeTimeRemaining = new InvertedDoughnutValue(document.getElementById("chargingTimeRemaining"), 0, 0, "min", "charging progress")
+	}
 	chargeTimeRemaining.max = elapsedMinutes + realTimeRemaining;
 	chargeTimeRemaining.value = chargeTimeRemaining.max - realTimeRemaining;
 	chargeTimeRemaining.update();
-		
+	
 	range.setValue(carStatus.remainingRange);
 	chargePower.setValue(carStatus.chargePower*10);
 	chargeKMPH.setValue(carStatus.chargeRateKMPH);
@@ -98,27 +122,6 @@ function processCarStatus(carStatus){
 		break;
 	}
 	document.getElementById("hvacstate").innerHTML = hvacstate;
-		
-	if(carStatus.plugConnectionState == "connected"){
-		document.getElementById("chargingDisplay").style.display = "flex";
-		let chargeState;
-		switch(carStatus.chargeState){
-		case "charging":
-			chargeState = "charging...";
-			break;
-		case "chargePurposeReachedAndConservation":
-			chargeState = "holding charge";
-			break;
-		case "readyForCharging":
-			chargeState = "not charging";
-			break;
-		default:
-			chargeState = "unknown: "+carStatus.chargeState;
-		}
-		document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.plugLockState;
-	}else{
-		document.getElementById("chargingDisplay").style.display = "none";
-	}
 }
 
 function carGraphRangeUser(selectedDates, dateStr, instance){
