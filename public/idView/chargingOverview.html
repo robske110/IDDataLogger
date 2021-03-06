@@ -1,0 +1,104 @@
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="css/idView.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+	<title>IDView</title>
+	<style>
+		body{
+			margin: 0;
+		}
+		.chargeSessions{
+			list-style-type: none;
+			padding: 0;
+		}
+		.chargeSession{
+			padding-top: 1em;
+			padding-bottom: 1em;
+			margin-top: 1em;
+			background: #111;
+			border-radius: 0.5em;
+			display: flex;
+			justify-content: space-between;
+		}
+		.chargeSessionDougnut{
+			width: 15%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.chargeSessionElement{
+			padding-left: 1em;
+			padding-right: 1em;
+			border-left: solid thin white;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			flex-grow: 1;
+		}
+		.chargeSessionValue{
+			font-size: 2vw;
+		}
+		.chargeSessionValue.big{
+			font-size: 4vw;
+		}
+	</style>
+</head>
+<body>
+	<ul class="chargeSessions" id="chargeSessions">
+		<template id="chargeSession">
+			<li class="chargeSession">
+				<div class="chargeSessionDougnut">
+					<canvas id="chargesoc"></canvas>
+				</div>
+				<div class="chargeSessionElement">
+					<span class="chargeSessionValue big" id="kWh">00.00kWh</span>
+				</div>
+				<div class="chargeSessionElement">
+					<span class="chargeSessionValue big" id="range">000km</span>
+				</div>
+				<div class="chargeSessionElement">
+					<span class="chargeSessionValue big" id="avgchargepower">XXkW</span>
+					<span class="chargeSessionValue" id="minMaxChargePower">min XXkW | max XXkW</span>
+				</div>
+				<div class="chargeSessionElement">
+					<span class="chargeSessionValue big" id="duration">0:00h</span>
+					<span class="chargeSessionValue" id="time">XX:XX-XX:XX</span>
+					<span class="chargeSessionValue" id="date">XX.XX.XX</span>
+				</div>
+			</li>
+		</template>
+	</ul>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<script src="js/DoughnutValue.js"></script>
+	<script src="js/AnimatedValue.js"></script>
+	<script>
+		function createChargeSession(data){
+			let cS = document.querySelector("#chargeSession").content.firstElementChild.cloneNode(true);
+			let chargeSessions = document.querySelector("#chargeSessions");
+		
+			cS.querySelector("#duration").textContent = data.duration+"h";
+			cS.querySelector("#avgchargepower").textContent = data.avgChargePower+"kW";
+			cS.querySelector("#minMaxChargePower").textContent = data.minChargePower+"kW" + " | " + data.maxChargePower+"kW";
+			cS.querySelector("#kWh").textContent = data.integralChargeEnergy+"kWh";
+			cS.querySelector("#range").textContent = (data.rangeEnd - data.rangeStart)+"km";
+			
+			chargeSessions.appendChild(cS);
+			
+			new SOCchargeDoughnutValue(cS.querySelector("#chargesoc"), data.socStart, data.socEnd, "soc");
+		}
+		createChargeSession({
+			duration: "4:48",
+			avgChargePower: 10.4,
+			minChargePower: 8.5,
+			maxChargePower: 10.5,
+			integralChargeEnergy: 48.59,
+			rangeStart: 27,
+			rangeEnd: 311,
+			socStart: 5,
+			socEnd: 90
+		});
+	</script>
+</body>

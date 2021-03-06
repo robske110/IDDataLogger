@@ -63,6 +63,15 @@ class DatabaseConnection{
 		return $pdoStatement;
 	}
 	
+	public function queryStatement(string $sql): PDOStatement{
+		try{
+			$pdoStatement = $this->connection->query($sql);
+		}catch(PDOException $e){
+			throw $this->handlePDOexception($e, "Running query ".$sql." failed");
+		}
+		return $pdoStatement;
+	}
+	
 	public function handlePDOexception(PDOException $e, ?string $what = null): RuntimeException{
 		Logger::var_dump($e->errorInfo, "errorInfo");
 		return new RuntimeException(($what.": " ?? "").$e->getMessage()." [".$e->getCode()."]");
