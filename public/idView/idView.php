@@ -64,8 +64,9 @@ spl_autoload_register(function ($class){
 			$xAxis = new Xaxis($carGraphData->time);
 
 			$batterySOC = new Dataset("batterySOC", $carGraphData->batterySOC, new Colour(0, 255, 255));
-			$xAxis->addDataset($batterySOC);
-			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
+			$targetSOC = new Dataset("targetSOC", $carGraphData->targetSOC, new Colour(255, 0, 0), null, true);
+			$xAxis->addDataset($batterySOC)->addDataset($targetSOC);
+			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->addDataset($targetSOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
 			
 			$remainingRange = new Dataset("remainingRange", $carGraphData->remainingRange, new Colour(0, 128, 255));
 			$xAxis->addDataset($remainingRange);

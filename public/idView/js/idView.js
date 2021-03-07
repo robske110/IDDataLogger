@@ -184,9 +184,10 @@ function processCarGraphUpdate(graphData){
 	const chart = chartStore.carGraph.chart;
 	chart.options.scales.xAxes[0].labels = graphData.time;
 	chart.data.datasets[0].data = graphData.batterySOC;
-	chart.data.datasets[1].data = graphData.remainingRange;
-	chart.data.datasets[2].data = graphData.remainingChargingTime;
-	chart.data.datasets[3].data = graphData.chargePower;
-	chart.data.datasets[4].data = graphData.chargeRateKMPH;
+	chart.data.datasets[1].data = graphData.targetSOC;
+	chart.data.datasets[2].data = graphData.remainingRange;
+	chart.data.datasets[3].data = graphData.remainingChargingTime;
+	chart.data.datasets[4].data = graphData.chargePower;
+	chart.data.datasets[5].data = graphData.chargeRateKMPH;
 	chart.update();
 }
