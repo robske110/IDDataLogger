@@ -2,48 +2,50 @@ version: '3.7'
 services:
   db:
     image: postgres:latest
-    container_name: id_data_logger_postgres
+    container_name: iddatalogger_db
     restart: always
     environment:
-      POSTGRES_USER: vwiddatalogger
-      POSTGRES_PASSWORD: ${IDDATALOGGER_DBPWD}
+      POSTGRES_USER: iddatalogger
       POSTGRES_DB: vwid
+      POSTGRES_HOST_AUTH_METHOD: trust
       PGDATA: /var/lib/postgresql/data/pgdata
-    #expose: 
-    #  - "5432"
-    ports:
-      - "5432:5432"
     volumes:
       - persistent_data_db:/var/lib/postgresql/data:rw
 
-  web:
-    build: ./public
-    depends_on:
-      - db
-    links:
-      - db
-    container_name: id_data_logger_web
-    restart: always
-    ports:
-      - "${IDDATALOGGER_HTTPPORT}:80"
-    volumes:
-      - persistent_data_config:/usr/config:ro
-
   app:
     build: .
-    environment: 
-      IDDATALOGGER_DBPWD: ${IDDATALOGGER_DBPWD}
+    container_name: iddatalogger_app
+    environment:
+      IDDATALOGGER_USERNAME: ${IDDATALOGGER_USERNAME}
+      IDDATALOGGER_PASSWORD: ${IDDATALOGGER_PASSWORD}
+      IDDATALOGGER_VIN: ${IDDATALOGGER_VIN}
+      IDDATALOGGER_BASE_UPDATERATE: ${IDDATALOGGER_BASE_UPDATERATE}
+      IDDATALOGGER_INCREASED_UPDATERATE: ${IDDATALOGGER_INCREASED_UPDATERATE}
+      IDDATALOGGER_CARPIC_VIEWDIRECTION: ${IDDATALOGGER_CARPIC_VIEWDIRECTION}
+      IDDATALOGGER_CARPIC_ANGLE: ${IDDATALOGGER_CARPIC_ANGLE}
+      IDDATALOGGER_CARPIC_FLIP: ${IDDATALOGGER_CARPIC_FLIP}
+      IDDATALOGGER_TIMEZONE: ${IDDATALOGGER_TIMEZONE}
+      IDDATALOGGER_LOGGING_DEBUG_ENABLE: ${IDDATALOGGER_LOGGING_DEBUG_ENABLE}
+      IDDATALOGGER_LOGGING_FILE_ENABLE: ${IDDATALOGGER_LOGGING_FILE_ENABLE}
+      IDDATALOGGER_DB_HOST: iddatalogger_db
+      IDDATALOGGER_DB_DBNAME: vwid
+      IDDATALOGGER_DB_USER: iddatalogger
     depends_on:
       - db
-      - web
-    links:
-      - db
-    container_name: id_data_logger_app
     restart: always
     volumes:
-      - persistent_data_config:/usr/config:rw
-    stdin_open: true
-    tty: true
+      - persistent_data_app:/usr/src/IDDataLogger/data:rw
+
+  web:
+    build: ./public
+    container_name: iddatalogger_web
+    environment:
+      DB_HOST: iddatalogger_db
+      DB_NAME: vwid
+      DB_USER: iddatalogger
+    restart: always
+    ports:
+      - "9000:80"
 
 volumes:
   persistent_data_db:
