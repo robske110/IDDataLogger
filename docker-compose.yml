@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:latest
+    container_name: id_data_logger_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: vwiddatalogger
+      POSTGRES_PASSWORD: ${IDDATALOGGER_DBPWD}
+      POSTGRES_DB: vwid
+      PGDATA: /var/lib/postgresql/data/pgdata
+    #expose: 
+    #  - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - persistent_data_db:/var/lib/postgresql/data:rw
+
+  web:
+    build: ./public
+    depends_on:
+      - db
+    links:
+      - db
+    container_name: id_data_logger_web
+    restart: always
+    ports:
+      - "${IDDATALOGGER_HTTPPORT}:80"
+    volumes:
+      - persistent_data_config:/usr/config:ro
+
+  app:
+    build: .
+    environment: 
+      IDDATALOGGER_DBPWD: ${IDDATALOGGER_DBPWD}
+    depends_on:
+      - db
+      - web
+    links:
+      - db
+    container_name: id_data_logger_app
+    restart: always
+    volumes:
+      - persistent_data_config:/usr/config:rw
+    stdin_open: true
+    tty: true
+
+volumes:
+  persistent_data_db:
+  persistent_data_config:
