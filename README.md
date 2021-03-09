@@ -1,7 +1,7 @@
 # ID DataLogger
 
 Welcome to the ID DataLogger project.
-This programm allows you to log data about your Volkswagen ID vehicle.
+This program allows you to log data about your Volkswagen ID vehicle.
 It includes an iOS widget (using Scriptable) and a webpage for seeing current status and history graphs.
 
 <p align="center">
@@ -36,13 +36,15 @@ Clone this repository.
    
 `git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
-Create a database (and a user) in your PostgreSQL (or other) server for this project and fill in the details into `config/config.example.json` and `.env.example.` We'll need these files later.
+Create a database (and a user) in your PostgreSQL (or other) server for this project and fill in the details into
+`config/config.example.json` and `.env.example.` We'll need these files later.
 You can do this using the config setup wizard by running the `config-wizard.sh` script, or manually.
 Note: for a detailed description of the possible config values visit [config.md](docs/config.md).
 
 After creating the config.json from config.example.json run `./start.sh`.
 The necessary tables in the database will be automatically created.
-After a successful connection to the db, the setup wizard will help you create an API key for the widget and a user for the website.
+After a successful connection to the db, the setup wizard will help you create an API key for the widget and a user for
+the website.
 
 All files in the `public` directory of this repository must now be placed somewhere in the webroot.
 It is recommended to place them in the second level (not directly in webroot).
@@ -52,18 +54,27 @@ Then copy the `.env` file (created from `.env.example`) outside the webroot with
 Note:
 `env.php` looks for a `.env` file two folders up from its location.
 (If you put the contents of the public folder in `/path/to/webroot/vwid/` it will look in `/path/to/.env`)
-If you place the files deeper inside the webroot, please consider editing env.php and configuring the correct path in the first line. It is strongly recommended keeping the .env file out of the webroot.
+If you place the files deeper inside the webroot, please consider editing env.php and configuring the correct path in
+the first line. It is strongly recommended keeping the .env file out of the webroot.
 
 You can alternatively set the environment variables through your webserver. (Or anything else that populates php's `$_ENV`)
 
-After successful start you can now visit idView.php or use the iOS widget after [setting it up](docs/ioswidget.md)!
+You now need to set up your system to automatically start `start.sh` on system start. Using systemd is recommended.
+
+You can now visit idView.php or use the iOS widget after [setting it up](docs/ioswidget.md)!
+
+#### Updating
+
+To update the software at a later data execute `git pull && git submodule update` in the repository directory and
+replace the files in the webroot with the new contents of the `public` folder. Make sure to restart the php process.
+(The one started by `start.sh`)
 
 ## Contributing
 
 Contributions are always welcome! You can help to improve the documentation, fix bugs in the code or add new features.
 
-Creating a containerized version (for example docker and especially with letsencrypt/certbot support) or
-improving the beginners guide are currently something I would love to have help with. Feel free to open a PR!
+Improving the beginners guide and documentation are currently something I would love to have help with.
+Feel free to open a PR!
 
 ### A big 'Thank you!' to the following contributors
 

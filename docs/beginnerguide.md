@@ -181,3 +181,22 @@ program and can help you debug issues if you ever have any trouble.
 
 If you want to view the website and have the iOS widget update outside your home network,
 please refer to [making the ID DataLogger available from the internet](https://github.com/robske110/IDDataLogger/wiki/Making-the-ID-DataLogger-available-from-the-internet).
+
+## Updating the installation in the future
+
+Make sure to periodically keep your installation up-to-date to receive security and bug fixes along with new features.
+Execute the following commands to ensure raspbian and other software is secure and up-to-date:
+```
+sudo apt update
+sudo apt -y upgrade
+sudo apt -y dist-upgrade
+systemctl reboot
+```
+To update the ID DataLogger you can either execute the following command to do this automatically:
+
+`cd ~/IDDataLogger && ./docs/update.sh`
+
+Or if you want to do it manually go into the directory of the ID DataLogger installation with `cd ~/IDDataLogger`, update
+the ID DataLogger software files using `git pull && git submodule update`, remove the old files in the webserver directory
+using `sudo rm -r /var/www/html/vwid`, copy the new files into the directory using `sudo cp -r ./public/. /var/www/html/vwid`
+and finally restart the ID DataLogger fetch program by running `sudo systemctl restart iddatalogger.service`.
