@@ -43,6 +43,7 @@ services:
       DB_HOST: iddatalogger_db
       DB_NAME: vwid
       DB_USER: iddatalogger
+      FORCE_ALLOW_HTTP: "true"
     restart: always
     ports:
       - "9000:80"
