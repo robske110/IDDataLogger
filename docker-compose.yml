@@ -49,4 +49,4 @@ services:
 
 volumes:
   persistent_data_db:
-  persistent_data_config:
+  persistent_data_app:
