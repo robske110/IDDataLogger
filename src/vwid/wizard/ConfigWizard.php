@@ -16,7 +16,53 @@ class ConfigWizard extends InteractiveWizard{
 			$this->writeDotEnv($ini);
 			exit;
 		}
+		if(isset(getopt("", ["use-env"])["use-env"])){
+			exit($this->createConfigFromEnvironment() ? 0 : 1);
+		}
 		$this->interactiveDBconfig();
+	}
+	
+	public function createConfigFromEnvironment(): bool{
+		$options = getopt("", ["fill-defaults", "quiet"]);
+		$quiet = isset($options["quiet"]);
+		if(isset($options["fill-defaults"])){
+			$config = json_decode(file_get_contents(BASE_DIR."config/config.example.json"), true);
+		}else{
+			if(file_exists(BASE_DIR."config/config.json")){
+				$config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
+			}else{
+				if(!$quiet) $this->message("No config.json found! To create from config.example.json specify --fill-defaults!");
+				return false;
+			}
+		}
+		$config = $this->readEnv($config);
+		file_put_contents(BASE_DIR."config/config.json", json_encode($config, JSON_PRETTY_PRINT));
+		if(!$quiet) $this->message("Successfully created/updated config.json from the environment variables");
+		return true;
+	}
+	
+	const CONFIG_BOOLEANS = [
+		"IDDATALOGGER_CARPIC_FLIP",
+		"IDDATALOGGER_LOGGING_DEBUG_ENABLE",
+		"IDDATALOGGER_LOGGING_FILE_ENABLE"
+	];
+	
+	public function readEnv(array $config, string $path = ""): array{
+		foreach($config as $key => $value){
+			if(is_array($value)){
+				$config[$key] = $this->readEnv($value, $path.strtoupper(str_replace("-", "_", $key))."_");
+				continue;
+			}
+			$envName = "IDDATALOGGER_".$path.strtoupper(str_replace("-", "_", $key));
+			if(isset($_ENV[$envName])){
+				if(in_array($envName, self::CONFIG_BOOLEANS)){
+					$config[$key] = $_ENV[$envName] == "true";
+				}else{
+					$config[$key] = $_ENV[$envName];
+				}
+			}
+		}
+		return $config;
 	}
 	
 	public function interactiveDBconfig(){
