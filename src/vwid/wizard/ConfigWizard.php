@@ -47,6 +47,11 @@ class ConfigWizard extends InteractiveWizard{
 		"IDDATALOGGER_LOGGING_FILE_ENABLE"
 	];
 	
+	const CONFIG_INTEGERS = [
+		"IDDATALOGGER_BASE_UPDATERATE",
+		"IDDATALOGGER_INCREASED_UPDATERATE"
+	];
+	
 	public function readEnv(array $config, string $path = ""): array{
 		foreach($config as $key => $value){
 			if(is_array($value)){
@@ -54,9 +59,11 @@ class ConfigWizard extends InteractiveWizard{
 				continue;
 			}
 			$envName = "IDDATALOGGER_".$path.strtoupper(str_replace("-", "_", $key));
-			if(isset($_ENV[$envName])){
+			if(!empty($_ENV[$envName])){
 				if(in_array($envName, self::CONFIG_BOOLEANS)){
 					$config[$key] = $_ENV[$envName] == "true";
+				}elseif(in_array($envName, self::CONFIG_INTEGERS)){
+					$config[$key] = (int) $_ENV[$envName];
 				}else{
 					$config[$key] = $_ENV[$envName];
 				}
