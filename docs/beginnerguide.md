@@ -166,7 +166,7 @@ It will now ask you if you want to generate an API key. If you want to use the i
 For more information on setting up the iOS widget using the API key see [Setting up the iOS Widget](ioswidget.md).
 After that it will ask you if you want to create an user. This user is used to log into the website. Make sure to choose
 a strong and long password. It is recommended to store this in a password manager.
-Note that you can create additional API keys or add additional users at any time using `./start.sh wizard`.
+Note that you can create additional API keys or add additional users at any time using `./start.sh --wizard`.
 
 After creating the API key and the user you should see `Done. Ready! Fetching car status...` and `Writing new data for timestamp`.
 This means you have successfully set up the ID DataLogger!
