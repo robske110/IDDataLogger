@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
          && docker-php-ext-install pdo_pgsql
 
 # copy puplic http content
-COPY . /var/www/html/
+COPY ./public/. /var/www/html/
 
 # use production php config (no warnings)
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
