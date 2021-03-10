@@ -39,12 +39,12 @@ class Main{
 				'pgsql' => 'db.sql'
 			};
 			$this->db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
-			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
+			if(($_SERVER['argv'][1] ?? "") != "--no-wizard"){
 				new SetupWizard($this);
 				$didWizard = true;
 			}
 		}
-		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "wizard"){
+		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "--wizard"){
 			new SetupWizard($this);
 		}
 		
