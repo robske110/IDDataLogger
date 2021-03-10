@@ -199,12 +199,16 @@ class SOCDoughnutValue extends DoughnutValue{
 class SOCchargeDoughnutValue extends DoughnutValue{
 	constructor(canvas, start, end, legendName){
 		super(canvas, start, 100, "%", legendName)
-		this.charged = end
+		this.end = end
+		this.displayStart = false
+		this.chart.options.onHover = function(ev, objects){
+			if(objects.length > 0){
+				const index = objects[0]._index
+				this.displayStart = this.chart.data.labels[index] == this.legendName
+				this.update()
+			}
+		}.bind(this)
 		this.update()
-	}
-	
-	onTooltipFilterCallback(tooltipItem, data) {
-		return tooltipItem.index < 2;
 	}
 	
 	onLegendClick(e, legendItem){
@@ -219,21 +223,28 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 				if(a.data[index].hidden){
 					this.chart.data.datasets[0].data[2] = this.max-this.value;
 				}else{
-					this.chart.data.datasets[0].data[2] = this.max-this.charged;
+					this.chart.data.datasets[0].data[2] = this.max-this.end;
 				}
 			}
     	}
     	this.chart.update();
 	}
 	
+	onTooltipFilterCallback(tooltipItem, data) {
+		return false;
+	}
+	
 	getInnerDisplayValue(){
-		return this.charged;
+		if(this.displayStart){
+			return this.value;
+		}
+		return this.end-this.value;
 	}
 	
 	generateData(){
 		return {
 			datasets: [{
-				data: [this.value, this.charged-this.value, this.max-this.charged],
+				data: [this.value, this.end-this.value, this.max-this.end],
 				backgroundColor: ['rgba(0,255,0,1)', 'rgba(0,200,200,1)', 'rgba(0,0,0,0)'],
 				borderColor: ['rgba(0,255,0,1)', 'rgba(0,200,200,1)', 'rgba(0,0,0,0)']
 			}],
@@ -242,6 +253,6 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 	}
 	
 	updateData(){
-		this.chart.data.datasets[0].data=[this.value, this.charged-this.value, this.max-this.charged];
+		this.chart.data.datasets[0].data=[this.value, this.end-this.value, this.max-this.end];
 	}
 }
