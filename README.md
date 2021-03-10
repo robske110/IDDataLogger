@@ -19,6 +19,9 @@ Should you have any remaining questions or issues please see [getting help](http
 
 ### Setup for advanced users
 
+You can install this software using docker with the instructions [here](docs/docker.md).
+Alternatively continue with the instructions below for installing on a system directly:
+
 #### Prerequisites
 
 - PHP 8 cli with pdo-pgsql (or pdo-mysql), curl, gd, pcntl and dom
