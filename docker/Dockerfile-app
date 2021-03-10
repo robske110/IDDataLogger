@@ -13,4 +13,4 @@ RUN apt-get update && apt-get install -y \
 COPY . /usr/src/IDDataLogger
 
 # setup entrypoint with automatic config generation from environment variables
-ENTRYPOINT /usr/src/IDDataLogger/docker-start.sh
+ENTRYPOINT /usr/src/IDDataLogger/docker/docker-start.sh

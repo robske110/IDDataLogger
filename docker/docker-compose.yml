@@ -13,7 +13,9 @@ services:
       - persistent_data_db:/var/lib/postgresql/data:rw
 
   app:
-    build: .
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile-app
     container_name: iddatalogger_app
     environment:
       IDDATALOGGER_USERNAME: ${IDDATALOGGER_USERNAME}
@@ -37,7 +39,9 @@ services:
       - persistent_data_app:/usr/src/IDDataLogger/data:rw
 
   web:
-    build: ./public
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile-web
     container_name: iddatalogger_web
     environment:
       DB_HOST: iddatalogger_db
