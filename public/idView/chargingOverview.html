@@ -14,8 +14,8 @@
 			padding: 0;
 		}
 		.chargeSession{
-			padding-top: 1em;
-			padding-bottom: 1em;
+			padding-top: 0.75em;
+			padding-bottom: 0.75em;
 			margin-top: 1em;
 			background: #111;
 			border-radius: 0.5em;
@@ -50,6 +50,23 @@
 </head>
 <body>
 	<ul class="chargeSessions" id="chargeSessions">
+		<li class="chargeSession">
+			<div class="chargeSessionDougnut">
+				<span class="chargeSessionValue small">SOC</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="chargeSessionValue small">charged kWh</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="chargeSessionValue small">gained range</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="chargeSessionValue small">power (⌀, min, max)</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="chargeSessionValue small">duration and date</span>
+			</div>
+		</li>
 		<template id="chargeSession">
 			<li class="chargeSession">
 				<div class="chargeSessionDougnut">
@@ -77,12 +94,21 @@
 	<script src="js/DoughnutValue.js"></script>
 	<script src="js/AnimatedValue.js"></script>
 	<script>
+		let dateLocaleSetting = "de-DE";
 		function createChargeSession(data){
 			let cS = document.querySelector("#chargeSession").content.firstElementChild.cloneNode(true);
 			let chargeSessions = document.querySelector("#chargeSessions");
 		
 			cS.querySelector("#duration").textContent = Math.floor(data.duration / 3600)+":"+String(Math.round(data.duration % 3600 / 60)).padStart(2, '0')+"h";
-			cS.querySelector("#date").textContent = (new Date(data.startTime)).toLocaleString("de-DE", {
+			const timeOpts = {
+				hour: '2-digit',
+				minute: '2-digit'
+			};
+			cS.querySelector("#time").textContent = 
+				(new Date(data.startTime)).toLocaleString(dateLocaleSetting, timeOpts)+" - "+
+				(new Date(data.endTime)).toLocaleString(dateLocaleSetting, timeOpts)
+			;
+			cS.querySelector("#date").textContent = (new Date(data.startTime)).toLocaleString(dateLocaleSetting, {
 				day: '2-digit',
 				month: '2-digit',
 				year: '2-digit'
@@ -99,6 +125,7 @@
 		createChargeSession({
 			duration: 17280,
 			startTime: "2021-03-06T16:49:48+00:00",
+			endTime: "2021-03-06T19:49:48+00:00",
 			avgChargePower: 10.4,
 			minChargePower: 8.5,
 			maxChargePower: 10.5,
