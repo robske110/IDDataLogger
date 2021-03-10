@@ -50,7 +50,7 @@ services:
       FORCE_ALLOW_HTTP: "true"
     restart: always
     ports:
-      - "9000:80"
+      - "${IDDATALOGGER_WEB_PORT}:80"
 
 volumes:
   persistent_data_db:
