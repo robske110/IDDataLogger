@@ -48,7 +48,8 @@ spl_autoload_register(function ($class){
 				<canvas id="chargingTimeRemaining"></canvas>
 			</div>
 		</div>
-		<div class="row" id="timetravelrow">
+		<div class="row">
+			<div id="carUpdate"></div>
 			<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
 			<button id="timetravelclear" onclick="timetravelPicker.clear();">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">

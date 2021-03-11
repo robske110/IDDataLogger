@@ -6,6 +6,7 @@ function carGraphAspectRatio(){
 window.addEventListener('resize', carGraphAspectRatio);
 carGraphAspectRatio();
 
+const dateLocaleSetting = "de-DE";
 flatpickr.localize(flatpickr.l10ns.de);
 let timetravelPicker = flatpickr("#timetravel", {dateFormat: "d.m.Y H:i", onChange: timetravelUser, enableTime: true, time_24hr: true});
 flatpickr("#graphDateRange", {mode: "range", dateFormat: "d.m.Y", onChange: carGraphRangeUser});
@@ -83,6 +84,14 @@ function processCarStatus(carStatus){
 	soc.targetSOC = carStatus.targetSOC;
 	soc.update();
 	
+	const carStatusTime = new Date(carStatus.time);
+	document.getElementById("carUpdate").textContent = carStatusTime.toLocaleString(dateLocaleSetting, {
+		day: '2-digit',
+		month: '2-digit'
+	}) + " " + carStatusTime.toLocaleString(dateLocaleSetting, {
+		hour: '2-digit',
+		minute: '2-digit'
+	});
 	let now;
 	if(timetravel){
 		now = Date.parse(carStatus.time);

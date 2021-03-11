@@ -24,8 +24,13 @@ body{
 	justify-content: center;
 	align-items: center;
 }
-#timetravelrow{
-	justify-content: flex-end;
+#timetravel{
+  margin-left: auto;
+}
+#carUpdate{
+  width: auto;
+  flex-grow: 0;
+  color: #555;
 }
 .bigvalue{
 	font-size: 5vw;
