@@ -43,3 +43,9 @@ body{
 .heat{
 	color: red;
 }
+#versionInfo{
+  position: fixed;
+  left: 10px;
+  bottom: 5px;
+  color: #222;
+}
