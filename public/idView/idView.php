@@ -96,7 +96,7 @@ spl_autoload_register(function ($class){
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
-	<div id="versionInfo">v0.0.4</div>
+	<div id="versionInfo">v0.0.4-InDev</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>
