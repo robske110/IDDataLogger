@@ -30,7 +30,7 @@ Should you have any remaining questions or issues please see [getting help](http
 #### Overview of the setup process
 
 Looking at the automated install script for debian [install.sh](docs/install.sh) alongside the following instructions
-might be helpful.
+might be helpful. (Instructions for using it can be found [here](docs/beginnerguide.md#installing-using-the-install-script))
 
 Clone this repository.
    
