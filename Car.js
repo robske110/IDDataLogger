@@ -14,7 +14,7 @@ const exampleData = false
 
 const socThreshold = 95 //not implemented
 
-// WIDGET VERSION: v0.0.3-InDev
+// WIDGET VERSION: v0.0.4-InDev
 
 // Created by robske_110 24.01.2020
 // This script is orginally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
@@ -181,7 +181,7 @@ async function createWidget() {
 		let finishTime = ""
 		if(dataTimestamp != null){
 			realRemainChgTime -= (Date.now() - dataTimestamp.getTime()) / 60000;
-			finishTime = " ("+dF.string(new Date(dataTimestamp.getTime() + realRemainChgTime))+")";
+			finishTime = " ("+dF.string(new Date(dataTimestamp.getTime() + realRemainChgTime * 60000))+")";
 		}
 		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(Math.round(realRemainChgTime % 60)).padStart(2, '0') + "h"
 		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr + (showFinishTime ? finishTime : ""))
