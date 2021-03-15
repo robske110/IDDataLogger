@@ -15,7 +15,8 @@ Clone this repository and change into the docker subdirectory.
 
 `git clone https://github.com/robske110/IDDataLogger.git --recursive && cd ./IDDataLogger/docker`
 
-Create a .env file in this directory (using .env.example as a basis).
+Create a .env file in the docker directory (using .env.example of the docker directory as a basis).
+Make sure to be in the docker subdirectory! The .env file in the root directory IS NOT USED in the docker installation!
 
 You need to set at least
 `IDDATALOGGER_USERNAME`,
