@@ -7,7 +7,7 @@ use DateTime;
 use robske_110\utils\Logger;
 
 class ChargeSession{
-	public int $duration; //sec
+	public int $chargeDuration; //sec
 	public float $avgChargePower;
 	public float $maxChargePower = 0;
 	public float $minChargePower = PHP_INT_MAX;
@@ -18,24 +18,55 @@ class ChargeSession{
 	public int $socStart;
 	public int $socEnd;
 	
+	public DateTime $chargeStartTime;
+	public DateTime $chargeEndTime;
 	public DateTime $startTime;
 	public DateTime $endTime;
 	
-	public function __construct(DateTime $chargeStartTime){
-		$this->startTime = $chargeStartTime;
-	}
-	
-	public function setEndTime(DateTime $endTime){
+	private function setEndTime(DateTime $endTime){
 		$this->endTime = $endTime;
-		$this->duration = $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
+		$this->chargeDuration = $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
 	}
 	
 	private int $entryCount = 0;
 	private float $chargePowerAccum = 0;
 	private float $lastChargePower;
 	private int $lastTime;
+	private string $lastChargeState = "";
 	
-	public function processEntry(array $entry){
+	/**
+	 * @param array $entry
+	 *
+	 * @return bool Whether this charge session is finished
+	 */
+	public function processEntry(array $entry): bool{
+		if(!isset($this->startTime)){
+			$this->startTime = new DateTime($entry["time"]);
+		}
+		
+		if(!isset($this->chargeStartTime)){
+			if($entry["chargestate"] == "charging"){
+				Logger::log("Started charging session at " . $entry["time"]);
+				$this->chargeStartTime = new DateTime($entry["time"]);
+			}else{
+				return false;
+			}
+		}
+		if($entry["chargestate"] == "readyForCharging" && $this->lastChargeState != "readyForCharging"){
+			Logger::log("Ended session at ".$entry["time"]);
+			Logger::debug("lCS".$this->lastChargeState." cs:".$entry["chargestate"]);
+			$this->setEndTime(new DateTime($entry["time"]));
+		}
+		
+		if($entry["plugconnectionstate"] == "disconnected"){
+			Logger::notice("Unplugged car at ".$entry["time"]);
+			$this->endTime = new DateTime($entry["time"]);
+		}
+		
+		if(isset($this->endTime)){
+			return true;
+		}
+		
 		++$this->entryCount;
 		if(!isset($this->rangeStart)){
 			$this->rangeStart = (int) $entry["remainingrange"];
@@ -56,7 +87,7 @@ class ChargeSession{
 		
 		if($entry["chargepower"] == 0){
 			Logger::critical($entry["time"].":".$entry["chargepower"]."kW");
-			return;
+			return false;
 		}
 		$this->maxChargePower = max($this->maxChargePower, (float) $entry["chargepower"]);
 		$this->minChargePower = min($this->minChargePower, (float) $entry["chargepower"]);
@@ -65,6 +96,7 @@ class ChargeSession{
 		
 		$this->avgChargePower = $this->chargePowerAccum / $this->entryCount;
 		$this->avgChargeKMR = $this->chargeKMRaccum / $this->entryCount;
+		return false;
 	}
 	
 	private float $chargeKMRaccum = 0;
@@ -73,7 +105,7 @@ class ChargeSession{
 	public float $minChargeKMR = PHP_INT_MAX;
 	
 	public function niceOut(){
-		Logger::log("range: start: ".$this->rangeStart."km end: ".$this->rangeEnd."km duration: ".round($this->duration/3600, 1)."h".PHP_EOL.
+		Logger::log("range: start: ".$this->rangeStart."km end: ".$this->rangeEnd."km duration: ".round($this->chargeDuration/3600, 1)."h".PHP_EOL.
 			"SOC: start: ".$this->socStart."% end: ".$this->socEnd."% target: ".$this->targetSOC."% chargeEnergy:".round($this->integralChargeEnergy / 3600, 2)."kWh cE_soc_calc".(58*($this->socEnd-$this->socStart))."kWh*100".PHP_EOL.
 			"POWER: avg: ".round($this->avgChargePower, 1)."kW / ".round($this->avgChargeKMR, 1)." min: ".$this->minChargePower."kW max: ".$this->maxChargePower."kW");
 		Logger::log("avgChgKMR/avgChgPower:".round($this->avgChargePower/$this->avgChargeKMR, 2)." start".round($this->rangeStart/$this->socStart, 1)." end".round($this->rangeEnd/$this->socEnd, 1));
