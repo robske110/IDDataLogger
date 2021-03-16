@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use robske_110\utils\Logger;
+use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\chargesession\ChargeSessionHandler;
 use robske_110\vwid\wizard\SetupWizard;
 
@@ -29,6 +30,7 @@ class Main{
 			$this->config["db"]["user"], $this->config["db"]["password"] ?? null,
 			$this->config["db"]["driver"] ?? "pgsql"
 		);
+		QueryCreationHelper::initDefaults($this->config["db"]["driver"] ?? "pgsql");
 		
 		$didWizard = false;
 		if(strtolower($this->db->query(
