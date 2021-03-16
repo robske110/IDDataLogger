@@ -41,14 +41,24 @@ CREATE TABLE IF NOT EXISTS carPictures (
 );
 
 CREATE TABLE IF NOT EXISTS chargingSessions (
-  sessionid      serial NOT NULL PRIMARY KEY,
-  duration       integer,
-  avgChargePower decimal(4, 1),
-  maxChargePower decimal(4, 1),
-  minChargePower decimal(4, 1),
-  chargeEnergy   float4,
-  rangeGain      smallint,
-  targetSOC      smallint,
-  socStart       decimal(3, 0),
-  socEnd         decimal(3, 0)
+  sessionid       serial NOT NULL PRIMARY KEY,
+  startTime       TIMESTAMP NOT NULL,
+  endTime         TIMESTAMP,
+  chargeStartTime TIMESTAMP,
+  chargeEndTime   TIMESTAMP,
+  duration        integer,
+  avgChargePower  decimal(4, 1),
+  maxChargePower  decimal(4, 1),
+  minChargePower  decimal(4, 1),
+  chargeEnergy    float4,
+  rangeStart      smallint,
+  rangeEnd        smallint,
+  targetSOC       smallint,
+  socStart        decimal(3, 0),
+  socEnd          decimal(3, 0)
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+    key   varchar(128) NOT NULL PRIMARY KEY,
+    value text
+)

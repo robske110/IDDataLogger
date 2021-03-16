@@ -24,8 +24,8 @@ class ChargeSession{
 	public DateTime $endTime;
 	
 	private function setEndTime(DateTime $endTime){
-		$this->endTime = $endTime;
-		$this->chargeDuration = $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
+		$this->chargeEndTime = $endTime;
+		$this->chargeDuration = $this->chargeEndTime->getTimestamp() - $this->chargeStartTime->getTimestamp();
 	}
 	
 	private int $entryCount = 0;
