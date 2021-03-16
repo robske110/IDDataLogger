@@ -46,11 +46,15 @@ class ChargeSessionHandler{
 	}
 	
 	public function processCarStatus(array $carStatus){
+		foreach($carStatus as $key => $value){
+			$carStatus[strtolower($key)] = $value;
+			unset($carStatus[$key]);
+		}
 		if($this->chargeSession === null && $carStatus["plugconnectionstate"] == "connected"){
 			Logger::notice("Plugged car in at ".$carStatus["time"]);
 			$this->chargeSession = new ChargeSession();
 		}
-		Logger::debug($carStatus["time"].":".$carStatus."chargestate"]);
+		Logger::debug($carStatus["time"].":".$carStatus["chargestate"]);
 		if($this->chargeSession !== null){
 			if($this->chargeSession->processEntry($carStatus)){
 				$this->chargeSession->niceOut();
@@ -70,10 +74,10 @@ class ChargeSessionHandler{
 	
 	private function writeChargeSession(){
 		$this->chargeSessionWrite->execute([
-			$this->chargeSession->startTime,
-			$this->chargeSession->endTime,
-			$this->chargeSession->chargeStartTime,
-			$this->chargeSession->chargeEndTime,
+			$this->chargeSession->startTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->endTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->chargeStartTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->chargeEndTime->format('Y\-m\-d\TH\:i\:s'),
 			$this->chargeSession->chargeDuration,
 			$this->chargeSession->avgChargePower,
 			$this->chargeSession->maxChargePower,
