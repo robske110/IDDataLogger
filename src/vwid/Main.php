@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use robske_110\utils\Logger;
+use robske_110\vwid\chargesession\ChargeSessionHandler;
 use robske_110\vwid\wizard\SetupWizard;
 
 class Main{
@@ -15,6 +16,7 @@ class Main{
 	
 	private CarStatusFetcher $carStatusFetcher;
 	private CarStatusWriter $carStatusWriter;
+	private ChargeSessionHandler $chargeSessionHandler;
 	
 	public function __construct(){
 		Logger::log("Reading config...");
@@ -52,6 +54,7 @@ class Main{
 		
 		$this->carStatusFetcher = new CarStatusFetcher($this);
 		$this->carStatusWriter = new CarStatusWriter($this);
+		$this->chargeSessionHandler = new ChargeSessionHandler($this->db);
 	}
 	
 	public function getDB(){
@@ -60,6 +63,7 @@ class Main{
 	
 	public function pushCarStatus(array $carStatusData){
 		$this->carStatusWriter->writeCarStatus($carStatusData);
+		$this->chargeSessionHandler->processCarStatus($carStatusData);
 	}
 	
 	public function getCarStatusWriter(): CarStatusWriter{

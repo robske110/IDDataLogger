@@ -46,7 +46,7 @@ class ChargeSession{
 		
 		if(!isset($this->chargeStartTime)){
 			if($entry["chargestate"] == "charging"){
-				Logger::log("Started charging session at " . $entry["time"]);
+				Logger::log("Started charging session at ".$entry["time"]);
 				$this->chargeStartTime = new DateTime($entry["time"]);
 			}else{
 				return false;

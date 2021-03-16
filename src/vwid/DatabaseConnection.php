@@ -51,7 +51,7 @@ class DatabaseConnection{
 		}catch(PDOException $e){
 			throw $this->handlePDOexception($e, "Query ".$sql." failed");
 		}
-		return $res->fetchAll();
+		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 	
 	public function prepare(string $sql): PDOStatement{
