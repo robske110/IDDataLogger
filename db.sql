@@ -41,8 +41,8 @@ CREATE TABLE IF NOT EXISTS carPictures (
 );
 
 CREATE TABLE IF NOT EXISTS chargingSessions (
-  sessionid       serial NOT NULL PRIMARY KEY,
-  startTime       TIMESTAMP NOT NULL,
+  sessionid       serial UNIQUE NOT NULL,
+  startTime       TIMESTAMP NOT NULL PRIMARY KEY,
   endTime         TIMESTAMP,
   chargeStartTime TIMESTAMP,
   chargeEndTime   TIMESTAMP,

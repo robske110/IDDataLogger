@@ -3,19 +3,41 @@ declare(strict_types=1);
 
 namespace robske_110\vwid\chargesession;
 
+use PDOStatement;
 use robske_110\utils\Logger;
+use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\DatabaseConnection;
 
 class ChargeSessionHandler{
 	private DatabaseConnection $db;
-	private ChargeSession $chargeSession;
+	private ?ChargeSession $chargeSession = null;
+	
+	private PDOStatement $chargeSessionWrite;
+	const DB_FIELDS = [
+		"startTime",
+		"endTime",
+		"chargeStartTime",
+		"chargeEndTime",
+		"duration",
+		"avgChargePower",
+		"maxChargePower",
+		"minChargePower",
+		"chargeEnergy",
+		"rangeStart",
+		"rangeEnd",
+		"targetSOC",
+		"socStart",
+        "socEnd"
+	];
 	
 	public function __construct(DatabaseConnection $db){
 		$this->db = $db;
 		
-		// prepare insert query
+		$query = QueryCreationHelper::createInsert("chargingSessions", self::DB_FIELDS);
+		Logger::debug("Preparing query ".$query."...");
+		$this->chargeSessionWrite = $db->prepare($query);
 		
-		$res = $db->query("SELECT startTime, endTime FROM chargingSessions WHERE endTime != NULL ORDER BY startTime DESC LIMIT 1");
+		$res = $db->query("SELECT startTime, endTime FROM chargingSessions WHERE endTime IS NOT NULL ORDER BY startTime DESC LIMIT 1");
 		
 		if(empty($res)){
 			Logger::notice("Building past charge sessions...");
@@ -26,12 +48,12 @@ class ChargeSessionHandler{
 	public function processCarStatus(array $carStatus){
 		if($this->chargeSession === null && $carStatus["plugconnectionstate"] == "connected"){
 			Logger::notice("Plugged car in at ".$carStatus["time"]);
-			$chargeSession = new ChargeSession();
+			$this->chargeSession = new ChargeSession();
 		}
-		Logger::debug($carStatus["time"].":".$entry["chargestate"]);
+		Logger::debug($carStatus["time"].":".$carStatus."chargestate"]);
 		if($this->chargeSession !== null){
 			if($this->chargeSession->processEntry($carStatus)){
-				$chargeSession->niceOut();
+				$this->chargeSession->niceOut();
 				$this->writeChargeSession();
 				$this->chargeSession = null;
 			}
@@ -47,6 +69,21 @@ class ChargeSessionHandler{
 	}
 	
 	private function writeChargeSession(){
-		// insert query
+		$this->chargeSessionWrite->execute([
+			$this->chargeSession->startTime,
+			$this->chargeSession->endTime,
+			$this->chargeSession->chargeStartTime,
+			$this->chargeSession->chargeEndTime,
+			$this->chargeSession->chargeDuration,
+			$this->chargeSession->avgChargePower,
+			$this->chargeSession->maxChargePower,
+			$this->chargeSession->minChargePower,
+			$this->chargeSession->integralChargeEnergy,
+			$this->chargeSession->rangeStart,
+			$this->chargeSession->rangeEnd,
+			$this->chargeSession->targetSOC,
+			$this->chargeSession->socStart,
+			$this->chargeSession->socEnd
+		]);
 	}
 }
