@@ -58,6 +58,10 @@ class Main{
 		return $this->db;
 	}
 	
+	public function pushCarStatus(array $carStatusData){
+		$this->carStatusWriter->writeCarStatus($carStatusData);
+	}
+	
 	public function getCarStatusWriter(): CarStatusWriter{
 		return $this->carStatusWriter;
 	}

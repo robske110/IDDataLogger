@@ -83,7 +83,7 @@ class CarStatusFetcher{
 			}else{
 				$this->currentUpdateRate = $this->main->config["increased-updaterate"] ?? 60;
 			}
-			$this->main->getCarStatusWriter()->writeCarStatus($this->carStatusData);
+			$this->main->pushCarStatus($this->carStatusData);
 		}
 	}
 	
