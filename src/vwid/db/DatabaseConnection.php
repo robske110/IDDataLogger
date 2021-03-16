@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace robske_110\vwid;
+namespace robske_110\vwid\db;
 
 use PDO;
 use PDOException;

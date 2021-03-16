@@ -6,6 +6,7 @@ namespace robske_110\vwid;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\chargesession\ChargeSessionHandler;
+use robske_110\vwid\db\DatabaseConnection;
 use robske_110\vwid\wizard\SetupWizard;
 
 class Main{

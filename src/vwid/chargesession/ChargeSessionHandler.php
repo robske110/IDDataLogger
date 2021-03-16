@@ -6,7 +6,7 @@ namespace robske_110\vwid\chargesession;
 use PDOStatement;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
-use robske_110\vwid\DatabaseConnection;
+use robske_110\vwid\db\DatabaseConnection;
 
 class ChargeSessionHandler{
 	private DatabaseConnection $db;
