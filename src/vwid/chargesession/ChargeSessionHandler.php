@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace robske_110\vwid\chargesession;
 
+use DateTime;
+use DateTimeZone;
 use PDOStatement;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
@@ -37,14 +39,12 @@ class ChargeSessionHandler{
 		Logger::debug("Preparing query ".$query."...");
 		$this->chargeSessionWrite = $db->prepare($query);
 		
-		$res = $db->query("SELECT startTime, endTime FROM chargingSessions WHERE endTime IS NOT NULL ORDER BY startTime DESC LIMIT 1");
+		$res = $db->query("SELECT starttime, endtime FROM chargingSessions WHERE endtime IS NOT NULL ORDER BY startTime DESC LIMIT 1");
 		
 		$db->query("DELETE FROM chargingSessions WHERE endTime IS NULL");
 		
-		if(empty($res)){
-			Logger::notice("Building past charge sessions...");
-			$this->buildAll();
-		}
+		Logger::log("Building past charge sessions from ".($res[0]["endtime"] ?? "beginning of data logging")."...");
+		$this->buildAll(new DateTime($res[0]["endtime"] ?? "@0", new DateTimeZone("UTC")));
 	}
 	
 	public function processCarStatus(array $carStatus, bool $alwaysWrite = true){
@@ -71,8 +71,9 @@ class ChargeSessionHandler{
 		}
 	}
 	
-	public function buildAll(){
-		$res = $this->db->query("SELECT time, batterysoc, remainingrange, chargestate, chargepower, chargeratekmph, targetsoc, plugconnectionstate FROM carStatus ORDER BY time ASC");
+	public function buildAll(?DateTime $from = null){
+		$from = " WHERE time > '".$from->format("Y-m-d\TH:i:s")."'";
+		$res = $this->db->query("SELECT time, batterysoc, remainingrange, chargestate, chargepower, chargeratekmph, targetsoc, plugconnectionstate FROM carStatus ".$from." ORDER BY time ASC");
 		
 		foreach($res as $entry){
 			$this->processCarStatus($entry, false);
