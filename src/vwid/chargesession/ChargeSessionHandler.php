@@ -87,9 +87,9 @@ class ChargeSessionHandler{
 	private function writeChargeSession(){
 		$this->chargeSessionWrite->execute([
 			$this->chargeSession->startTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession?->endTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession?->chargeStartTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession?->chargeEndTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->endTime?->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->chargeStartTime?->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession->chargeEndTime?->format('Y\-m\-d\TH\:i\:s'),
 			$this->chargeSession->chargeDuration,
 			$this->chargeSession->avgChargePower,
 			$this->chargeSession->maxChargePower,

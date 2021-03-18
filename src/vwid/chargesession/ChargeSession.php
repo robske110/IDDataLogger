@@ -10,7 +10,7 @@ class ChargeSession{
 	public int $chargeDuration = 0; //sec
 	public float $avgChargePower = 0;
 	public float $maxChargePower = 0;
-	public float $minChargePower = PHP_INT_MAX;
+	public ?float $minChargePower = null;
 	public float $integralChargeEnergy = 0; //kWs
 	public int $rangeStart;
 	public int $rangeEnd;
@@ -43,6 +43,14 @@ class ChargeSession{
 		if(!isset($this->startTime)){
 			$this->startTime = new DateTime($entry["time"]);
 		}
+		
+		if(!isset($this->rangeStart)){
+			$this->rangeStart = (int) $entry["remainingrange"];
+		}
+		if(!isset($this->socStart)){
+			$this->socStart = (int) $entry["batterysoc"];
+		}
+		
 		$this->rangeEnd = (int) $entry["remainingrange"];
 		$this->socEnd = (int) $entry["batterysoc"];
 		$this->targetSOC = (int) $entry["targetsoc"];
@@ -70,13 +78,6 @@ class ChargeSession{
 		}
 		
 		++$this->entryCount;
-		if(!isset($this->rangeStart)){
-			$this->rangeStart = (int) $entry["remainingrange"];
-		}
-		
-		if(!isset($this->socStart)){
-			$this->socStart = (int) $entry["batterysoc"];
-		}
 		
 		$currTime = (new DateTime($entry["time"]))->getTimestamp();
 		if(isset($this->lastTime)){
@@ -90,7 +91,7 @@ class ChargeSession{
 			return false;
 		}
 		$this->maxChargePower = max($this->maxChargePower, (float) $entry["chargepower"]);
-		$this->minChargePower = min($this->minChargePower, (float) $entry["chargepower"]);
+		$this->minChargePower = min($this->minChargePower ?? PHP_INT_MAX, (float) $entry["chargepower"]);
 		$this->chargePowerAccum += $entry["chargepower"];
 		$this->chargeKMRaccum += $entry["chargeratekmph"];
 		
