@@ -45,7 +45,7 @@ class ChargeSessionHandler{
 		}
 	}
 	
-	public function processCarStatus(array $carStatus){
+	public function processCarStatus(array $carStatus, bool $alwaysWrite = true){
 		foreach($carStatus as $key => $value){
 			if(strtolower($key) !== $key){
 				$carStatus[strtolower($key)] = $value;
@@ -63,6 +63,8 @@ class ChargeSessionHandler{
 				$this->chargeSession->niceOut();
 				$this->writeChargeSession();
 				$this->chargeSession = null;
+			}elseif($alwaysWrite){
+				$this->writeChargeSession();
 			}
 		}
 	}
@@ -71,16 +73,20 @@ class ChargeSessionHandler{
 		$res = $this->db->query("SELECT time, batterysoc, remainingrange, chargestate, chargepower, chargeratekmph, targetsoc, plugconnectionstate FROM carStatus ORDER BY time ASC");
 		
 		foreach($res as $entry){
-			$this->processCarStatus($entry);
+			$this->processCarStatus($entry, false);
+		}
+		
+		if($this->chargeSession !== null){
+			Logger::debug("Continuing charging session!");
 		}
 	}
 	
 	private function writeChargeSession(){
 		$this->chargeSessionWrite->execute([
 			$this->chargeSession->startTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession->endTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession->chargeStartTime->format('Y\-m\-d\TH\:i\:s'),
-			$this->chargeSession->chargeEndTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession?->endTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession?->chargeStartTime->format('Y\-m\-d\TH\:i\:s'),
+			$this->chargeSession?->chargeEndTime->format('Y\-m\-d\TH\:i\:s'),
 			$this->chargeSession->chargeDuration,
 			$this->chargeSession->avgChargePower,
 			$this->chargeSession->maxChargePower,

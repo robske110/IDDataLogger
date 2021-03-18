@@ -7,8 +7,8 @@ use DateTime;
 use robske_110\utils\Logger;
 
 class ChargeSession{
-	public int $chargeDuration; //sec
-	public float $avgChargePower;
+	public int $chargeDuration = 0; //sec
+	public float $avgChargePower = 0;
 	public float $maxChargePower = 0;
 	public float $minChargePower = PHP_INT_MAX;
 	public float $integralChargeEnergy = 0; //kWs
@@ -18,12 +18,12 @@ class ChargeSession{
 	public int $socStart;
 	public int $socEnd;
 	
-	public DateTime $chargeStartTime;
-	public DateTime $chargeEndTime;
+	public ?DateTime $chargeStartTime = null;
+	public ?DateTime $chargeEndTime = null;
 	public DateTime $startTime;
-	public DateTime $endTime;
+	public ?DateTime $endTime = null;
 	
-	private function setEndTime(DateTime $endTime){
+	private function setChargeEndTime(DateTime $endTime){
 		$this->chargeEndTime = $endTime;
 		$this->chargeDuration = $this->chargeEndTime->getTimestamp() - $this->chargeStartTime->getTimestamp();
 	}
@@ -43,8 +43,11 @@ class ChargeSession{
 		if(!isset($this->startTime)){
 			$this->startTime = new DateTime($entry["time"]);
 		}
+		$this->rangeEnd = (int) $entry["remainingrange"];
+		$this->socEnd = (int) $entry["batterysoc"];
+		$this->targetSOC = (int) $entry["targetsoc"];
 		
-		if(!isset($this->chargeStartTime)){
+		if($this->chargeStartTime === null){
 			if($entry["chargestate"] == "charging"){
 				Logger::log("Started charging session at ".$entry["time"]);
 				$this->chargeStartTime = new DateTime($entry["time"]);
@@ -55,7 +58,7 @@ class ChargeSession{
 		if($entry["chargestate"] == "readyForCharging" && $this->lastChargeState != "readyForCharging"){
 			Logger::log("Ended session at ".$entry["time"]);
 			Logger::debug("lCS".$this->lastChargeState." cs:".$entry["chargestate"]);
-			$this->setEndTime(new DateTime($entry["time"]));
+			$this->setChargeEndTime(new DateTime($entry["time"]));
 		}
 		
 		if($entry["plugconnectionstate"] == "disconnected"){
@@ -63,7 +66,7 @@ class ChargeSession{
 			$this->endTime = new DateTime($entry["time"]);
 		}
 		
-		if(isset($this->endTime)){
+		if($this->endTime !== null){
 			return true;
 		}
 		
@@ -71,12 +74,10 @@ class ChargeSession{
 		if(!isset($this->rangeStart)){
 			$this->rangeStart = (int) $entry["remainingrange"];
 		}
-		$this->rangeEnd = (int) $entry["remainingrange"];
+		
 		if(!isset($this->socStart)){
 			$this->socStart = (int) $entry["batterysoc"];
 		}
-		$this->socEnd = (int) $entry["batterysoc"];
-		$this->targetSOC = (int) $entry["targetsoc"];
 		
 		$currTime = (new DateTime($entry["time"]))->getTimestamp();
 		if(isset($this->lastTime)){
