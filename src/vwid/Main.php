@@ -73,6 +73,9 @@ class Main{
 	
 	public function pushCarStatus(array $carStatusData){
 		$this->carStatusWriter->writeCarStatus($carStatusData);
+	}
+	
+	public function pushWrittenCarStatus(array $carStatusData){
 		$this->chargeSessionHandler->processCarStatus($carStatusData);
 	}
 	

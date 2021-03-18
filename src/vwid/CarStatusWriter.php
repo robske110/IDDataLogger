@@ -116,6 +116,14 @@ class CarStatusWriter{
 			$this->initQuery();
 			return false;
 		}
+		$written = [];
+		$pos = 0;
+		$written["time"] = $data[$pos++];
+		foreach(self::DB_FIELDS as $dbField){
+			$written[$dbField] = $data[$pos++];
+		}
+		$this->main->pushWrittenCarStatus($written);
+		
 		$this->lastWrittenCarStatus = $data;
 		return true;
 	}

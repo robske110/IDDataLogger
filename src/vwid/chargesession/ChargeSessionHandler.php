@@ -47,9 +47,12 @@ class ChargeSessionHandler{
 	
 	public function processCarStatus(array $carStatus){
 		foreach($carStatus as $key => $value){
-			$carStatus[strtolower($key)] = $value;
-			unset($carStatus[$key]);
+			if(strtolower($key) !== $key){
+				$carStatus[strtolower($key)] = $value;
+				unset($carStatus[$key]);
+			}
 		}
+		
 		if($this->chargeSession === null && $carStatus["plugconnectionstate"] == "connected"){
 			Logger::notice("Plugged car in at ".$carStatus["time"]);
 			$this->chargeSession = new ChargeSession();
