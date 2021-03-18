@@ -56,10 +56,10 @@ class ChargeSessionHandler{
 		}
 		
 		if($this->chargeSession === null && $carStatus["plugconnectionstate"] == "connected"){
-			Logger::notice("Plugged car in at ".$carStatus["time"]);
+			Logger::log("Plugged car in at ".$carStatus["time"]);
 			$this->chargeSession = new ChargeSession();
 		}
-		Logger::debug($carStatus["time"].":".$carStatus["chargestate"]);
+		Logger::debug($carStatus["time"].": ".$carStatus["chargestate"]);
 		if($this->chargeSession !== null){
 			if($this->chargeSession->processEntry($carStatus)){
 				$this->chargeSession->niceOut();

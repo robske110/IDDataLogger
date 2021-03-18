@@ -49,23 +49,22 @@ class ChargeSession{
 		
 		if($this->chargeStartTime === null){
 			if($entry["chargestate"] == "charging"){
-				Logger::log("Started charging session at ".$entry["time"]);
+				Logger::log("Started charging at ".$entry["time"]);
 				$this->chargeStartTime = new DateTime($entry["time"]);
 			}else{
 				return false;
 			}
 		}
 		if($entry["chargestate"] == "readyForCharging" && $this->lastChargeState != "readyForCharging"){
-			Logger::log("Ended session at ".$entry["time"]);
+			Logger::log("Ended charging at ".$entry["time"]);
 			Logger::debug("lCS".$this->lastChargeState." cs:".$entry["chargestate"]);
 			$this->setChargeEndTime(new DateTime($entry["time"]));
 		}
 		
 		if($entry["plugconnectionstate"] == "disconnected"){
-			Logger::notice("Unplugged car at ".$entry["time"]);
+			Logger::log("Unplugged car at ".$entry["time"]);
 			$this->endTime = new DateTime($entry["time"]);
 		}
-		
 		if($this->endTime !== null){
 			return true;
 		}
@@ -87,7 +86,7 @@ class ChargeSession{
 		$this->lastChargePower = (float) $entry["chargepower"];
 		
 		if($entry["chargepower"] == 0){
-			Logger::critical($entry["time"].":".$entry["chargepower"]."kW");
+			Logger::debug("Charging at ".$entry["time"]." with 0kW!");
 			return false;
 		}
 		$this->maxChargePower = max($this->maxChargePower, (float) $entry["chargepower"]);
