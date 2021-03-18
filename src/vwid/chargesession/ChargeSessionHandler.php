@@ -39,6 +39,8 @@ class ChargeSessionHandler{
 		
 		$res = $db->query("SELECT startTime, endTime FROM chargingSessions WHERE endTime IS NOT NULL ORDER BY startTime DESC LIMIT 1");
 		
+		$db->query("DELETE FROM chargingSessions WHERE endTime IS NULL");
+		
 		if(empty($res)){
 			Logger::notice("Building past charge sessions...");
 			$this->buildAll();
