@@ -8,8 +8,8 @@ use robske_110\utils\Logger;
 
 class ChargeSession{
 	public int $chargeDuration = 0; //sec
-	public float $avgChargePower = 0;
-	public float $maxChargePower = 0;
+	public ?float $avgChargePower = null;
+	public ?float $maxChargePower = null;
 	public ?float $minChargePower = null;
 	public float $integralChargeEnergy = 0; //kWs
 	public int $rangeStart;
@@ -90,7 +90,7 @@ class ChargeSession{
 			Logger::debug("Charging at ".$entry["time"]." with 0kW!");
 			return false;
 		}
-		$this->maxChargePower = max($this->maxChargePower, (float) $entry["chargepower"]);
+		$this->maxChargePower = max($this->maxChargePower ?? 0, (float) $entry["chargepower"]);
 		$this->minChargePower = min($this->minChargePower ?? PHP_INT_MAX, (float) $entry["chargepower"]);
 		$this->chargePowerAccum += $entry["chargepower"];
 		$this->chargeKMRaccum += $entry["chargeratekmph"];
