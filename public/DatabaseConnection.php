@@ -43,7 +43,7 @@ class DatabaseConnection{
 	
 	public function query(string $sql): array{
 		$res = $this->connection->query($sql);
-		return $res->fetchAll();
+		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 	
 	public function queryStatement(string $sql): PDOStatement{
