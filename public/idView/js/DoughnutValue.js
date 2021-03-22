@@ -204,7 +204,7 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 		this.chart.options.onHover = function(ev, objects){
 			if(objects.length > 0){
 				const index = objects[0]._index
-				this.displayStart = this.chart.data.labels[index] == this.legendName
+				this.displaySlice = index
 				this.update()
 			}
 		}.bind(this)
@@ -235,10 +235,14 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 	}
 	
 	getInnerDisplayValue(){
-		if(this.displayStart){
-			return this.value;
+		switch(this.displaySlice){
+			case 0:
+				return this.value;
+			case 1:
+				return this.end-this.value;
+			default:
+				return this.end
 		}
-		return this.end-this.value;
 	}
 	
 	generateData(){
