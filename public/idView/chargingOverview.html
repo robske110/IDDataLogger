@@ -115,25 +115,44 @@
 			});
 			cS.querySelector("#avgchargepower").textContent = data.avgChargePower+"kW";
 			cS.querySelector("#minMaxChargePower").textContent = data.minChargePower+"kW" + " | " + data.maxChargePower+"kW";
-			cS.querySelector("#kWh").textContent = data.integralChargeEnergy+"kWh";
+			cS.querySelector("#kWh").textContent = Math.round(data.chargeEnergy/360, 2)/10+"kWh";
 			cS.querySelector("#range").textContent = (data.rangeEnd - data.rangeStart)+"km";
 			
 			chargeSessions.appendChild(cS);
 			
 			new SOCchargeDoughnutValue(cS.querySelector("#chargesoc"), data.socStart, data.socEnd, "soc");
 		}
-		createChargeSession({
-			duration: 17280,
-			startTime: "2021-03-06T16:49:48+00:00",
-			endTime: "2021-03-06T19:49:48+00:00",
-			avgChargePower: 10.4,
-			minChargePower: 8.5,
-			maxChargePower: 10.5,
-			integralChargeEnergy: 48.59,
-			rangeStart: 27,
-			rangeEnd: 311,
-			socStart: 5,
-			socEnd: 90
-		});
+		
+		async function getJSON(link){
+			return (await fetch(link)).json();
+		}
+		
+		let beginTime = new Date();
+		beginTime.setDate(beginTime.getDate()-300);
+		beginTime.setHours(0,0,0,0);
+		let endTime = null;
+		
+		async function updateChargingSessions(){
+			console.log(beginTime);
+			const chargingSessions = await getJSON(
+				"../chargingSessions.php?beginTime="+Math.round(beginTime.getTime()/1000)+
+				(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000))
+			);
+			if(chargingSessions == undefined){
+				alert("failed to decode carGraphData JSON");
+				return;
+			}
+			processChargingSession(chargingSessions);
+		}
+
+		setInterval(updateChargingSessions, 60000);
+
+		function processChargingSession(chargingSessions){
+			for(const cid in chargingSessions){
+				createChargeSession(chargingSessions[cid]);
+			}
+		}
+		
+		updateChargingSessions();
 	</script>
 </body>
