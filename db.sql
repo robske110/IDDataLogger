@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS authKeys (
-    authKey text NOT NULL
+    authKey text UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS carPictures (
