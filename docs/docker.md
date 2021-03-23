@@ -50,4 +50,4 @@ certificates and HTTPS support.
 ### Updating
 
 To update the software at a later data execute `git pull && git submodule update` in the repository directory and
-rebuild the docker containers web and app. (`docker build web && docker build app`)
+rebuild the docker containers web and app. (`docker-compose build web && docker-compose build app`)
