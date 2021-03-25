@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace robske_110\vwid\wizard;
 
+use RuntimeException;
+
 class InteractiveWizard{
 	protected function readLine(): string{
 		return trim((string) fgets(STDIN));
@@ -13,20 +15,26 @@ class InteractiveWizard{
 	}
 	
 	protected function get(string $msg, ?string $default = null, array $options = []): ?string{
-		$msg = "> ".$msg;
+		$out = "> ".$msg;
 		
 		
 		if(!empty($options)){
-			$msg .= " (".implode(",", $options).")";
+			$out .= " (".implode(",", $options).")";
 		}
 		if($default !== null){
-			$msg .= "\n[".$default."]";
+			$out .= "\n[".$default."]";
 		}
-		$msg .= ": ";
+		$out .= ": ";
 		
-		echo $msg;
+		echo $out;
 		
 		$input = $this->readLine();
+		if(!empty($options) && $input !== ""){
+			if(!in_array($input, $options, true)){
+				$this->message("Please answer with one of the following options (case-sensitive!): ".implode(",", $options));
+				$this->get($msg, $default, $options);
+			}
+		}
 		
 		return $input === "" ? $default : $input;
 	}
