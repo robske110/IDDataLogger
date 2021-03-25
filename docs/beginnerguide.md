@@ -34,8 +34,8 @@ There is a one-line command which attempts to install this project automagically
 
 The install script works and is tested on raspbian and debian.
 It assumes you have a fresh OS, especially without any existing PostgreSQL or webserver installations.
-It is intended to be run as a normal user, do not run it under root! Make sure to have sudo installed and be allowed to
-run commands with it.
+
+*Note for debian:* Run the install script as a normal user, **do not run it under root**! Make sure to have sudo installed and be in sudoers!
 
 Enter (or copy) the following command to download and run the install script:
 

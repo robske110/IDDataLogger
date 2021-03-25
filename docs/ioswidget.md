@@ -9,7 +9,10 @@ The iOS widget is created using Scriptable App.
 4. If you own a mac airdrop this file to your iOS device and open it in Scriptable. 
    
    On other operating system you'll need to send the file to your iOS device in another way, for example by e-mail.
-3. Edit the file according to the instructions in [Changing settings in the script](#changing-settings-in-the-script)
+3. Edit the file *in scriptable* according to the instructions in [Changing settings in the script](#changing-settings-in-the-script)
+
+If you prefer to edit the settings on your PC you will need to edit [Car.js](../Car.js) and copy the contents of it in 
+scriptable.
 
 ### Changing settings in the script
 
