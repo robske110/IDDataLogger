@@ -14,7 +14,7 @@ const exampleData = false
 
 const socThreshold = 95 //not implemented
 
-// WIDGET VERSION: v0.0.4-InDev
+// WIDGET VERSION: v0.0.4
 
 // Created by robske_110 24.01.2020
 // This script is orginally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
