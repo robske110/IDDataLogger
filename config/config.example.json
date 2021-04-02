@@ -19,6 +19,7 @@
     "timezone": null,
     "logging": {
         "debug-enable": false,
+        "curl-verbose": false,
         "file-enable": false,
         "log-dir": null
     }

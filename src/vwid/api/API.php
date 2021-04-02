@@ -10,6 +10,12 @@ use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\webutils\CurlWrapper;
 
 class API extends CurlWrapper{
+	public static bool $VERBOSE = false;
+	
+	public function __construct(?bool $enableVerbose = null){
+		parent::__construct($enableVerbose ?? self::$VERBOSE);
+	}
+	
 	public function verifyAndDecodeResponse(string $response, string $apiEndpoint = "unknown"): array{
 		$httpCode = curl_getinfo($this->getCh(), CURLINFO_RESPONSE_CODE);
 		if($httpCode === 401){

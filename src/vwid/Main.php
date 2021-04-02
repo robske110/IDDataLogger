@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace robske_110\vwid;
 
 use robske_110\utils\Logger;
+use robske_110\vwid\api\API;
 use robske_110\vwid\wizard\SetupWizard;
 
 class Main{
@@ -47,6 +48,8 @@ class Main{
 		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "--wizard"){
 			new SetupWizard($this);
 		}
+		
+		API::$VERBOSE = $this->config["logging"]["curl-verbose"] ?? false;
 		
 		new CarPictureHandler($this);
 		
