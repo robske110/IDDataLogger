@@ -36,8 +36,9 @@ iddatalogger_app | Please enter this API key in the apiKey setting at the top of
 ```
 
 Further environment variables available are the same as defined in [config.md](docs/config.md). The environment variable
-names for the configuration options will be all UPPERCASE with hyphens and dots replaced by underscores.
-(For example `logging.debug-enable` becomes `LOGGING_DEBUG_ENABLE`)
+names for the configuration options will be all UPPERCASE with hyphens and dots replaced by underscores and prefixed
+with `IDDATALOGGER`.
+(For example `logging.debug-enable` becomes `IDDATALOGGER_LOGGING_DEBUG_ENABLE`)
 
 After creating the .env file the last command to execute is `docker compose up`.
 

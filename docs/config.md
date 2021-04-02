@@ -50,8 +50,9 @@ Note: For changes to the carpic settings to apply, delete data/carPic.png
 
 `logging.log-dir` The directory in which to store log files. Can be `null` for default directory (`program_directory/log`).
 
-Note: If you run config-wizard.sh with the `--use-env` option (default in docker) the ENV variable names will be the config names in uppercase,
-dots and hyphens are replaced by underscores. (For example `logging.log-dir` becomes `LOGGING_LOG_DIR`.)
+Note: If you run config-wizard.sh with the `--use-env` option (default in docker) the ENV variable names will be the
+config names in uppercase with dots and hyphens are replaced by underscores and the prefix IDDATALOGGER.
+(For example `logging.log-dir` becomes `IDDATALOGGER_LOGGING_LOG_DIR`.)
 
 ## .env file
 
