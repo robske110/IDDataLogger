@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\vwid\api\API;
 use robske_110\vwid\wizard\SetupWizard;
@@ -19,7 +20,13 @@ class Main{
 	
 	public function __construct(){
 		Logger::log("Reading config...");
-		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
+		try{
+			$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true, 512, JSON_THROW_ON_ERROR);
+		}catch(\JsonException $exception){
+			ErrorUtils::logException($exception);
+			Logger::warning("Unable to parse config.json! Most likely invalid format.");
+			forceShutdown();
+		}
 		Logger::addOutputFilter($this->config["password"]);
 		
 		Logger::log("Connecting to db...");

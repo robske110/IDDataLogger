@@ -71,7 +71,7 @@ class MobileAppAPI extends API{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			throw new IDLoginException("Unable to login. Check login information (password)! (Could not find location header.)");
+			throw new IDLoginException("Unable to login. Check login information (password)! See FAQ if issue persists. (Could not find location header)");
 		}
 		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");
