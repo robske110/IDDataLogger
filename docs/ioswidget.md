@@ -40,4 +40,5 @@ Further settings available are described in the following table:
 | showFinishTime    | set this to false if you want to hide the charge finish time and only display charge time remaining |
 | forceImageRefresh | set this to true after you've changed the carPicture (data/carPic.png) to force the widget to update it |
 | exampleData       | set this to true to force the widget to display example data and not to fetch from baseURL   |
-| socThreshold      | not implemented  |
+| timetravel        | set this to an unix timestamp (in seconds) if you want to display values as if the widget was last updated at that time. Mostly useful for debugging. |
+| socThreshold      | not implemented |

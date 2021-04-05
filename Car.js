@@ -12,14 +12,20 @@ const forceImageRefresh = false //set to true to refresh the image
 
 const exampleData = false
 
+const timetravel = null; //set to a unix timestamp to emulate the script being run at that time (seconds!)
+
 const socThreshold = 95 //not implemented
 
-// WIDGET VERSION: v0.0.4
+// WIDGET VERSION: v0.0.5-InDev
 
 // Created by robske_110 24.01.2020
-// This script is orginally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
+// This script is originally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
 
-const scriptRun = new Date()
+let scriptRun = new Date()
+if(timetravel !== null){
+	scriptRun = new Date(timetravel*1000);
+}
+
 
 // Translations
 const translations = {
@@ -180,7 +186,7 @@ async function createWidget() {
 		let realRemainChgTime = data.remainingChargingTime;
 		let finishTime = ""
 		if(dataTimestamp != null){
-			realRemainChgTime -= (Date.now() - dataTimestamp.getTime()) / 60000;
+			realRemainChgTime -= (scriptRun.getTime() - dataTimestamp.getTime()) / 60000;
 			finishTime = " ("+dF.string(new Date(dataTimestamp.getTime() + realRemainChgTime * 60000))+")";
 		}
 		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(Math.round(realRemainChgTime % 60)).padStart(2, '0') + "h"
@@ -266,6 +272,9 @@ async function getData() {
 
 async function getJSON(){
 	url = baseURL+"/carStatus.php?key="+apiKey
+	if(timetravel !== null){
+		url += "&at=@"+timetravel
+	}
 	req = new Request(url)
 	req.method = "GET"
 	apiResult = await req.loadString()
