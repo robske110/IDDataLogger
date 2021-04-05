@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
-use http\Exception\RuntimeException;
 use PDOException;
 use PDOStatement;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
+use RuntimeException;
 
 class CarStatusWriter{
 	const DB_FIELDS = [
