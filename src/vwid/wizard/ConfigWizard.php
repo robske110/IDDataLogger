@@ -35,6 +35,7 @@ class ConfigWizard extends InteractiveWizard{
 				return false;
 			}
 		}
+		$_ENV = getenv(); //For configurations where the $_ENV superglobal is disabled, manually populate it.
 		$config = $this->readEnv($config);
 		file_put_contents(BASE_DIR."config/config.json", json_encode($config, JSON_PRETTY_PRINT));
 		if(!$quiet) $this->message("Successfully created/updated config.json from the environment variables");
