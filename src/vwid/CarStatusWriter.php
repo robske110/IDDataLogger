@@ -10,7 +10,7 @@ use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
 use RuntimeException;
 
-class CarStatusWriter{
+class CarStatusWriter implements CarStatusUpdateReceiver{
 	const DB_FIELDS = [
 		"batterySOC",
 		"remainingRange",
@@ -37,14 +37,14 @@ class CarStatusWriter{
 		"rearWindowHeatingState"
 	];
 	
-	private Main $main;
+	private DatabaseConnection $db;
 	
 	private PDOStatement $carStatusWrite;
 	
 	private array $lastWrittenCarStatus = [];
 	
-	public function __construct(Main $main){
-		$this->main = $main;
+	public function __construct(DatabaseConnection $db){
+		$this->db = $db;
 		$this->initQuery();
 	}
 	
@@ -58,9 +58,13 @@ class CarStatusWriter{
 			$query .= "?, ";
 		}
 		$query .= "?) ";
-		$query .= QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "time", self::DB_FIELDS);
+		$query .= QueryCreationHelper::createUpsert($this->db->getDriver(), "time", self::DB_FIELDS);
 		Logger::debug("Preparing query ".$query."...");
-		$this->carStatusWrite = $this->main->getDB()->prepare($query);
+		$this->carStatusWrite = $this->db->prepare($query);
+	}
+	
+	public function carStatusUpdate(array $carStatusData){
+		$this->writeCarStatus($carStatusData);
 	}
 	
 	/**
@@ -112,7 +116,7 @@ class CarStatusWriter{
 		}catch(PDOException $e){
 			ErrorUtils::logException($e);
 			Logger::critical("Could not write to db, attempting reconnect...");
-			$this->main->getDB()->connect();
+			$this->db->connect();
 			$this->initQuery();
 			return false;
 		}

@@ -60,8 +60,8 @@ class Main{
 		
 		new CarPictureHandler($this->db, $this->config);
 		
-		$this->carStatusFetcher = new CarStatusFetcher($this);
-		$this->carStatusWriter = new CarStatusWriter($this);
+		$this->carStatusWriter = new CarStatusWriter($this->db);
+		$this->carStatusFetcher = new CarStatusFetcher($this->carStatusWriter, $this->config);
 	}
 	
 	public function getDB(){
