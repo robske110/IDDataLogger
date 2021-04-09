@@ -42,8 +42,23 @@ class CarPictureHandler{
 		$websiteAPI = new WebsiteAPI(new LoginInformation($config["username"], $config["password"]));
 		
 		$cars = $websiteAPI->apiGetAP("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars");
+		$vin = $cars[0]["vin"];
+		if(!empty($this->main->config["vin"])){
+			foreach($cars as $car){
+				if($car["vin"] === $this->main->config["vin"]){
+					$vin = $car["vin"];
+				}
+			}
+			if($vin !== $this->main->config["vin"]){
+				Logger::var_dump($cars, "cars");
+				Logger::warning(
+					"Could not find the vehicle with the specified vin ('".$this->main->config["vin"]
+					."')! Will fetch image for default car, please check config and try again by deleting data/carPic.png!"
+				);
+			}
+		}
 		foreach($websiteAPI->apiGetAP(
-			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$cars[0]["vin"]
+			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$vin
 		)["images"] as $image){
 			if(
 				$image["viewDirection"] == ($config["carpic"]["viewDirection"] ?? "front") &&
