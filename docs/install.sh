@@ -1,6 +1,11 @@
 #!/bin/bash
 #Install script for clean debian-based systems.
 
+if [ "${EUID:-$(id -u)}" -eq 0 ]; then
+  echo "This install script is not to be run as root or with sudo."
+  echo "Please run it with sudo installed and from a normal user who is in sudoers!"
+  exit
+fi
 cd ~ || exit
 wget -q -O - https://packages.sury.org/php/README.txt | bash -s -
 sudo apt -y install php8.0 php8.0-pgsql php8.0-curl php8.0-gd php8.0-dom
