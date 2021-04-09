@@ -58,7 +58,7 @@ class Main{
 		
 		API::$VERBOSE = $this->config["logging"]["curl-verbose"] ?? false;
 		
-		new CarPictureHandler($this);
+		new CarPictureHandler($this->db, $this->config);
 		
 		$this->carStatusFetcher = new CarStatusFetcher($this);
 		$this->carStatusWriter = new CarStatusWriter($this);
