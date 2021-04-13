@@ -16,7 +16,6 @@ class Main{
 	private DatabaseConnection $db;
 	
 	private CarStatusFetcher $carStatusFetcher;
-	private CarStatusWriter $carStatusWriter;
 	
 	public function __construct(){
 		Logger::log("Reading config...");
@@ -60,16 +59,12 @@ class Main{
 		
 		new CarPictureHandler($this->db, $this->config);
 		
-		$this->carStatusWriter = new CarStatusWriter($this->db);
-		$this->carStatusFetcher = new CarStatusFetcher($this->carStatusWriter, $this->config);
+		$this->carStatusFetcher = new CarStatusFetcher($this->config);
+		$this->carStatusFetcher->registerUpdateReceiver(new CarStatusWriter($this->db));
 	}
 	
-	public function getDB(){
+	public function getDB(): DatabaseConnection{
 		return $this->db;
-	}
-	
-	public function getCarStatusWriter(): CarStatusWriter{
-		return $this->carStatusWriter;
 	}
 	
 	public function tick(int $tickCnter){

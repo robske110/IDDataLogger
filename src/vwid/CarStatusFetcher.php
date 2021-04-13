@@ -14,7 +14,8 @@ use robske_110\vwid\api\MobileAppAPI;
 use robske_110\webutils\CurlError;
 
 class CarStatusFetcher{
-	private CarStatusUpdateReceiver $carStatusUpdateReceiver;
+	/** @var CarStatusUpdateReceiver[]  */
+	private array $updateReceivers;
 	private array $config;
 	
 	private MobileAppAPI $idAPI;
@@ -65,14 +66,17 @@ class CarStatusFetcher{
 		]
 	];
 	
-	public function __construct(CarStatusUpdateReceiver $carStatusUpdateReceiver, array $config){
-		$this->carStatusUpdateReceiver = $carStatusUpdateReceiver;
+	public function __construct(array $config){
 		$this->config = $config;
 		
 		Logger::log("Logging in...");
 		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
 		$this->idAPI = new MobileAppAPI($loginInformation);
 		$this->login();
+	}
+	
+	public function registerUpdateReceiver(CarStatusUpdateReceiver $updateReceiver){
+		$this->updateReceivers[] = $updateReceiver;
 	}
 	
 	public function tick(int $tickCnter){
@@ -86,7 +90,9 @@ class CarStatusFetcher{
 			}else{
 				$this->currentUpdateRate = $this->config["increased-updaterate"] ?? 60;
 			}
-			$this->carStatusUpdateReceiver->carStatusUpdate($this->carStatusData);
+			foreach($this->updateReceivers as $updateReceiver){
+				$updateReceiver->carStatusUpdate($this->carStatusData);
+			}
 		}
 	}
 	
