@@ -6,6 +6,7 @@ namespace robske_110\vwid;
 use DateTime;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\vwid\api\API;
 use robske_110\vwid\api\exception\IDAPIException;
 use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\vwid\api\LoginInformation;
@@ -159,7 +160,9 @@ class CarStatusFetcher{
 		
 		$carStatusData = [];
 		
-		#var_dump($data);
+		if(API::$VERBOSE){
+			Logger::var_dump($data);
+		}
 		$this->readValues($data, self::DATA_MAPPING, $carStatusData);
 		$this->carStatusData = $carStatusData;
 		#var_dump($carStatusData);
