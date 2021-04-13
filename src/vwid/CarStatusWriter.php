@@ -69,10 +69,8 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 	
 	/**
 	 * @param array $carStatusData The carStatusData to write to the db
-	 *
-	 * @return bool whether writing was successful (also returns true on skipping)
 	 */
-	public function writeCarStatus(array $carStatusData): bool{
+	public function writeCarStatus(array $carStatusData, bool $retry = true){
 		$data = [];
 		$dateTime = null;
 		foreach(CarStatusFetcher::DATA_MAPPING as $key => $val){
@@ -106,7 +104,7 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 			$data[] = $carStatusData[$dbField];
 		}
 		if($data === $this->lastWrittenCarStatus){
-			return true;
+			return;
 		}
 		Logger::log("Writing new data for timestamp ".$data[0]);
 		#var_dump($data);
@@ -114,13 +112,15 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 		try{
 			$this->carStatusWrite->execute($data);
 		}catch(PDOException $e){
+			if(!$retry){
+				throw $e;
+			}
 			ErrorUtils::logException($e);
 			Logger::critical("Could not write to db, attempting reconnect...");
 			$this->db->connect();
 			$this->initQuery();
-			return false;
+			$this->writeCarStatus($carStatusData, false);
 		}
 		$this->lastWrittenCarStatus = $data;
-		return true;
 	}
 }
