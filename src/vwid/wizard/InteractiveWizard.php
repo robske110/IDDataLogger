@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace robske_110\vwid\wizard;
 
-use RuntimeException;
-
 class InteractiveWizard{
 	protected function readLine(): string{
 		return trim((string) fgets(STDIN));

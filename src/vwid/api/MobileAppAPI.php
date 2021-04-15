@@ -6,11 +6,8 @@ namespace robske_110\vwid\api;
 use DOMDocument;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\api\exception\IDAPIException;
-use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\vwid\api\exception\IDLoginException;
 use robske_110\webutils\CurlError;
-use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
 
 class MobileAppAPI extends API{
