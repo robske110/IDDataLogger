@@ -17,7 +17,7 @@ Let's get to work then.
 
 ## Prerequisites
 You'll need
-- a Raspberry Pi with an internet connection and raspbian installed (alternatively any machine with a debian installation works)
+- a Raspberry Pi (see [supported models](https://github.com/robske110/IDDataLogger/wiki/Supported-Raspberry-PI-models)) with an internet connection and raspbian installed (alternatively any machine with a debian installation works)
 - a publicly routable IPv4 address if you want to use the widget and website from outside your home network (Some fibre plans for example do not include this)
 
 We assume you have your Raspberry Pi freshly setup and have the command prompt in front of you.
@@ -25,10 +25,11 @@ There are plenty of guides on the internet on how to archive this.
 
 You should see the following line: `pi@Raspberry Pi:~ $`
 
-We strongly recommend changing your password on the Raspberry Pi to a reasonably strong one.
+We strongly recommend changing your password on the Raspberry Pi to a strong one using the command `passwd`.
 
-Now you'll need to decide how you want to setup this project.
-There is a one-line command which attempts to install this project automagically, but if you prefer to do some things manually and learn some things in the process jump to this [section](#installing-manually).
+Now you'll need to decide how you want to set this project up.
+There is a one-line command which installs this project automagically, but if you prefer to do some things manually and
+learn some things in the process jump to this [section](#installing-manually).
 
 ## Installing using the install script
 
