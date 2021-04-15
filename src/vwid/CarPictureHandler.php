@@ -55,9 +55,10 @@ class CarPictureHandler{
 				);
 			}
 		}
-		foreach($websiteAPI->apiGetAP(
+		$images = $websiteAPI->apiGetAP(
 			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$vin
-		)["images"] as $image){
+		)["images"];
+		foreach($images as $image){
 			if(
 				$image["viewDirection"] == ($this->config["viewDirection"] ?? "front") &&
 				$image["angle"] == ($this->config["angle"] ?? "right")
@@ -66,7 +67,11 @@ class CarPictureHandler{
 			}
 		}
 		if(!isset($imageUrl)){
-			throw new RuntimeException("Unable to fetch a car picture: Could not find uri.");
+			Logger::var_dump($images);
+			throw new RuntimeException(
+				"Unable to fetch a car picture: Could not find uri for vin: ".
+				$vin.", viewDirection: ".$this->config["viewDirection"].", angle: ".$this->config["angle"]
+			);
 		}
 		file_put_contents(self::PICTURE_LOCATION, file_get_contents($imageUrl));
 		
