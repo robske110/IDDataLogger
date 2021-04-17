@@ -41,6 +41,9 @@ class WebsiteAPI extends API{
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($pwdPage);
 		
+		if($dom->getElementById("credentialsForm") === null){
+			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
+		}
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
 		$fields["password"] = $loginInformation->password;
