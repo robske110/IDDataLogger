@@ -1,0 +1,96 @@
+*{
+	padding: 0;
+	margin: 0;
+}
+.chargeSessions{
+	list-style-type: none;
+}
+.chargeSession{
+	padding-top: 1.5vw;
+	padding-bottom: 1.5vw;
+	margin-top: 1vw;
+	background: var(--accent-color-main);
+	border-radius: 0.5em;
+	display: flex;
+	justify-content: space-between;
+}
+.chargeSessionDataset{
+	flex-grow: 4;
+	flex-basis: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+.chargeSessionElement{
+	border-left: solid thin white;
+	flex-grow: 1;
+	flex-basis: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.chargeSessionValue{
+	font-size: 2.5vw;
+}
+.chargeSessionValue.big{
+	font-size: 4.5vw;
+}
+.chargeSessionValue.small{
+	font-size: 2vw;
+}
+.chargeSessionDescription{
+	font-size: 2vw;
+	align-self: flex-start;
+	margin-left: 1vw;
+	display: none;
+}
+.chargeSessionTimeDate{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+@media only screen and (max-width: 480px) {
+	.chargeSessionElement{
+		border: none;
+		min-width: 120px;
+	}
+	.chargeSessionElement:first-child{
+		border-right: solid thin white;
+	}
+	.chargeSessionElement:nth-child(3){
+		border-top: solid thin white;
+	}
+	.chargeSessionElement:last-child{
+		border-top: solid thin white;
+		border-left: solid thin white;
+	}
+	#chargeSessionHeader{
+		display: none;
+	}
+	.chargeSessionDescription{
+		display: initial;
+	}
+	.chargeSessionTimeDate{
+		flex-direction: row;
+	}
+	#date{
+		margin-left: 1vw;
+	}
+	.chargeSessionValue{
+		font-size: 4vw;
+	}
+	.chargeSessionValue.big{
+		font-size: 6vw;
+	}
+	.chargeSessionValue.small{
+		font-size: 3vw;
+	}
+	.chargeSessionDescription{
+		display: initial;
+	}
+}
+.chargeSessionElement.doughnut{
+	width: 15%;
+	border: none;
+}

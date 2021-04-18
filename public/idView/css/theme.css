@@ -1,0 +1,19 @@
+:root{
+	--font-color: white;
+	--background-color: black;
+	--accent-color-main: #111;
+	--accent-color-secondary: #222;
+	--accent-color-tertiary: #333;
+}
+[data-theme="dimmed"]{
+	--font-color: white;
+	--background-color: #111;
+	--accent-color-main: #222;
+	--accent-color-secondary: #222;
+	--accent-color-tertiary: #333;
+}
+body{
+	color: var(--font-color);
+	background: var(--background-color);
+	font-family: "Avenir", sans-serif;
+}

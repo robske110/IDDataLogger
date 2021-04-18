@@ -1,126 +1,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="css/theme.css">
+	<link rel="stylesheet" type="text/css" href="css/chargingOverview.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-	<title>IDView</title>
-	<style>
-		*{
-			padding: 0;
-			margin: 0;
-		}
-		:root{
-			--font-color: white;
-			--background-color: black;
-			--accent-color-main: #111;
-			--accent-color-secondary: #222;
-			--accent-color-tertiary: #333;
-		}
-		[data-theme="dimmed"]{
-			--font-color: white;
-			--background-color: #111;
-			--accent-color-main: #222;
-			--accent-color-secondary: #222;
-			--accent-color-tertiary: #333;
-		}
-		body{
-			color: var(--font-color);
-			background: var(--background-color);
-			font-family: "Avenir", sans-serif;
-		}
-		.chargeSessions{
-			list-style-type: none;
-		}
-		.chargeSession{
-			padding-top: 1.5vw;
-			padding-bottom: 1.5vw;
-			margin-top: 1vw;
-			background: var(--accent-color-main);
-			border-radius: 0.5em;
-			display: flex;
-			justify-content: space-between;
-		}
-		.chargeSessionDataset{
-			flex-grow: 4;
-			flex-basis: 0;
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
-		}
-		.chargeSessionElement{
-			border-left: solid thin white;
-			flex-grow: 1;
-			flex-basis: 0;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-		}
-		.chargeSessionValue{
-			font-size: 2.5vw;
-		}
-		.chargeSessionValue.big{
-			font-size: 4.5vw;
-		}
-		.chargeSessionValue.small{
-			font-size: 2vw;
-		}
-		.chargeSessionDescription{
-			font-size: 2vw;
-			align-self: flex-start;
-			margin-left: 1vw;
-			display: none;
-		}
-		.chargeSessionTimeDate{
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-		}
-		@media only screen and (max-width: 480px) {
-			.chargeSessionElement{
-				border: none;
-				min-width: 120px;
-			}
-			.chargeSessionElement:first-child{
-				border-right: solid thin white;
-			}
-			.chargeSessionElement:nth-child(3){
-				border-top: solid thin white;
-			}
-			.chargeSessionElement:last-child{
-				border-top: solid thin white;
-				border-left: solid thin white;
-			}
-			#chargeSessionHeader{
-				display: none;
-			}
-			.chargeSessionDescription{
-				display: initial;
-			}
-			.chargeSessionTimeDate{
-				flex-direction: row;
-			}
-			#date{
-				margin-left: 1vw;
-			}
-			.chargeSessionValue{
-				font-size: 4vw;
-			}
-			.chargeSessionValue.big{
-				font-size: 6vw;
-			}
-			.chargeSessionValue.small{
-				font-size: 3vw;
-			}
-			.chargeSessionDescription{
-				display: initial;
-			}
-		}
-		.chargeSessionElement.doughnut{
-			width: 15%;
-			border: none;
-		}
-	</style>
+	<title>chargingOverview</title>
 </head>
 <body>
 	<ul class="chargeSessions" id="chargeSessions">
@@ -238,5 +123,61 @@
 		}
 		
 		updateChargingSessions();
+		createChargeSession({
+			duration: 17280,
+			startTime: "2021-03-06T16:49:48+00:00",
+			endTime: "2021-03-06T19:49:48+00:00",
+			avgChargePower: 10.4,
+			minChargePower: 8.5,
+			maxChargePower: 10.5,
+			integralChargeEnergy: 48.59,
+			chargeEnergy: 99999,
+			rangeStart: 27,
+			rangeEnd: 311,
+			socStart: 5,
+			socEnd: 90
+		});
+		createChargeSession({
+			duration: 17280,
+			startTime: "2021-03-06T16:49:48+00:00",
+			endTime: "2021-03-06T19:49:48+00:00",
+			avgChargePower: 10.4,
+			minChargePower: 8.5,
+			maxChargePower: 10.5,
+			integralChargeEnergy: 48.59,
+			chargeEnergy: 99999,
+			rangeStart: 27,
+			rangeEnd: 311,
+			socStart: 5,
+			socEnd: 90
+		});
+		createChargeSession({
+			duration: 17280,
+			startTime: "2021-03-06T16:49:48+00:00",
+			endTime: "2021-03-06T19:49:48+00:00",
+			avgChargePower: 10.4,
+			minChargePower: 8.5,
+			maxChargePower: 10.5,
+			integralChargeEnergy: 48.59,
+			chargeEnergy: 99999,
+			rangeStart: 27,
+			rangeEnd: 311,
+			socStart: 5,
+			socEnd: 90
+		});
+		createChargeSession({
+			duration: 17280,
+			startTime: "2021-03-06T16:49:48+00:00",
+			endTime: "2021-03-06T19:49:48+00:00",
+			avgChargePower: 10.4,
+			minChargePower: 8.5,
+			maxChargePower: 10.5,
+			integralChargeEnergy: 48.59,
+			chargeEnergy: 99999,
+			rangeStart: 27,
+			rangeEnd: 311,
+			socStart: 5,
+			socEnd: 90
+		});
 	</script>
 </body>
