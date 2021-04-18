@@ -11,19 +11,19 @@
 	<ul class="chargeSessions" id="chargeSessions">
 		<li class="chargeSession" id="chargeSessionHeader">
 			<div class="chargeSessionElement doughnut">
-				<span class="chargeSessionValue small">SOC</span>
+				<span class="value small">SOC</span>
 			</div>
 			<div class="chargeSessionElement">
-				<span class="chargeSessionValue small">charged kWh</span>
+				<span class="value small">charged kWh</span>
 			</div>
 			<div class="chargeSessionElement">
-				<span class="chargeSessionValue small">gained range</span>
+				<span class="value small">gained range</span>
 			</div>
 			<div class="chargeSessionElement">
-				<span class="chargeSessionValue small">power (⌀, min, max)</span>
+				<span class="value small">power (⌀, min, max)</span>
 			</div>
 			<div class="chargeSessionElement">
-				<span class="chargeSessionValue small">duration and date</span>
+				<span class="value small">duration and date</span>
 			</div>
 		</li>
 		<template id="chargeSession">
@@ -33,42 +33,42 @@
 				</div>
 				<div class="chargeSessionElements">
 					<div class="chargeSessionElement">
-						<span class="chargeSessionDescription">charged kWh</span>
+						<label>charged kWh</label>
 						<span>
-							<span class="chargeSessionValue big" id="kWh">00.00</span>
-							<span class="chargeSessionUnit">kWh</span>
+							<span class="value big" id="kWh">00.00</span>
+							<span class="unit">kWh</span>
 						</span>
 					</div>
 					<div class="chargeSessionElement">
-						<span class="chargeSessionDescription">gained range</span>
+						<label>gained range</label>
 						<span>
-							<span class="chargeSessionValue big" id="range">000</span>
-							<span class="chargeSessionUnit">km</span>
+							<span class="value big" id="range">000</span>
+							<span class="unit">km</span>
 						</span>
 					</div>
 					<div class="chargeSessionElement">
-						<span class="chargeSessionDescription">power(⌀, min, max)</span>
+						<label>power(⌀, min, max)</label>
 						<span>
-							<span class="chargeSessionValue big" id="avgchargepower">XXX</span>
-							<span class="chargeSessionUnit">kW</span>
+							<span class="value big" id="avgchargepower">XXX</span>
+							<span class="unit">kW</span>
 						</span>
 						<span>
-							<span class="chargeSessionValue" id="minChargePower">XXX</span>
-							<span class="chargeSessionUnit small">kW</span>
-							<span class="chargeSessionValue">|</span>
-							<span class="chargeSessionValue" id="maxChargePower">XXX</span>
-							<span class="chargeSessionUnit small">kW</span>
+							<span class="value" id="minChargePower">XXX</span>
+							<span class="unit small">kW</span>
+							<span class="value">|</span>
+							<span class="value" id="maxChargePower">XXX</span>
+							<span class="unit small">kW</span>
 						</span>
 					</div>
 					<div class="chargeSessionElement">
-						<span class="chargeSessionDescription">duration and date</span>
+						<label>duration and date</label>
 						<span>
-							<span class="chargeSessionValue big" id="duration">XXX</span>
-							<span class="chargeSessionUnit">h</span>
+							<span class="value big" id="duration">XXX</span>
+							<span class="unit">h</span>
 						</span>
 						<div class="chargeSessionTimeDate">
-							<span class="chargeSessionValue small" id="time">XX:XX - XX:XX</span>
-							<span class="chargeSessionValue small" id="date">XX.XX.XX</span>
+							<span class="value small" id="time">XX:XX - XX:XX</span>
+							<span class="value small" id="date">XX.XX.XX</span>
 						</div>
 					</div>
 				</div>
@@ -80,7 +80,7 @@
 	<script src="js/AnimatedValue.js"></script>
 	<script>
 		document.documentElement.setAttribute('data-theme', 'dimmed');
-		
+		document.documentElement.setAttribute('data-chargeSessions-mobile-label', 'display');
 		let dateLocaleSetting = "de-DE";
 		function createChargeSession(data){
 			let cS = document.querySelector("#chargeSession").content.firstElementChild.cloneNode(true);

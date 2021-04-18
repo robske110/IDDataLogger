@@ -2,6 +2,13 @@
   padding: 0;
   margin: 0;
 }
+:root{
+  --chargeSession-mobile-display-label: none;
+}
+[data-chargeSessions-mobile-label="display"]{
+  --chargeSession-mobile-display-label: initial;
+}
+
 .chargeSessions{
   list-style-type: none;
 }
@@ -31,23 +38,23 @@
   justify-content: center;
   align-items: center;
 }
-.chargeSessionValue{
+.chargeSessionElement ~ .value{
   font-size: 2.25vw;
 }
-.chargeSessionValue.big{
+.chargeSessionElement ~ .value.big{
   font-size: 4vw;
 }
-.chargeSessionValue.small{
+.chargeSessionElement ~ .value.small{
   font-size: 1.75vw;
 }
-.chargeSessionUnit{
+.chargeSessionElement ~ .unit{
   font-size: 2vw;
   color: var(--font-color-secondary);
 }
-.chargeSessionUnit.small{
+.chargeSessionElement ~ .unit.small{
   font-size: 1.5vw;
 }
-.chargeSessionDescription{
+.chargeSessionElement > label{
   font-size: 2vw;
   align-self: flex-start;
   margin-left: 1vw;
@@ -65,20 +72,20 @@
     min-width: 115px;
   }
   .chargeSessionElement:first-child{
-    border-right: solid thin var(--accent-color-tertiary);;
+    border-right: solid thin var(--accent-color-tertiary);
   }
   .chargeSessionElement:nth-child(3){
-    border-top: solid thin var(--accent-color-tertiary);;
+    border-top: solid thin var(--accent-color-tertiary);
   }
   .chargeSessionElement:last-child{
-    border-top: solid thin var(--accent-color-tertiary);;
-    border-left: solid thin var(--accent-color-tertiary);;
+    border-top: solid thin var(--accent-color-tertiary);
+    border-left: solid thin var(--accent-color-tertiary);
   }
   #chargeSessionHeader{
     display: none;
   }
-  .chargeSessionDescription{
-    display: initial;
+  .chargeSessionElement > label{
+    display: var(--chargeSession-mobile-display-label);
   }
   .chargeSessionTimeDate{
     flex-direction: row;
@@ -86,34 +93,32 @@
   #date{
     margin-left: 1vw;
   }
-  .chargeSessionValue{
+  .value{
     font-size: 4vw;
   }
-  .chargeSessionValue.big{
+  .value.big{
     font-size: 6.5vw;
   }
-  .chargeSessionValue.small{
+  .value.small{
     font-size: 3vw;
   }
-  .chargeSessionUnit{
+  .unit{
     font-size: 3vw;
   }
-  .chargeSessionUnit.small{
+  .unit.small{
     font-size: 2.5vw;
   }
 }
 @media only screen and (max-width: 370px) {
   .chargeSessionElement{
     border: none !important;
+    border-bottom: solid thin var(--accent-color-tertiary) !important;
   }
-  .chargeSessionDescription{
-    display: initial;
+  .chargeSessionElement:last-child{
+    border: none !important;
   }
-}
-.chargeSessionDescription.hide{
-  display: none;
 }
 .chargeSessionElement.doughnut{
   width: 15%;
-  border: none;
+  border: none !important;
 }
