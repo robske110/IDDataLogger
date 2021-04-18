@@ -1,41 +1,60 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" type="text/css" href="css/idView.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 	<title>IDView</title>
 	<style>
-		body{
+		*{
+			padding: 0;
 			margin: 0;
+		}
+		:root{
+			--font-color: white;
+			--background-color: black;
+			--accent-color-main: #111;
+			--accent-color-secondary: #222;
+			--accent-color-tertiary: #333;
+		}
+		[data-theme="dimmed"]{
+			--font-color: white;
+			--background-color: #111;
+			--accent-color-main: #222;
+			--accent-color-secondary: #222;
+			--accent-color-tertiary: #333;
+		}
+		body{
+			color: var(--font-color);
+			background: var(--background-color);
+			font-family: "Avenir", sans-serif;
 		}
 		.chargeSessions{
 			list-style-type: none;
-			padding: 0;
 		}
 		.chargeSession{
 			padding-top: 1.5vw;
 			padding-bottom: 1.5vw;
 			margin-top: 1vw;
-			background: #111;
+			background: var(--accent-color-main);
 			border-radius: 0.5em;
 			display: flex;
 			justify-content: space-between;
 		}
-		.chargeSessionDougnut{
-			width: 15%;
+		.chargeSessionDataset{
+			flex-grow: 4;
+			flex-basis: 0;
 			display: flex;
-			justify-content: center;
-			align-items: center;
+			flex-wrap: wrap;
+			justify-content: space-between;
 		}
 		.chargeSessionElement{
 			border-left: solid thin white;
+			flex-grow: 1;
+			flex-basis: 0;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			flex-grow: 1;
-			flex-basis: 0;
 		}
 		.chargeSessionValue{
 			font-size: 2.5vw;
@@ -46,12 +65,67 @@
 		.chargeSessionValue.small{
 			font-size: 2vw;
 		}
+		.chargeSessionDescription{
+			font-size: 2vw;
+			align-self: flex-start;
+			margin-left: 1vw;
+			display: none;
+		}
+		.chargeSessionTimeDate{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		@media only screen and (max-width: 480px) {
+			.chargeSessionElement{
+				border: none;
+				min-width: 120px;
+			}
+			.chargeSessionElement:first-child{
+				border-right: solid thin white;
+			}
+			.chargeSessionElement:nth-child(3){
+				border-top: solid thin white;
+			}
+			.chargeSessionElement:last-child{
+				border-top: solid thin white;
+				border-left: solid thin white;
+			}
+			#chargeSessionHeader{
+				display: none;
+			}
+			.chargeSessionDescription{
+				display: initial;
+			}
+			.chargeSessionTimeDate{
+				flex-direction: row;
+			}
+			#date{
+				margin-left: 1vw;
+			}
+			.chargeSessionValue{
+				font-size: 4vw;
+			}
+			.chargeSessionValue.big{
+				font-size: 6vw;
+			}
+			.chargeSessionValue.small{
+				font-size: 3vw;
+			}
+			.chargeSessionDescription{
+				display: initial;
+			}
+		}
+		.chargeSessionElement.doughnut{
+			width: 15%;
+			border: none;
+		}
 	</style>
 </head>
 <body>
 	<ul class="chargeSessions" id="chargeSessions">
-		<li class="chargeSession">
-			<div class="chargeSessionDougnut">
+		<li class="chargeSession" id="chargeSessionHeader">
+			<div class="chargeSessionElement doughnut">
 				<span class="chargeSessionValue small">SOC</span>
 			</div>
 			<div class="chargeSessionElement">
@@ -69,23 +143,31 @@
 		</li>
 		<template id="chargeSession">
 			<li class="chargeSession">
-				<div class="chargeSessionDougnut">
+				<div class="chargeSessionElement doughnut">
 					<canvas id="chargesoc"></canvas>
 				</div>
-				<div class="chargeSessionElement">
-					<span class="chargeSessionValue big" id="kWh">00.00kWh</span>
-				</div>
-				<div class="chargeSessionElement">
-					<span class="chargeSessionValue big" id="range">000km</span>
-				</div>
-				<div class="chargeSessionElement">
-					<span class="chargeSessionValue big" id="avgchargepower">XXXkW</span>
-					<span class="chargeSessionValue" id="minMaxChargePower">min XXkW | max XXXkW</span>
-				</div>
-				<div class="chargeSessionElement">
-					<span class="chargeSessionValue big" id="duration">0:00h</span>
-					<span class="chargeSessionValue small" id="time">XX:XX - XX:XX</span>
-					<span class="chargeSessionValue small" id="date">XX.XX.XX</span>
+				<div class="chargeSessionDataset">
+					<div class="chargeSessionElement">
+						<span class="chargeSessionDescription">charged kWh</span>
+						<span class="chargeSessionValue big" id="kWh">00.00kWh</span>
+					</div>
+					<div class="chargeSessionElement">
+						<span class="chargeSessionDescription">gained range</span>
+						<span class="chargeSessionValue big" id="range">000km</span>
+					</div>
+					<div class="chargeSessionElement">
+						<span class="chargeSessionDescription">power(⌀, min, max)</span>
+						<span class="chargeSessionValue big" id="avgchargepower">XXXkW</span>
+						<span class="chargeSessionValue" id="minMaxChargePower">min XXkW | max XXXkW</span>
+					</div>
+					<div class="chargeSessionElement">
+						<span class="chargeSessionDescription">duration and date</span>
+						<span class="chargeSessionValue big" id="duration">0:00h</span>
+						<div class="chargeSessionTimeDate">
+							<span class="chargeSessionValue small" id="time">XX:XX - XX:XX</span>
+							<span class="chargeSessionValue small" id="date">XX.XX.XX</span>
+						</div>
+					</div>
 				</div>
 			</li>
 		</template>
@@ -94,6 +176,8 @@
 	<script src="js/DoughnutValue.js"></script>
 	<script src="js/AnimatedValue.js"></script>
 	<script>
+		document.documentElement.setAttribute('data-theme', 'dimmed');
+		
 		let dateLocaleSetting = "de-DE";
 		function createChargeSession(data){
 			let cS = document.querySelector("#chargeSession").content.firstElementChild.cloneNode(true);
