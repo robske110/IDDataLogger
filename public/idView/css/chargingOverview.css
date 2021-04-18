@@ -1,96 +1,119 @@
 *{
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 .chargeSessions{
-	list-style-type: none;
+  list-style-type: none;
 }
 .chargeSession{
-	padding-top: 1.5vw;
-	padding-bottom: 1.5vw;
-	margin-top: 1vw;
-	background: var(--accent-color-main);
-	border-radius: 0.5em;
-	display: flex;
-	justify-content: space-between;
+  padding: 1.5vw;
+  margin-top: 0.5em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  background: var(--accent-color-main);
+  border-radius: 0.5em;
+  display: flex;
+  justify-content: space-between;
 }
-.chargeSessionDataset{
-	flex-grow: 4;
-	flex-basis: 0;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
+.chargeSessionElements{
+  flex-grow: 4;
+  flex-basis: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 .chargeSessionElement{
-	border-left: solid thin white;
-	flex-grow: 1;
-	flex-basis: 0;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+  border-left: solid thin var(--accent-color-tertiary);
+  flex-grow: 1;
+  flex-basis: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .chargeSessionValue{
-	font-size: 2.5vw;
+  font-size: 2.25vw;
 }
 .chargeSessionValue.big{
-	font-size: 4.5vw;
+  font-size: 4vw;
 }
 .chargeSessionValue.small{
-	font-size: 2vw;
+  font-size: 1.75vw;
+}
+.chargeSessionUnit{
+  font-size: 2vw;
+  color: var(--font-color-secondary);
+}
+.chargeSessionUnit.small{
+  font-size: 1.5vw;
 }
 .chargeSessionDescription{
-	font-size: 2vw;
-	align-self: flex-start;
-	margin-left: 1vw;
-	display: none;
+  font-size: 2vw;
+  align-self: flex-start;
+  margin-left: 1vw;
+  display: none;
+  color: var(--font-color-secondary);
 }
 .chargeSessionTimeDate{
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 @media only screen and (max-width: 480px) {
-	.chargeSessionElement{
-		border: none;
-		min-width: 120px;
-	}
-	.chargeSessionElement:first-child{
-		border-right: solid thin white;
-	}
-	.chargeSessionElement:nth-child(3){
-		border-top: solid thin white;
-	}
-	.chargeSessionElement:last-child{
-		border-top: solid thin white;
-		border-left: solid thin white;
-	}
-	#chargeSessionHeader{
-		display: none;
-	}
-	.chargeSessionDescription{
-		display: initial;
-	}
-	.chargeSessionTimeDate{
-		flex-direction: row;
-	}
-	#date{
-		margin-left: 1vw;
-	}
-	.chargeSessionValue{
-		font-size: 4vw;
-	}
-	.chargeSessionValue.big{
-		font-size: 6vw;
-	}
-	.chargeSessionValue.small{
-		font-size: 3vw;
-	}
-	.chargeSessionDescription{
-		display: initial;
-	}
+  .chargeSessionElement{
+    border: none;
+    min-width: 115px;
+  }
+  .chargeSessionElement:first-child{
+    border-right: solid thin var(--accent-color-tertiary);;
+  }
+  .chargeSessionElement:nth-child(3){
+    border-top: solid thin var(--accent-color-tertiary);;
+  }
+  .chargeSessionElement:last-child{
+    border-top: solid thin var(--accent-color-tertiary);;
+    border-left: solid thin var(--accent-color-tertiary);;
+  }
+  #chargeSessionHeader{
+    display: none;
+  }
+  .chargeSessionDescription{
+    display: initial;
+  }
+  .chargeSessionTimeDate{
+    flex-direction: row;
+  }
+  #date{
+    margin-left: 1vw;
+  }
+  .chargeSessionValue{
+    font-size: 4vw;
+  }
+  .chargeSessionValue.big{
+    font-size: 6.5vw;
+  }
+  .chargeSessionValue.small{
+    font-size: 3vw;
+  }
+  .chargeSessionUnit{
+    font-size: 3vw;
+  }
+  .chargeSessionUnit.small{
+    font-size: 2.5vw;
+  }
+}
+@media only screen and (max-width: 370px) {
+  .chargeSessionElement{
+    border: none !important;
+  }
+  .chargeSessionDescription{
+    display: initial;
+  }
+}
+.chargeSessionDescription.hide{
+  display: none;
 }
 .chargeSessionElement.doughnut{
-	width: 15%;
-	border: none;
+  width: 15%;
+  border: none;
 }

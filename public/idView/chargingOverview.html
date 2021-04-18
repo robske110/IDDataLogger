@@ -31,23 +31,41 @@
 				<div class="chargeSessionElement doughnut">
 					<canvas id="chargesoc"></canvas>
 				</div>
-				<div class="chargeSessionDataset">
+				<div class="chargeSessionElements">
 					<div class="chargeSessionElement">
 						<span class="chargeSessionDescription">charged kWh</span>
-						<span class="chargeSessionValue big" id="kWh">00.00kWh</span>
+						<span>
+							<span class="chargeSessionValue big" id="kWh">00.00</span>
+							<span class="chargeSessionUnit">kWh</span>
+						</span>
 					</div>
 					<div class="chargeSessionElement">
 						<span class="chargeSessionDescription">gained range</span>
-						<span class="chargeSessionValue big" id="range">000km</span>
+						<span>
+							<span class="chargeSessionValue big" id="range">000</span>
+							<span class="chargeSessionUnit">km</span>
+						</span>
 					</div>
 					<div class="chargeSessionElement">
 						<span class="chargeSessionDescription">power(⌀, min, max)</span>
-						<span class="chargeSessionValue big" id="avgchargepower">XXXkW</span>
-						<span class="chargeSessionValue" id="minMaxChargePower">min XXkW | max XXXkW</span>
+						<span>
+							<span class="chargeSessionValue big" id="avgchargepower">XXX</span>
+							<span class="chargeSessionUnit">kW</span>
+						</span>
+						<span>
+							<span class="chargeSessionValue" id="minChargePower">XXX</span>
+							<span class="chargeSessionUnit small">kW</span>
+							<span class="chargeSessionValue">|</span>
+							<span class="chargeSessionValue" id="maxChargePower">XXX</span>
+							<span class="chargeSessionUnit small">kW</span>
+						</span>
 					</div>
 					<div class="chargeSessionElement">
 						<span class="chargeSessionDescription">duration and date</span>
-						<span class="chargeSessionValue big" id="duration">0:00h</span>
+						<span>
+							<span class="chargeSessionValue big" id="duration">XXX</span>
+							<span class="chargeSessionUnit">h</span>
+						</span>
 						<div class="chargeSessionTimeDate">
 							<span class="chargeSessionValue small" id="time">XX:XX - XX:XX</span>
 							<span class="chargeSessionValue small" id="date">XX.XX.XX</span>
@@ -68,7 +86,7 @@
 			let cS = document.querySelector("#chargeSession").content.firstElementChild.cloneNode(true);
 			let chargeSessions = document.querySelector("#chargeSessions");
 		
-			cS.querySelector("#duration").textContent = Math.floor(data.duration / 3600)+":"+String(Math.round(data.duration % 3600 / 60)).padStart(2, '0')+"h";
+			cS.querySelector("#duration").textContent = Math.floor(data.duration / 3600)+":"+String(Math.round(data.duration % 3600 / 60)).padStart(2, '0');
 			const timeOpts = {
 				hour: '2-digit',
 				minute: '2-digit'
@@ -82,10 +100,11 @@
 				month: '2-digit',
 				year: '2-digit'
 			});
-			cS.querySelector("#avgchargepower").textContent = data.avgChargePower+"kW";
-			cS.querySelector("#minMaxChargePower").textContent = data.minChargePower+"kW" + " | " + data.maxChargePower+"kW";
-			cS.querySelector("#kWh").textContent = Math.round(data.chargeEnergy/360, 2)/10+"kWh";
-			cS.querySelector("#range").textContent = (data.rangeEnd - data.rangeStart)+"km";
+			cS.querySelector("#avgchargepower").textContent = data.avgChargePower;
+			cS.querySelector("#minChargePower").textContent = data.minChargePower
+			cS.querySelector("#maxChargePower").textContent = data.maxChargePower;
+			cS.querySelector("#kWh").textContent = Math.round(data.chargeEnergy/360, 2)/10;
+			cS.querySelector("#range").textContent = (data.rangeEnd - data.rangeStart);
 			
 			chargeSessions.appendChild(cS);
 			
