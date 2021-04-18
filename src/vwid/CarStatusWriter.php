@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
-use http\Exception\RuntimeException;
 use PDOException;
 use PDOStatement;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
+use RuntimeException;
 
-class CarStatusWriter{
+class CarStatusWriter implements CarStatusUpdateReceiver{
 	const DB_FIELDS = [
 		"batterySOC",
 		"remainingRange",
@@ -37,14 +37,14 @@ class CarStatusWriter{
 		"rearWindowHeatingState"
 	];
 	
-	private Main $main;
+	private DatabaseConnection $db;
 	
 	private PDOStatement $carStatusWrite;
 	
 	private array $lastWrittenCarStatus = [];
 	
-	public function __construct(Main $main){
-		$this->main = $main;
+	public function __construct(DatabaseConnection $db){
+		$this->db = $db;
 		$this->initQuery();
 	}
 	
@@ -58,17 +58,19 @@ class CarStatusWriter{
 			$query .= "?, ";
 		}
 		$query .= "?) ";
-		$query .= QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "time", self::DB_FIELDS);
+		$query .= QueryCreationHelper::createUpsert($this->db->getDriver(), "time", self::DB_FIELDS);
 		Logger::debug("Preparing query ".$query."...");
-		$this->carStatusWrite = $this->main->getDB()->prepare($query);
+		$this->carStatusWrite = $this->db->prepare($query);
+	}
+	
+	public function carStatusUpdate(array $carStatusData){
+		$this->writeCarStatus($carStatusData);
 	}
 	
 	/**
 	 * @param array $carStatusData The carStatusData to write to the db
-	 *
-	 * @return bool whether writing was successful (also returns true on skipping)
 	 */
-	public function writeCarStatus(array $carStatusData): bool{
+	public function writeCarStatus(array $carStatusData, bool $retry = true){
 		$data = [];
 		$dateTime = null;
 		foreach(CarStatusFetcher::DATA_MAPPING as $key => $val){
@@ -102,7 +104,7 @@ class CarStatusWriter{
 			$data[] = $carStatusData[$dbField];
 		}
 		if($data === $this->lastWrittenCarStatus){
-			return true;
+			return;
 		}
 		Logger::log("Writing new data for timestamp ".$data[0]);
 		#var_dump($data);
@@ -110,11 +112,14 @@ class CarStatusWriter{
 		try{
 			$this->carStatusWrite->execute($data);
 		}catch(PDOException $e){
+			if(!$retry){
+				throw $e;
+			}
 			ErrorUtils::logException($e);
 			Logger::critical("Could not write to db, attempting reconnect...");
-			$this->main->getDB()->connect();
+			$this->db->connect();
 			$this->initQuery();
-			return false;
+			$this->writeCarStatus($carStatusData, false);
 		}
 		$written = [];
 		$pos = 0;
@@ -125,6 +130,5 @@ class CarStatusWriter{
 		$this->main->pushWrittenCarStatus($written);
 		
 		$this->lastWrittenCarStatus = $data;
-		return true;
 	}
 }

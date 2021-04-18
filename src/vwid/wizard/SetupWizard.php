@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace robske_110\vwid\wizard;
 
+use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\Main;
 use RuntimeException;
 
@@ -18,16 +19,32 @@ class SetupWizard extends InteractiveWizard{
 		$this->message("Welcome to the ID DataLogger! This setup wizard guides you through the last setup steps!");
 		$this->message("A connection to the database has already been established and tables have been initialized.");
 		
-		$this->message("We can now generate an API key for accessing the carStatus and carPicture API. This is needed for the iOS widget.");
-		$generateAPIkey = $this->get("Do you want to generate an API key?", "Y", ["Y", "N"]);
-		if($generateAPIkey == "Y"){
-			$this->generateAPIkey();
+		$options = getopt("", ["frontend-username:", "frontend-password:", "frontend-apikey:"]);
+		if(empty($options["frontend-apikey"])){
+			$additional = $this->main->getDB()->query(" SELECT count(*) FROM authKeys")[0]["count"] > 0;
+			$this->message(
+				"We can now generate an ".($additional ? "additional" : "").
+				" API key for accessing the carStatus and carPicture API. It is required for the iOS widget."
+			);
+			$generateAPIkey = $this->get(
+				"Do you want to generate an ".($additional ? "additional" : "")." API key?",
+				$additional ? "N": "Y", ["Y", "N"]
+			);
+			if($generateAPIkey == "Y"){
+				$this->generateAPIkey();
+			}
+		}else{
+			$this->addApiKey($options["frontend-apikey"]);
 		}
 		
-		$this->message("We can now setup a user for the IDView (website with statistics about the car)");
-		$generateAPIkey = $this->get("Do you want to create an user?", "Y", ["Y", "N"]);
-		if($generateAPIkey == "Y"){
-			$this->setupUser();
+		if(empty($options["frontend-username"]) || empty($options["frontend-password"])){
+			$this->message("We can now create a user for the IDView (website with statistics about the car)");
+			$generateAPIkey = $this->get("Do you want to create an user?", "Y", ["Y", "N"]);
+			if($generateAPIkey == "Y"){
+				$this->setupUser();
+			}
+		}else{
+			$this->addUser($options["frontend-username"], $options["frontend-password"]);
 		}
 		
 		$this->message("Perfect! Server will now continue starting...");
@@ -35,9 +52,15 @@ class SetupWizard extends InteractiveWizard{
 	
 	private function generateAPIkey(){
 		$apiKey = bin2hex(random_bytes(32));
-		$this->main->getDB()->query("INSERT INTO authKeys(authKey) VALUES('".$apiKey."')");
+		$this->addApiKey($apiKey);
 		$this->message("Successfully generated the API key ".$apiKey."");
 		$this->message("Please enter this API key in the apiKey setting at the top of the iOS widget!");
+	}
+	
+	private function addApiKey(string $apiKey){
+		if($this->main->getDB()->query("SELECT count(*) FROM authKeys WHERE authkey = '".$apiKey."'")[0]["count"] == 0){
+			$this->main->getDB()->query("INSERT INTO authKeys(authKey) VALUES('".$apiKey."')");
+		}
 	}
 	
 	private function setupUser(){
@@ -46,8 +69,14 @@ class SetupWizard extends InteractiveWizard{
 		if(strlen($username) > 64 && $this->main->getDB()->getDriver() !== "pgsql"){
 			throw new RuntimeException("The username cannot be longer than 64 chars!");
 		}
-		
-		$putUser = $this->main->getDB()->prepare("INSERT INTO users(username, hash) VALUES(?, ?)");
+		$this->addUser($username, $password);
+	}
+	
+	private function addUser(string $username, string $password){
+		$putUser = $this->main->getDB()->prepare(
+			"INSERT INTO users(username, hash) VALUES(?, ?)".
+			QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "username", ["username", "hash"])
+		);
 		
 		$res = $putUser->execute([$username, password_hash($password, PASSWORD_DEFAULT)]);
 		if($res !== false){

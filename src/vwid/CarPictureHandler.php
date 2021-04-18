@@ -13,10 +13,12 @@ use RuntimeException;
 class CarPictureHandler{
 	const PICTURE_LOCATION = BASE_DIR."data/carPic.png";
 	
-	private $main;
+	private DatabaseConnection $db;
 	
-	public function __construct(Main $main){
-		$this->main = $main;
+	private array $config;
+	
+	public function __construct(DatabaseConnection $db, array $config){
+		$this->config = $config;
 		@mkdir(BASE_DIR."data/");
 		if(!file_exists(BASE_DIR."data/carPic.png")){
 			Logger::log("Fetching carPicture (this will take a while...)");
@@ -29,31 +31,47 @@ class CarPictureHandler{
 				imagecolorallocate($im, 255, 0, 0);
 				imagepng($im, self::PICTURE_LOCATION, 9, PNG_NO_FILTER);
 			}
-			
 		}
-		$this->main->getDB()->query(
-			"INSERT INTO carPictures(pictureID, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."') ".
-			QueryCreationHelper::createUpsert($this->main->getDB()->getDriver(), "pictureID", ["carPicture"])
-		);
+		$this->db = $db;
+		$this->writeCarPictureToDB();
 	}
 	
 	public function fetchCarPicture(){
-		$config = $this->main->config;
-		$websiteAPI = new WebsiteAPI(new LoginInformation($config["username"], $config["password"]));
+		$websiteAPI = new WebsiteAPI(new LoginInformation($this->config["username"], $this->config["password"]));
 		
 		$cars = $websiteAPI->apiGetAP("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars");
-		foreach($websiteAPI->apiGetAP(
-			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$cars[0]["vin"]
-		)["images"] as $image){
+		$vin = $cars[0]["vin"];
+		if(!empty($this->config["vin"])){
+			foreach($cars as $car){
+				if($car["vin"] === $this->config["vin"]){
+					$vin = $car["vin"];
+				}
+			}
+			if($vin !== $this->config["vin"]){
+				Logger::var_dump($cars, "cars");
+				Logger::warning(
+					"Could not find the vehicle with the specified vin ('".$this->config["vin"] ."')!".
+					"Will fetch image for default car, please check config and try again by deleting data/carPic.png!"
+				);
+			}
+		}
+		$images = $websiteAPI->apiGetAP(
+			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$vin
+		)["images"];
+		foreach($images as $image){
 			if(
-				$image["viewDirection"] == ($config["carpic"]["viewDirection"] ?? "front") &&
-				$image["angle"] == ($config["carpic"]["angle"] ?? "right")
+				$image["viewDirection"] == ($this->config["viewDirection"] ?? "front") &&
+				$image["angle"] == ($this->config["angle"] ?? "right")
 			){
 				$imageUrl = $image["url"];
 			}
 		}
 		if(!isset($imageUrl)){
-			throw new RuntimeException("Unable to fetch a car picture: Could not find uri.");
+			Logger::var_dump($images);
+			throw new RuntimeException(
+				"Unable to fetch a car picture: Could not find uri for vin: ".
+				$vin.", viewDirection: ".$this->config["viewDirection"].", angle: ".$this->config["angle"]
+			);
 		}
 		file_put_contents(self::PICTURE_LOCATION, file_get_contents($imageUrl));
 		
@@ -71,11 +89,18 @@ class CarPictureHandler{
 		}
 		imagealphablending($cropped, false);
 		imagesavealpha($cropped, true);
-		if($config["carpic"]["flip"] == true){
+		if($this->config["carpic"]["flip"] == true){
 			imageflip($cropped, IMG_FLIP_HORIZONTAL);
 		}
 		imagepng($cropped, self::PICTURE_LOCATION, 9, PNG_NO_FILTER);
 		imagedestroy($cropped);
 		Logger::log("Successfully cropped and saved picture");
+	}
+	
+	public function writeCarPictureToDB(){
+		$this->db->query(
+			"INSERT INTO carPictures(pictureID, carPicture) VALUES('default', '".base64_encode(file_get_contents(self::PICTURE_LOCATION))."') ".
+			QueryCreationHelper::createUpsert($this->db->getDriver(), "pictureID", ["carPicture"])
+		);
 	}
 }

@@ -6,6 +6,7 @@ function carGraphAspectRatio(){
 window.addEventListener('resize', carGraphAspectRatio);
 carGraphAspectRatio();
 
+const dateLocaleSetting = "de-DE";
 flatpickr.localize(flatpickr.l10ns.de);
 let timetravelPicker = flatpickr("#timetravel", {dateFormat: "d.m.Y H:i", onChange: timetravelUser, enableTime: true, time_24hr: true});
 flatpickr("#graphDateRange", {mode: "range", dateFormat: "d.m.Y", onChange: carGraphRangeUser});
@@ -83,6 +84,14 @@ function processCarStatus(carStatus){
 	soc.targetSOC = carStatus.targetSOC;
 	soc.update();
 	
+	const carStatusTime = new Date(carStatus.time);
+	document.getElementById("carUpdate").textContent = carStatusTime.toLocaleString(dateLocaleSetting, {
+		day: '2-digit',
+		month: '2-digit'
+	}) + " " + carStatusTime.toLocaleString(dateLocaleSetting, {
+		hour: '2-digit',
+		minute: '2-digit'
+	});
 	let now;
 	if(timetravel){
 		now = Date.parse(carStatus.time);
@@ -184,9 +193,10 @@ function processCarGraphUpdate(graphData){
 	const chart = chartStore.carGraph.chart;
 	chart.options.scales.xAxes[0].labels = graphData.time;
 	chart.data.datasets[0].data = graphData.batterySOC;
-	chart.data.datasets[1].data = graphData.remainingRange;
-	chart.data.datasets[2].data = graphData.remainingChargingTime;
-	chart.data.datasets[3].data = graphData.chargePower;
-	chart.data.datasets[4].data = graphData.chargeRateKMPH;
+	chart.data.datasets[1].data = graphData.targetSOC;
+	chart.data.datasets[2].data = graphData.remainingRange;
+	chart.data.datasets[3].data = graphData.remainingChargingTime;
+	chart.data.datasets[4].data = graphData.chargePower;
+	chart.data.datasets[5].data = graphData.chargeRateKMPH;
 	chart.update();
 }

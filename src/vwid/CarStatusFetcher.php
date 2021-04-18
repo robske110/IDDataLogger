@@ -6,6 +6,7 @@ namespace robske_110\vwid;
 use DateTime;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\vwid\api\API;
 use robske_110\vwid\api\exception\IDAPIException;
 use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\vwid\api\LoginInformation;
@@ -13,7 +14,9 @@ use robske_110\vwid\api\MobileAppAPI;
 use robske_110\webutils\CurlError;
 
 class CarStatusFetcher{
-	private Main $main;
+	/** @var CarStatusUpdateReceiver[]  */
+	private array $updateReceivers;
+	private array $config;
 	
 	private MobileAppAPI $idAPI;
 	private string $vin;
@@ -63,13 +66,17 @@ class CarStatusFetcher{
 		]
 	];
 	
-	public function __construct(Main $main){
-		$this->main = $main;
+	public function __construct(array $config){
+		$this->config = $config;
 		
 		Logger::log("Logging in...");
-		$loginInformation = new LoginInformation($this->main->config["username"], $this->main->config["password"]);
+		$loginInformation = new LoginInformation($this->config["username"], $this->config["password"]);
 		$this->idAPI = new MobileAppAPI($loginInformation);
 		$this->login();
+	}
+	
+	public function registerUpdateReceiver(CarStatusUpdateReceiver $updateReceiver){
+		$this->updateReceivers[] = $updateReceiver;
 	}
 	
 	public function tick(int $tickCnter){
@@ -79,11 +86,13 @@ class CarStatusFetcher{
 			}
 			//increase update rate while charging or hvac active:
 			if($this->carStatusData["chargeState"] == "readyForCharging" && $this->carStatusData["hvacState"] == "off"){
-				$this->currentUpdateRate = $this->main->config["base-updaterate"] ?? 60 * 10;
+				$this->currentUpdateRate = $this->config["base-updaterate"] ?? 60 * 10;
 			}else{
-				$this->currentUpdateRate = $this->main->config["increased-updaterate"] ?? 60;
+				$this->currentUpdateRate = $this->config["increased-updaterate"] ?? 60;
 			}
-			$this->main->pushCarStatus($this->carStatusData);
+			foreach($this->updateReceivers as $updateReceiver){
+				$updateReceiver->carStatusUpdate($this->carStatusData);
+			}
 		}
 	}
 	
@@ -93,16 +102,16 @@ class CarStatusFetcher{
 		$vehicles = $this->idAPI->apiGet("vehicles")["data"];
 		
 		$vehicleToUse = $vehicles[0];
-		if(!empty($this->main->config["vin"])){
+		if(!empty($this->config["vin"])){
 			foreach($vehicles as $vehicle){
-				if($vehicle["vin"] === $this->main->config["vin"]){
+				if($vehicle["vin"] === $this->config["vin"]){
 					$vehicleToUse = $vehicle;
 				}
 			}
-			if($vehicleToUse["vin"] !== $this->main->config["vin"]){
+			if($vehicleToUse["vin"] !== $this->config["vin"]){
 				Logger::var_dump($vehicles, "vehicles");
 				Logger::warning(
-					"Could not find the vehicle with the specified vin ('".$this->main->config["vin"]
+					"Could not find the vehicle with the specified vin ('".$this->config["vin"]
 					."')! If fetching fails, please double check your vin!"
 				);
 			}
@@ -157,7 +166,9 @@ class CarStatusFetcher{
 		
 		$carStatusData = [];
 		
-		#var_dump($data);
+		if(API::$VERBOSE){
+			Logger::var_dump($data);
+		}
 		$this->readValues($data, self::DATA_MAPPING, $carStatusData);
 		$this->carStatusData = $carStatusData;
 		#var_dump($carStatusData);

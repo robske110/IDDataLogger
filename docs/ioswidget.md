@@ -9,7 +9,10 @@ The iOS widget is created using Scriptable App.
 4. If you own a mac airdrop this file to your iOS device and open it in Scriptable. 
    
    On other operating system you'll need to send the file to your iOS device in another way, for example by e-mail.
-3. Edit the file according to the instructions in [Changing settings in the script](#changing-settings-in-the-script)
+3. Edit the file *in scriptable* according to the instructions in [Changing settings in the script](#changing-settings-in-the-script)
+
+If you prefer to edit the settings on your PC you will need to edit [Car.js](../Car.js) and copy the contents of it in 
+scriptable.
 
 ### Changing settings in the script
 
@@ -37,4 +40,5 @@ Further settings available are described in the following table:
 | showFinishTime    | set this to false if you want to hide the charge finish time and only display charge time remaining |
 | forceImageRefresh | set this to true after you've changed the carPicture (data/carPic.png) to force the widget to update it |
 | exampleData       | set this to true to force the widget to display example data and not to fetch from baseURL   |
-| socThreshold      | not implemented  |
+| timetravel        | set this to an unix timestamp (in seconds) if you want to display values as if the widget was last updated at that time. Mostly useful for debugging. |
+| socThreshold      | not implemented |

@@ -6,11 +6,8 @@ namespace robske_110\vwid\api;
 use DOMDocument;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
-use robske_110\vwid\api\exception\IDAPIException;
-use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\vwid\api\exception\IDLoginException;
 use robske_110\webutils\CurlError;
-use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
 
 class MobileAppAPI extends API{
@@ -71,7 +68,7 @@ class MobileAppAPI extends API{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
-			throw new IDLoginException("Unable to login. Check login information (password)! (Could not find location header.)");
+			throw new IDLoginException("Unable to login. Check login information (password)! See FAQ if issue persists. (Could not find location header)");
 		}
 		#var_dump($this->weConnectRedirFields);
 		Logger::debug("Getting real token...");

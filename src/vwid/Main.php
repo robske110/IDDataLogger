@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\chargesession\ChargeSessionHandler;
 use robske_110\vwid\db\DatabaseConnection;
 use robske_110\vwid\db\DBmigrator;
+use robske_110\vwid\api\API;
 use robske_110\vwid\wizard\SetupWizard;
 
 class Main{
@@ -18,12 +20,17 @@ class Main{
 	private DatabaseConnection $db;
 	
 	private CarStatusFetcher $carStatusFetcher;
-	private CarStatusWriter $carStatusWriter;
 	private ChargeSessionHandler $chargeSessionHandler;
 	
 	public function __construct(){
 		Logger::log("Reading config...");
-		$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true);
+		try{
+			$this->config = json_decode(file_get_contents(BASE_DIR."config/config.json"), true, 512, JSON_THROW_ON_ERROR);
+		}catch(\JsonException $exception){
+			ErrorUtils::logException($exception);
+			Logger::warning("Unable to parse config.json! Most likely invalid format.");
+			forceShutdown();
+		}
 		Logger::addOutputFilter($this->config["password"]);
 		
 		Logger::log("Connecting to db...");
@@ -40,25 +47,27 @@ class Main{
 			)[0]["table_name"] ?? "") !== "carstatus"
 		){
 			self::initializeTables($this->db);
-			if(($_SERVER['argv'][1] ?? "") != "nowizard"){
+			if(($_SERVER['argv'][1] ?? "") != "--no-wizard"){
 				new SetupWizard($this);
 				$didWizard = true;
 			}
 		}else{
 			new DBmigrator($this->db);
 		}
-		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "wizard"){
+		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "--wizard"){
 			new SetupWizard($this);
 		}
 		
-		new CarPictureHandler($this);
+		API::$VERBOSE = $this->config["logging"]["curl-verbose"] ?? false;
 		
-		$this->carStatusFetcher = new CarStatusFetcher($this);
-		$this->carStatusWriter = new CarStatusWriter($this);
+		new CarPictureHandler($this->db, $this->config);
+		
 		$this->chargeSessionHandler = new ChargeSessionHandler($this->db);
+		$this->carStatusFetcher = new CarStatusFetcher($this->config);
+		$this->carStatusFetcher->registerUpdateReceiver(new CarStatusWriter($this->db));
 	}
 	
-	public function getDB(){
+	public function getDB(): DatabaseConnection{
 		return $this->db;
 	}
 	
@@ -70,17 +79,8 @@ class Main{
 		};
 		$db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
 	}
-	
-	public function pushCarStatus(array $carStatusData){
-		$this->carStatusWriter->writeCarStatus($carStatusData);
-	}
-	
 	public function pushWrittenCarStatus(array $carStatusData){
 		$this->chargeSessionHandler->processCarStatus($carStatusData);
-	}
-	
-	public function getCarStatusWriter(): CarStatusWriter{
-		return $this->carStatusWriter;
 	}
 	
 	public function tick(int $tickCnter){

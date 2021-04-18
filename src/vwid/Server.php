@@ -64,7 +64,7 @@ Logger::init(
 	($config["logging"]["log-dir"] ?? BASE_DIR."/log/")
 );
 
-const VERSION = "v0.0.4";
+const VERSION = "v0.0.5";
 const IS_RELEASE = false;
 
 $hash = exec("git -C \"".BASE_DIR."\" rev-parse HEAD 2>/dev/null");

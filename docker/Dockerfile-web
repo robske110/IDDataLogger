@@ -1,0 +1,12 @@
+FROM php:8.0-apache AS base
+
+# install needed php extensions
+RUN apt-get update && apt-get install -y \
+         libpq-dev \
+         && docker-php-ext-install pdo_pgsql
+
+# copy puplic http content
+COPY ./public/. /var/www/html/
+
+# use production php config (no warnings)
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"

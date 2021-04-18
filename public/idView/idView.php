@@ -48,7 +48,8 @@ spl_autoload_register(function ($class){
 				<canvas id="chargingTimeRemaining"></canvas>
 			</div>
 		</div>
-		<div class="row" id="timetravelrow">
+		<div class="row">
+			<div id="carUpdate"></div>
 			<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
 			<button id="timetravelclear" onclick="timetravelPicker.clear();">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
@@ -64,8 +65,9 @@ spl_autoload_register(function ($class){
 			$xAxis = new Xaxis($carGraphData->time);
 
 			$batterySOC = new Dataset("batterySOC", $carGraphData->batterySOC, new Colour(0, 255, 255));
-			$xAxis->addDataset($batterySOC);
-			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
+			$targetSOC = new Dataset("targetSOC", $carGraphData->targetSOC, new Colour(255, 0, 0), null, true);
+			$xAxis->addDataset($batterySOC)->addDataset($targetSOC);
+			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->addDataset($targetSOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
 			
 			$remainingRange = new Dataset("remainingRange", $carGraphData->remainingRange, new Colour(0, 128, 255));
 			$xAxis->addDataset($remainingRange);
@@ -94,6 +96,7 @@ spl_autoload_register(function ($class){
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
+	<div id="versionInfo">v0.0.5-InDev</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>

@@ -17,7 +17,7 @@ Let's get to work then.
 
 ## Prerequisites
 You'll need
-- a Raspberry Pi with an internet connection and raspbian installed (alternatively any machine with a debian installation works)
+- a Raspberry Pi (see [supported models](https://github.com/robske110/IDDataLogger/wiki/Supported-Raspberry-PI-models)) with an internet connection and raspbian installed (alternatively any machine with a debian installation works)
 - a publicly routable IPv4 address if you want to use the widget and website from outside your home network (Some fibre plans for example do not include this)
 
 We assume you have your Raspberry Pi freshly setup and have the command prompt in front of you.
@@ -25,15 +25,22 @@ There are plenty of guides on the internet on how to archive this.
 
 You should see the following line: `pi@Raspberry Pi:~ $`
 
-We strongly recommend changing your password on the Raspberry Pi to a reasonably strong one.
+We strongly recommend changing your password on the Raspberry Pi to a strong one using the command `passwd`.
 
-Now you'll need to decide how you want to setup this project.
-There is a one-line command which attempts to install this project automagically, but if you prefer to do some things manually and learn some things in the process jump to this [section](#installing-manually).
+If any problems or questions pop up during set up:
+ 1. See the list of common problems and FAQs [here](https://github.com/robske110/IDDataLogger/wiki/FAQ-and-frequent-problems).
+ 2. If there are remaining problems or questions see [getting help](https://github.com/robske110/IDDataLogger/wiki/Getting-help).
+
+Now you'll need to decide how you want to set this project up.
+There is a one-line command which installs this project automagically, but if you prefer to do some things manually and
+learn some things in the process jump to this [section](#installing-manually).
 
 ## Installing using the install script
 
 The install script works and is tested on raspbian and debian.
 It assumes you have a fresh OS, especially without any existing PostgreSQL or webserver installations.
+
+*Note for debian:* Run the install script as a normal user, **do not run it under root**! Make sure to have sudo installed and be in sudoers!
 
 Enter (or copy) the following command to download and run the install script:
 
@@ -103,11 +110,13 @@ git clone https://github.com/robske110/IDDataLogger.git --recursive
 ```
 Once we have done this we need to configure the ID DataLogger. We'll need to tell it the database details and our VW
 account login information. We'll change into the directory of the program by executing `cd IDDataLogger` and then run
-the config wizard with `./config-wizard.sh --allow-insecure-http`. The allow insecure http option allows us to test
+the config wizard with `./config-wizard.sh --allow-insecure-http`. The `allow-insecure-http` option allows us to test
 and run the application in our home network.
+
 The wizard will first ask for the username of the VW ID account. This is the E-Mail address you used to register at VW.
 After that you'll need to enter the password for your VW account.
-Now we need to configure the database parameters. It will ask us for the hostname of the database server. Since we run 
+
+Now we need to configure the database parameters. It will ask us for the hostname of the database server. Since we run
 the database on the same machine the default value of `localhost` is correct and we can just press enter. Now it will
 ask us for the name of the database. We used createdb vwid earlier, so we'll need to enter `vwid` here. The username of
 the user we created earlier was `iddatalogger` so enter that for the next question. Now it will ask us for the password
@@ -166,7 +175,7 @@ It will now ask you if you want to generate an API key. If you want to use the i
 For more information on setting up the iOS widget using the API key see [Setting up the iOS Widget](ioswidget.md).
 After that it will ask you if you want to create an user. This user is used to log into the website. Make sure to choose
 a strong and long password. It is recommended to store this in a password manager.
-Note that you can create additional API keys or add additional users at any time using `./start.sh wizard`.
+Note that you can create additional API keys or add additional users at any time using `./start.sh --wizard`.
 
 After creating the API key and the user you should see `Done. Ready! Fetching car status...` and `Writing new data for timestamp`.
 This means you have successfully set up the ID DataLogger!
@@ -181,3 +190,22 @@ program and can help you debug issues if you ever have any trouble.
 
 If you want to view the website and have the iOS widget update outside your home network,
 please refer to [making the ID DataLogger available from the internet](https://github.com/robske110/IDDataLogger/wiki/Making-the-ID-DataLogger-available-from-the-internet).
+
+## Updating the installation in the future
+
+Make sure to periodically keep your installation up-to-date to receive security and bug fixes along with new features.
+Execute the following commands to ensure raspbian and other software is secure and up-to-date:
+```
+sudo apt update
+sudo apt -y upgrade
+sudo apt -y dist-upgrade
+systemctl reboot
+```
+To update the ID DataLogger you can either execute the following command to do this automatically:
+
+`cd ~/IDDataLogger && ./docs/update.sh`
+
+Or if you want to do it manually go into the directory of the ID DataLogger installation with `cd ~/IDDataLogger`, update
+the ID DataLogger software files using `git pull && git submodule update`, remove the old files in the webserver directory
+using `sudo rm -r /var/www/html/vwid`, copy the new files into the directory using `sudo cp -r ./public/. /var/www/html/vwid`
+and finally restart the ID DataLogger fetch program by running `sudo systemctl restart iddatalogger.service`.

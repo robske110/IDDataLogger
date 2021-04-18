@@ -5,6 +5,7 @@ require_once __DIR__."/../DatabaseConnection.php";
 class carGraphData{
 	public array $time = [];
 	public array $batterySOC = [];
+	public array $targetSOC = [];
 	public array $remainingRange = [];
 	public array $remainingChargingTime = [];
 	public array $chargePower = [];
@@ -14,6 +15,7 @@ class carGraphData{
 		return [
 			"time" => $this->time,
 			"batterySOC" => $this->batterySOC,
+			"targetSOC" => $this->targetSOC,
 			"remainingRange" => $this->remainingRange,
 			"remainingChargingTime" => $this->remainingChargingTime,
 			"chargePower" => $this->chargePower,
@@ -45,6 +47,7 @@ class carGraphDataProvider{
 		}
 		
 		$carGraphData->batterySOC = array_column($data, "batterysoc");
+		$carGraphData->targetSOC = array_column($data, "targetsoc");
 		$carGraphData->remainingRange = array_column($data, "remainingrange");
 		$carGraphData->remainingChargingTime = array_column($data, "remainingchargingtime");
 		$carGraphData->chargePower = array_column($data, "chargepower");
@@ -100,6 +103,7 @@ class carGraphDataProvider{
 				#echo("rem at $group[$i] ::".count($group));
 				unset($data->time[$group[$i]]);
 				unset($data->batterySOC[$group[$i]]);
+				unset($data->targetSOC[$group[$i]]);
 				unset($data->remainingRange[$group[$i]]);
 				unset($data->remainingChargingTime[$group[$i]]);
 				unset($data->chargePower[$group[$i]]);
@@ -108,6 +112,7 @@ class carGraphDataProvider{
 		}
 		$data->time = array_values($data->time);
 		$data->batterySOC = array_values($data->batterySOC);
+		$data->targetSOC = array_values($data->targetSOC);
 		$data->remainingRange = array_values($data->remainingRange);
 		$data->remainingChargingTime = array_values($data->remainingChargingTime);
 		$data->chargePower = array_values($data->chargePower);
@@ -118,7 +123,7 @@ class carGraphDataProvider{
 		$beginTime = new DateTime("@".$beginTime, new DateTimeZone("UTC"));
 		$endTime = new DateTime("@".$endTime, new DateTimeZone("UTC"));
 		$data = DatabaseConnection::getInstance()->query(
-			"SELECT time, batterysoc, remainingrange, remainingchargingtime, chargepower, chargeratekmph FROM carStatus WHERE time >= TIMESTAMP '".
+			"SELECT time, batterysoc, targetsoc, remainingrange, remainingchargingtime, chargepower, chargeratekmph FROM carStatus WHERE time >= TIMESTAMP '".
 			$beginTime->format("Y-m-d\TH:i:s").
 			"' AND time <= TIMESTAMP '".$endTime->format("Y-m-d\TH:i:s")."' ORDER BY time ASC"
 		);

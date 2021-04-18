@@ -77,8 +77,8 @@ foreach($carStatus as $key => $value){
 		}
 	}
 }
-$carStatus["lastChargeStartTime"] = (new DateTime($chargeStartRes["time"] ?? $carStatus["time"]))->format(DateTimeInterface::ATOM);
-$carStatus["time"] = (new DateTime($carStatus["time"]))->format(DateTimeInterface::ATOM);
+$carStatus["lastChargeStartTime"] = (new DateTime($chargeStartRes["time"] ?? $carStatus["time"], new DateTimeZone("UTC")))->format(DateTimeInterface::ATOM);
+$carStatus["time"] = (new DateTime($carStatus["time"], new DateTimeZone("UTC")))->format(DateTimeInterface::ATOM);
 #var_dump($carStatus);
 
 echo(json_encode($carStatus));
