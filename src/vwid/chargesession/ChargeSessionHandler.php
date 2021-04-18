@@ -8,9 +8,10 @@ use DateTimeZone;
 use PDOStatement;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
+use robske_110\vwid\CarStatusWrittenUpdateReceiver;
 use robske_110\vwid\db\DatabaseConnection;
 
-class ChargeSessionHandler{
+class ChargeSessionHandler implements CarStatusWrittenUpdateReceiver{
 	private DatabaseConnection $db;
 	private ?ChargeSession $chargeSession = null;
 	
@@ -45,6 +46,10 @@ class ChargeSessionHandler{
 		
 		Logger::log("Building past charge sessions from ".($res[0]["endtime"] ?? "beginning of data logging")."...");
 		$this->buildAll(new DateTime($res[0]["endtime"] ?? "@0", new DateTimeZone("UTC")));
+	}
+	
+	public function carStatusWrittenUpdate(array $carStatusData){
+		$this->processCarStatus($carStatusData);
 	}
 	
 	public function processCarStatus(array $carStatus, bool $alwaysWrite = true){

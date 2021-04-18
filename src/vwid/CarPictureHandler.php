@@ -8,6 +8,7 @@ use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
 use robske_110\vwid\api\LoginInformation;
 use robske_110\vwid\api\WebsiteAPI;
+use robske_110\vwid\db\DatabaseConnection;
 use RuntimeException;
 
 class CarPictureHandler{

@@ -64,7 +64,9 @@ class Main{
 		
 		$this->chargeSessionHandler = new ChargeSessionHandler($this->db);
 		$this->carStatusFetcher = new CarStatusFetcher($this->config);
-		$this->carStatusFetcher->registerUpdateReceiver(new CarStatusWriter($this->db));
+		$carStatusWriter = new CarStatusWriter($this->db);
+		$carStatusWriter->registerUpdateReceiver($this->chargeSessionHandler);
+		$this->carStatusFetcher->registerUpdateReceiver($carStatusWriter);
 	}
 	
 	public function getDB(): DatabaseConnection{
@@ -78,9 +80,6 @@ class Main{
 			'pgsql' => 'db.sql'
 		};
 		$db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
-	}
-	public function pushWrittenCarStatus(array $carStatusData){
-		$this->chargeSessionHandler->processCarStatus($carStatusData);
 	}
 	
 	public function tick(int $tickCnter){

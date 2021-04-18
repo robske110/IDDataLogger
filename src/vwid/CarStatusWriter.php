@@ -8,6 +8,7 @@ use PDOStatement;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
+use robske_110\vwid\db\DatabaseConnection;
 use RuntimeException;
 
 class CarStatusWriter implements CarStatusUpdateReceiver{
@@ -41,6 +42,8 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 	
 	private PDOStatement $carStatusWrite;
 	
+	/** @var CarStatusWrittenUpdateReceiver[]  */
+	private array $updateReceivers;
 	private array $lastWrittenCarStatus = [];
 	
 	public function __construct(DatabaseConnection $db){
@@ -61,6 +64,10 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 		$query .= QueryCreationHelper::createUpsert($this->db->getDriver(), "time", self::DB_FIELDS);
 		Logger::debug("Preparing query ".$query."...");
 		$this->carStatusWrite = $this->db->prepare($query);
+	}
+	
+	public function registerUpdateReceiver(CarStatusWrittenUpdateReceiver $updateReceiver){
+		$this->updateReceivers[] = $updateReceiver;
 	}
 	
 	public function carStatusUpdate(array $carStatusData){
@@ -127,7 +134,9 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 		foreach(self::DB_FIELDS as $dbField){
 			$written[$dbField] = $data[$pos++];
 		}
-		$this->main->pushWrittenCarStatus($written);
+		foreach($this->updateReceivers as $updateReceiver){
+			$updateReceiver->carStatusWrittenUpdate($written);
+		}
 		
 		$this->lastWrittenCarStatus = $data;
 	}
