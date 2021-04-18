@@ -27,6 +27,10 @@ You should see the following line: `pi@Raspberry Pi:~ $`
 
 We strongly recommend changing your password on the Raspberry Pi to a strong one using the command `passwd`.
 
+If any problems or questions pop up during set up:
+ 1. See the list of common problems and FAQs [here](https://github.com/robske110/IDDataLogger/wiki/FAQ-and-frequent-problems).
+ 2. If there are remaining problems or questions see [getting help](https://github.com/robske110/IDDataLogger/wiki/Getting-help).
+
 Now you'll need to decide how you want to set this project up.
 There is a one-line command which installs this project automagically, but if you prefer to do some things manually and
 learn some things in the process jump to this [section](#installing-manually).
@@ -106,11 +110,13 @@ git clone https://github.com/robske110/IDDataLogger.git --recursive
 ```
 Once we have done this we need to configure the ID DataLogger. We'll need to tell it the database details and our VW
 account login information. We'll change into the directory of the program by executing `cd IDDataLogger` and then run
-the config wizard with `./config-wizard.sh --allow-insecure-http`. The allow insecure http option allows us to test
+the config wizard with `./config-wizard.sh --allow-insecure-http`. The `allow-insecure-http` option allows us to test
 and run the application in our home network.
+
 The wizard will first ask for the username of the VW ID account. This is the E-Mail address you used to register at VW.
 After that you'll need to enter the password for your VW account.
-Now we need to configure the database parameters. It will ask us for the hostname of the database server. Since we run 
+
+Now we need to configure the database parameters. It will ask us for the hostname of the database server. Since we run
 the database on the same machine the default value of `localhost` is correct and we can just press enter. Now it will
 ask us for the name of the database. We used createdb vwid earlier, so we'll need to enter `vwid` here. The username of
 the user we created earlier was `iddatalogger` so enter that for the next question. Now it will ask us for the password

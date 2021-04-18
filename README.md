@@ -15,6 +15,7 @@ It includes an iOS widget (using Scriptable) and a webpage for seeing current st
 
 A quick heads-up beforehand: Setting this up for someone who has never set up a webserver before can be challenging.
 Don't worry though, the [beginners guide](docs/beginnerguide.md) guides you through every step you need to take.
+Common problems and answers to frequently asked questions can be found [here](https://github.com/robske110/IDDataLogger/wiki/FAQ-and-frequent-problems).
 Should you have any remaining questions or issues please see [getting help](https://github.com/robske110/IDDataLogger/wiki/Getting-help).
 
 ### Setup for advanced users
