@@ -15,14 +15,17 @@ spl_autoload_register(function ($class){
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
 	<link rel="stylesheet" type="text/css" href="css/datepicker.css">
+	<link rel="stylesheet" type="text/css" href="css/theme.css">
 	<link rel="stylesheet" type="text/css" href="css/idView.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+	<link rel="stylesheet" type="text/css" href="css/pageNavigation.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 	<title>IDView</title>
 </head>
 <body>
-	<div class="container">
+	<div class="page">
+	<div class="container" id="IDViewPage">
 		<div class="row">
 			<div class="element">
 				<img src="../carPicture.php" class="responsive" alt="Car">
@@ -96,7 +99,21 @@ spl_autoload_register(function ($class){
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
+	<iframe id="chargingOverviewPage" src="chargingOverview.html" class="hidden"></iframe>
+	</div>
 	<div id="versionInfo">v0.0.5-InDev</div>
+
+	<ul class="pagenav" id="pagenav">
+		<li class="selectablePage" id="IDView">
+			<a>Overview</a>
+		</li>
+		<li class="selectablePage" id="chargingOverview">
+			<a>ChargingOverview</a>
+		</li>
+		<li class="selectablePage" id="settings">
+			<a>Settings</a>
+		</li>
+	</ul>	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>
@@ -108,4 +125,5 @@ spl_autoload_register(function ($class){
 	$graph->render();
 	?>
 	<script src="js/idView.js"></script>
+	<script src="js/SelectableList.js"></script>
 </body>
