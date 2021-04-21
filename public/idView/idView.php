@@ -26,84 +26,88 @@ spl_autoload_register(function ($class){
 <body>
 	<div class="top"></div>
 	<div class="page">
-	<div class="container" id="IDViewPage">
-		<div class="row">
-			<div class="element">
-				<img src="../carPicture.php" class="responsive" alt="Car">
+		<div class="container" id="IDViewPage">
+			<div class="row">
+				<div class="element">
+					<img src="../carPicture.php" class="responsive" alt="Car">
+				</div>
+				<div class="element doughnut">
+					<canvas id="soc"></canvas>
+				</div>
+				<div class="element">
+					<span class="bigvalue" id="range">000km</span>
+					<span class="bigvalue" id="hvacstate">-------</span>
+					<span class="bigvalue" id="hvactargettemp">00.0°C</span>
+				</div>
 			</div>
-			<div class="element doughnut">
-				<canvas id="soc"></canvas>
+			<div class="row" id="chargingDisplay" style="display: none">
+				<div class="element">
+					<span class="bigvalue" id="chargingState">__chargestate__<br>__lockstate__</span>
+				</div>
+				<div class="element">
+					<span class="bigvalue" id="chargePower">000kW</span>
+					<span class="bigvalue" id="chargeKMPH">0 km/h</span>
+				</div>
+				<div class="element doughnut">
+					<canvas id="chargingTimeRemaining"></canvas>
+				</div>
 			</div>
-			<div class="element">
-				<span class="bigvalue" id="range">000km</span>
-				<span class="bigvalue" id="hvacstate">-------</span>
-				<span class="bigvalue" id="hvactargettemp">00.0°C</span>
+			<div class="row">
+				<div id="carUpdate"></div>
+				<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
+				<button id="timetravelclear" onclick="timetravelPicker.clear();">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+						<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+					</svg>
+				</button>
 			</div>
-		</div>
-		<div class="row" id="chargingDisplay" style="display: none">
-			<div class="element">
-				<span class="bigvalue" id="chargingState">__chargestate__<br>__lockstate__</span>
-			</div>
-			<div class="element">
-				<span class="bigvalue" id="chargePower">000kW</span>
-				<span class="bigvalue" id="chargeKMPH">0 km/h</span>
-			</div>
-			<div class="element doughnut">
-				<canvas id="chargingTimeRemaining"></canvas>
-			</div>
-		</div>
-		<div class="row">
-			<div id="carUpdate"></div>
-			<input type="text" class="flatpickr" id="timetravel" placeholder="timetravel">
-			<button id="timetravelclear" onclick="timetravelPicker.clear();">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-				<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-			</svg></button>
-		</div>
-		<div class="row">
-			<?php
-			$carGraphData = (new carGraphDataProvider((new DateTime)->sub(new DateInterval("P7D"))->setTime(0, 0)->getTimestamp(), time(), true))->getGraphData();
+			<div class="row">
+				<?php
+				$carGraphData = (new carGraphDataProvider((new DateTime)->sub(new DateInterval("P7D"))->setTime(0, 0)->getTimestamp(), time(), true))->getGraphData();
 			
-			$graph = (new Graph("carGraph", GraphDisplayType::LINE))->setLineTension(0);
+				$graph = (new Graph("carGraph", GraphDisplayType::LINE))->setLineTension(0);
 
-			$xAxis = new Xaxis($carGraphData->time);
+				$xAxis = new Xaxis($carGraphData->time);
 
-			$batterySOC = new Dataset("batterySOC", $carGraphData->batterySOC, new Colour(0, 255, 255));
-			$targetSOC = new Dataset("targetSOC", $carGraphData->targetSOC, new Colour(255, 0, 0), null, true);
-			$xAxis->addDataset($batterySOC)->addDataset($targetSOC);
-			$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->addDataset($targetSOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
+				$batterySOC = new Dataset("batterySOC", $carGraphData->batterySOC, new Colour(0, 255, 255));
+				$targetSOC = new Dataset("targetSOC", $carGraphData->targetSOC, new Colour(255, 0, 0), null, true);
+				$xAxis->addDataset($batterySOC)->addDataset($targetSOC);
+				$graph->addYaxis((new Yaxis("e", "%"))->addDataset($batterySOC)->addDataset($targetSOC)->setMinMax(0, 100)->displayGridLines(false)->display(false));
 			
-			$remainingRange = new Dataset("remainingRange", $carGraphData->remainingRange, new Colour(0, 128, 255));
-			$xAxis->addDataset($remainingRange);
-			$graph->addYaxis((new Yaxis("r", "km"))->addDataset($remainingRange)->displayGridLines(false));
+				$remainingRange = new Dataset("remainingRange", $carGraphData->remainingRange, new Colour(0, 128, 255));
+				$xAxis->addDataset($remainingRange);
+				$graph->addYaxis((new Yaxis("r", "km"))->addDataset($remainingRange)->displayGridLines(false));
 			
-			$remainingChargingTime = new Dataset("remainingChargingTime", $carGraphData->remainingChargingTime, new Colour(128, 0, 255), null, true);
-			$xAxis->addDataset($remainingChargingTime);
-			$graph->addYaxis((new Yaxis("t", "min"))->addDataset($remainingChargingTime)->displayGridLines(false)->display(false));
+				$remainingChargingTime = new Dataset("remainingChargingTime", $carGraphData->remainingChargingTime, new Colour(128, 0, 255), null, true);
+				$xAxis->addDataset($remainingChargingTime);
+				$graph->addYaxis((new Yaxis("t", "min"))->addDataset($remainingChargingTime)->displayGridLines(false)->display(false));
 
-			$chargePower = new Dataset("chargePower", $carGraphData->chargePower, new Colour(0, 255, 0));
-			$chargePower->setSteppedLine();
-			$xAxis->addDataset($chargePower);
-			$graph->addYaxis((new Yaxis("p", "kW"))->addDataset($chargePower)->setMinMax(0));
+				$chargePower = new Dataset("chargePower", $carGraphData->chargePower, new Colour(0, 255, 0));
+				$chargePower->setSteppedLine();
+				$xAxis->addDataset($chargePower);
+				$graph->addYaxis((new Yaxis("p", "kW"))->addDataset($chargePower)->setMinMax(0));
 
-			$chargeRateKMPH = new Dataset("chargeRateKMPH", $carGraphData->chargeRateKMPH, new Colour(0, 255, 0), null, true);
-			$chargeRateKMPH->setSteppedLine();
-			$xAxis->addDataset($chargeRateKMPH);
-			$graph->addYaxis((new Yaxis("k", "km/h"))->addDataset($chargeRateKMPH)->setMinMax(0)->display(false));
+				$chargeRateKMPH = new Dataset("chargeRateKMPH", $carGraphData->chargeRateKMPH, new Colour(0, 255, 0), null, true);
+				$chargeRateKMPH->setSteppedLine();
+				$xAxis->addDataset($chargeRateKMPH);
+				$graph->addYaxis((new Yaxis("k", "km/h"))->addDataset($chargeRateKMPH)->setMinMax(0)->display(false));
 
-			$graph->setXaxis($xAxis);
+				$graph->setXaxis($xAxis);
 
-			$graph->canvas();
-			?>
+				$graph->canvas();
+				?>
+			</div>
+			<div class="row">
+				<input type="text" class="flatpickr" id="graphDateRange">
+			</div>
 		</div>
-		<div class="row">
-			<input type="text" class="flatpickr" id="graphDateRange">
+		<iframe id="chargingOverviewPage" class="hidden"></iframe>
+		<div class="container hidden" id="settingsPage">
+			Settings are coming soon!
+			<div id="versionInfo">v0.0.6-InDev</div>
 		</div>
 	</div>
-	<iframe id="chargingOverviewPage" class="hidden"></iframe>
-	</div>
-	<div id="versionInfo">v0.0.5-InDev</div>
-
+	
 	<ul class="pagenav" id="pagenav">
 		<li class="selectablePage" id="IDView">
 			<a>Overview</a>
