@@ -54,6 +54,10 @@ class chargingSessionDataProvider{
 		return ((new DateTime($dbDate))->format(DateTimeInterface::ATOM));
 	}
 	
+	private static function nullableFormatDate(?string $dbDate): ?string{
+		return $dbDate === null ? null : self::formatDate($dbDate);
+	}
+	
 	public function getChargingSessions(): array{
 		$beginTime = microtime(true);
 		$data = $this->fetchFromDB($this->beginTime, $this->endTime);
@@ -61,10 +65,11 @@ class chargingSessionDataProvider{
 		$chargingSessions = [];
 		foreach($data as $chargeSessionData){
 			$chargingSession = new ChargingSession();
+			$chargingSession->id = $chargeSessionData["sessionid"];
 			$chargingSession->startTime = self::formatDate($chargeSessionData["starttime"]);
-			$chargingSession->endTime = self::formatDate($chargeSessionData["endtime"]);
-			$chargingSession->chargeStartTime = self::formatDate($chargeSessionData["chargestarttime"]);
-			$chargingSession->chargeEndTime = self::formatDate($chargeSessionData["chargeendtime"]);
+			$chargingSession->endTime = self::nullableFormatDate($chargeSessionData["endtime"]);
+			$chargingSession->chargeStartTime = self::nullableFormatDate($chargeSessionData["chargestarttime"]);
+			$chargingSession->chargeEndTime = self::nullableFormatDate($chargeSessionData["chargeendtime"]);
 			$chargingSession->chargeDuration = (int) $chargeSessionData["duration"];
 			$chargingSession->avgChargePower = (float) $chargeSessionData["avgchargepower"];
 			$chargingSession->maxChargePower = (float) $chargeSessionData["maxchargepower"];
