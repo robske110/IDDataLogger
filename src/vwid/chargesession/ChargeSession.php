@@ -94,6 +94,8 @@ class ChargeSession{
 		$this->minChargePower = min($this->minChargePower ?? PHP_INT_MAX, (float) $entry["chargepower"]);
 		$this->chargePowerAccum += $entry["chargepower"];
 		$this->chargeKMRaccum += $entry["chargeratekmph"];
+		$this->maxChargeKMR = max($this->maxChargeKMR, (float) $entry["chargeratekmph"]);
+		$this->minChargeKMR = min($this->minChargeKMR, (float) $entry["chargepower"]);
 		
 		$this->avgChargePower = $this->chargePowerAccum / $this->entryCount;
 		$this->avgChargeKMR = $this->chargeKMRaccum / $this->entryCount;
@@ -106,9 +108,18 @@ class ChargeSession{
 	public float $minChargeKMR = PHP_INT_MAX;
 	
 	public function niceOut(){
-		Logger::log("range: start: ".$this->rangeStart."km end: ".$this->rangeEnd."km duration: ".round($this->chargeDuration/3600, 1)."h".PHP_EOL.
-			"SOC: start: ".$this->socStart."% end: ".$this->socEnd."% target: ".$this->targetSOC."% chargeEnergy:".round($this->integralChargeEnergy / 3600, 2)."kWh cE_soc_calc".(58*($this->socEnd-$this->socStart))."kWh*100".PHP_EOL.
-			"POWER: avg: ".round($this->avgChargePower, 1)."kW / ".round($this->avgChargeKMR, 1)." min: ".$this->minChargePower."kW max: ".$this->maxChargePower."kW");
-		Logger::log("avgChgKMR/avgChgPower:".round($this->avgChargePower/$this->avgChargeKMR, 2)." start".round($this->rangeStart/$this->socStart, 1)." end".round($this->rangeEnd/$this->socEnd, 1));
+		Logger::log("Charge session: ".PHP_EOL.
+			"range: start: ".$this->rangeStart."km end: ".$this->rangeEnd."km".PHP_EOL.
+			"duration: ".round($this->chargeDuration/3600, 1)."h".PHP_EOL.
+			"SOC: start: ".$this->socStart."% end: ".$this->socEnd."% target: ".$this->targetSOC."%".PHP_EOL.
+			"chargeEnergy:".round($this->integralChargeEnergy / 3600, 2)."kWh ".
+			"cE_soc_calc".round((58*($this->socEnd-$this->socStart))/100, 2)."kWh".PHP_EOL.
+			"POWER: avg: ".round($this->avgChargePower, 1)."kW min: ".$this->minChargePower."kW max: ".$this->maxChargePower."kW"
+		);
+		Logger::debug(
+			"chgKMR: min".round($this->minChargeKMR, 1)." max".round($this->maxChargeKMR, 1)." avg". round($this->avgChargeKMR, 1).PHP_EOL.
+			"avgChgKMR/avgChgPower: ".round($this->avgChargePower/$this->avgChargeKMR, 2).PHP_EOL.
+			"range/soc: start".round($this->rangeStart/$this->socStart, 1)." end".round($this->rangeEnd/$this->socEnd, 1)
+		);
 	}
 }
