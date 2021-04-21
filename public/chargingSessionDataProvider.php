@@ -3,6 +3,8 @@ declare(strict_types=1);
 require_once "DatabaseConnection.php";
 
 class ChargingSession{
+	public int $id;
+	
 	public int $chargeDuration; //sec
 	public ?float $avgChargePower = null;
 	public ?float $maxChargePower = null;
@@ -21,6 +23,7 @@ class ChargingSession{
 	
 	public function toArray(): array{
 		return [
+			"id" => $this->id,
 			"startTime" => $this->startTime,
 			"endTime" => $this->endTime,
 			"chargeStartTime" => $this->chargeStartTime,
@@ -98,7 +101,8 @@ class chargingSessionDataProvider{
 		$beginTime = new DateTime("@".$beginTime, new DateTimeZone("UTC"));
 		$endTime = new DateTime("@".$endTime, new DateTimeZone("UTC"));
 		$data = DatabaseConnection::getInstance()->query(
-			"SELECT starttime,
+			"SELECT sessionid,
+			starttime,
 			endtime,
 			chargestarttime,
 			chargeendtime,
