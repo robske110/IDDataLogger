@@ -5,7 +5,7 @@
   --accent-color-main: #111;
   --accent-color-secondary: #222;
   --accent-color-tertiary: #2c2c2c;
-  --transparent-accent: rgba(34, 34, 34, 0.5);
+  --transparent-accent: rgba(25, 25, 25, 0.75);
 }
 [data-theme="dimmed"]{
   --font-color: white;

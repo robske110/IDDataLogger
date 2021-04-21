@@ -11,6 +11,13 @@
 
 .chargeSessions{
   list-style-type: none;
+  padding-bottom: 0.5em;
+}
+@media only screen and (max-width: 750px){
+  .chargeSessions{
+    list-style-type: none;
+    margin-bottom: 49px;
+  }
 }
 .chargeSession{
   padding: 1.5vw;
@@ -38,20 +45,20 @@
   justify-content: center;
   align-items: center;
 }
-.chargeSessionElement ~ .value{
+.value{
   font-size: 2.25vw;
 }
-.chargeSessionElement ~ .value.big{
+.value.big{
   font-size: 4vw;
 }
-.chargeSessionElement ~ .value.small{
+.value.small{
   font-size: 1.75vw;
 }
-.chargeSessionElement ~ .unit{
+.unit{
   font-size: 2vw;
   color: var(--font-color-secondary);
 }
-.chargeSessionElement ~ .unit.small{
+.unit.small{
   font-size: 1.5vw;
 }
 .chargeSessionElement > label{

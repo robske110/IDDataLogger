@@ -4,7 +4,7 @@
 	top: 0;
 	left: 0;
 	position: fixed;
-	width: 160px;
+	width: 170px;
 	height: 100%;
 	border-right: thin solid var(--accent-color-secondary);
   backdrop-filter: blur(6px);
@@ -27,7 +27,9 @@
 }
 
 .page{
-	padding-left: 160px;
+	padding-left: 170px;
+  margin: auto;
+  max-width: 1500px;
 }
 
 ul .horizontal > li {
@@ -52,7 +54,6 @@ ul .horizontal > li {
 	}
 	.pagenav > li{
 		display: inline-block;
-		zoom: 1;
 	}
 	.page{
 		padding-left: 0;

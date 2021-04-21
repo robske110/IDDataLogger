@@ -24,6 +24,7 @@ spl_autoload_register(function ($class){
 	<title>IDView</title>
 </head>
 <body>
+	<div class="top"></div>
 	<div class="page">
 	<div class="container" id="IDViewPage">
 		<div class="row">
@@ -99,7 +100,7 @@ spl_autoload_register(function ($class){
 			<input type="text" class="flatpickr" id="graphDateRange">
 		</div>
 	</div>
-	<iframe id="chargingOverviewPage" src="chargingOverview.html" class="hidden"></iframe>
+	<iframe id="chargingOverviewPage" class="hidden"></iframe>
 	</div>
 	<div id="versionInfo">v0.0.5-InDev</div>
 
@@ -108,7 +109,7 @@ spl_autoload_register(function ($class){
 			<a>Overview</a>
 		</li>
 		<li class="selectablePage" id="chargingOverview">
-			<a>ChargingOverview</a>
+			<a>Charging Sessions</a>
 		</li>
 		<li class="selectablePage" id="settings">
 			<a>Settings</a>
@@ -126,4 +127,5 @@ spl_autoload_register(function ($class){
 	?>
 	<script src="js/idView.js"></script>
 	<script src="js/SelectableList.js"></script>
+	<script src="js/pageNavigation.js"></script>
 </body>
