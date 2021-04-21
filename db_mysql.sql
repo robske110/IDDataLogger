@@ -26,18 +26,18 @@ CREATE TABLE IF NOT EXISTS carStatus (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    userid serial NOT NULL PRIMARY KEY,
-    username varchar(64) UNIQUE NOT NULL,
-    hash text NOT NULL
+  userid   serial NOT NULL PRIMARY KEY,
+  username varchar(64) UNIQUE NOT NULL,
+  hash     text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS authKeys (
-    authKey text UNIQUE NOT NULL
+  authKey text UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS carPictures (
-    pictureID varchar(128) NOT NULL PRIMARY KEY,
-    carPicture mediumtext NOT NULL
+  pictureID  varchar(128) NOT NULL PRIMARY KEY,
+  carPicture mediumtext NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS chargingSessions (
@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS chargingSessions (
 );
 
 CREATE TABLE IF NOT EXISTS settings (
-    key   varchar(128) NOT NULL PRIMARY KEY,
-    value mediumtext
+  settingKey   varchar(128) NOT NULL PRIMARY KEY,
+  settingValue mediumtext
 )

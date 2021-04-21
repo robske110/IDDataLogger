@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS chargingSessions (
 );
 
 CREATE TABLE IF NOT EXISTS settings (
-    key   varchar(128) NOT NULL PRIMARY KEY,
-    value text
+  settingKey   varchar(128) NOT NULL PRIMARY KEY,
+  settingValue text
 )

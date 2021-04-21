@@ -18,7 +18,7 @@ class DBmigrator{
 	
 	public function doAutoMigration(){
 		try{
-			$this->db->query("SELECT value FROM settings WHERE key = 'dbschemaversion'");
+			$this->db->query("SELECT value FROM settings WHERE settingKey = 'dbschemaversion'");
 		}catch(RuntimeException){
 			Logger::notice("Could not find settings table, upgrading schema to V1");
 			Main::initializeTables($this->db);
@@ -28,8 +28,8 @@ class DBmigrator{
 	
 	private function setDBversion(string $dbVersion){
 		$this->db->query(
-			"INSERT INTO settings(key, value) VALUES('dbschemaversion', $dbVersion) ".
-			QueryCreationHelper::createUpsert($this->db->getDriver(), "key", ["value"])
+			"INSERT INTO settings(settingKey, settingValue) VALUES('dbschemaversion', $dbVersion) ".
+			QueryCreationHelper::createUpsert($this->db->getDriver(), "settingKey", ["settingValue"])
 		);
 	}
 }
