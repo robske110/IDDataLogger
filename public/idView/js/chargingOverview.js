@@ -52,26 +52,30 @@ async function getJSON(link){
 	return (await fetch(link)).json();
 }
 
-let beginTime = new Date();
-beginTime.setDate(beginTime.getDate()-300);
-beginTime.setHours(0,0,0,0);
+let beginTime = null;
 let endTime = null;
 
 async function updateChargingSessions(inital = false){
-	console.log(beginTime);
-	const chargingSessions = await getJSON(
-		"../chargingSessions.php?beginTime="+Math.round(beginTime.getTime()/1000)+
-		(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000))
-	);
+	let chargingSessions;
+	try{
+		chargingSessions = await getJSON(
+			"../chargingSessions.php"+
+			(beginTime == null ? "" : "?beginTime="+Math.round(beginTime.getTime()/1000))+
+			(endTime == null ? "" : "&endTime="+Math.round(endTime.getTime()/1000))
+		);
+	}catch(SyntaxError){
+		window.location.replace("../login/login.php?destination=../idView/chargingOverview.html");
+		return;
+	}
 	processChargingSession(chargingSessions, inital);
 }
-
-setInterval(updateChargingSessions, 5000);
 
 function processChargingSession(chargingSessions, last = false){
 	for(const cid in chargingSessions){
 		createChargeSession(chargingSessions[cid], last);
 	}
 }
+
+setInterval(updateChargingSessions, 30000);
 
 updateChargingSessions(true);
