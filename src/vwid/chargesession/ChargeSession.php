@@ -114,7 +114,11 @@ class ChargeSession{
 			"SOC: start: ".$this->socStart."% end: ".$this->socEnd."% target: ".$this->targetSOC."%".PHP_EOL.
 			"chargeEnergy:".round($this->integralChargeEnergy / 3600, 2)."kWh ".
 			"cE_soc_calc".round((58*($this->socEnd-$this->socStart))/100, 2)."kWh".PHP_EOL.
-			"POWER: avg: ".round($this->avgChargePower, 1)."kW min: ".$this->minChargePower."kW max: ".$this->maxChargePower."kW"
+			(
+				$this->avgChargePower === null ? "NO chargePower" :
+				"POWER: avg: ".round($this->avgChargePower, 1)."kW min: ".$this->minChargePower.
+				"kW max: ".$this->maxChargePower."kW"
+			)
 		);
 		Logger::debug(
 			"chgKMR: min".round($this->minChargeKMR, 1)." max".round($this->maxChargeKMR, 1)." avg". round($this->avgChargeKMR, 1).PHP_EOL.
