@@ -120,6 +120,9 @@ class ChargeSession{
 				"kW max: ".$this->maxChargePower."kW"
 			)
 		);
+		if(!isset($this->avgChargeKMR)){
+			return;
+		}
 		Logger::debug(
 			"chgKMR: min".round($this->minChargeKMR, 1)." max".round($this->maxChargeKMR, 1)." avg". round($this->avgChargeKMR, 1).PHP_EOL.
 			"avgChgKMR/avgChgPower: ".round($this->avgChargePower/$this->avgChargeKMR, 2).PHP_EOL.
