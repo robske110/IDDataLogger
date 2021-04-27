@@ -54,7 +54,7 @@ class chargingSessionDataProvider{
 	}
 	
 	private static function formatDate(string $dbDate): string{
-		return ((new DateTime($dbDate))->format(DateTimeInterface::ATOM));
+		return ((new DateTime($dbDate, new DateTimeZone("UTC")))->format(DateTimeInterface::ATOM));
 	}
 	
 	private static function nullableFormatDate(?string $dbDate): ?string{
