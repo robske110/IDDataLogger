@@ -16,7 +16,7 @@ const timetravel = null; //set to a unix timestamp to emulate the script being r
 
 const socThreshold = 95 //not implemented
 
-// WIDGET VERSION: v0.0.5-InDev
+// WIDGET VERSION: v0.0.6-InDev
 
 // Created by robske_110 24.01.2020
 // This script is originally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
@@ -42,6 +42,7 @@ const translations = {
 		hvac: "HVAC",
 		hvacStatus: {
 			heating: "heating",
+			cooling: "cooling",
 			ventilation: "ventilating",
 			off: "off"
 		}
@@ -59,6 +60,7 @@ const translations = {
 		hvac: "Klimaanlage",
 		hvacStatus: {
 			heating: "Heizen",
+			cooling: "Kühlen",
 			ventilation: "Lüften",
 			off: "Aus"
 		}
@@ -216,6 +218,9 @@ async function createWidget() {
 	switch (data.hvacState){
 		case "heating":
 			hvacStatus = getTranslatedText("hvacStatus.heating");
+			break;
+		case "cooling:":
+			hvacStatus = getTranslatedText("hvacStatus.cooling");
 			break;
 		case "ventilation":
 			hvacStatus = getTranslatedText("hvacStatus.ventilation");

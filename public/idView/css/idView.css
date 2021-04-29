@@ -57,6 +57,9 @@ body{
 .heat{
   color: red;
 }
+.cool{
+  color: aqua;
+}
 #versionInfo{
   color: var(--font-color-secondary);
   

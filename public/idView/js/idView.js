@@ -116,19 +116,25 @@ function processCarStatus(carStatus){
 	targetTemp.setValue(carStatus.hvacTargetTemp*10);
 		
 	let hvacstate;
+	document.getElementById("hvacstate").classList.remove("heat");
+	document.getElementById("hvacstate").classList.remove("cool");
 	switch(carStatus.hvacState){
 	case "heating":
 		hvacstate = "heating";
 		document.getElementById("hvacstate").classList.add("heat");
 		break;
+	case "cooling":
+		hvacstate = "cooling";
+		document.getElementById("hvacstate").classList.add("cool");
+		break;
 	case "off":
 		hvacstate = "hvac off";
-		document.getElementById("hvacstate").classList.remove("heat");
 		break;
 	case "ventilation":
 		hvacstate = "ventilating";
-		document.getElementById("hvacstate").classList.remove("heat");
 		break;
+	default:
+		hvacstate = "unknown: "+carStatus.hvacstate;
 	}
 	document.getElementById("hvacstate").innerHTML = hvacstate;
 }
