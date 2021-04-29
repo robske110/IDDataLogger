@@ -206,6 +206,8 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 				const index = objects[0]._index
 				this.displaySlice = index
 				this.update()
+			}else{
+				this.displaySlice = undefined;
 			}
 		}.bind(this)
 		this.update()
@@ -222,8 +224,10 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 			if(index == 1){
 				if(a.data[index].hidden){
 					this.chart.data.datasets[0].data[2] = this.max-this.value;
+					this.displaySlice = 0;
 				}else{
 					this.chart.data.datasets[0].data[2] = this.max-this.end;
+					this.displaySlice = undefined;
 				}
 			}
     	}
