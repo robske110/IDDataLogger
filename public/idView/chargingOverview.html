@@ -1,0 +1,82 @@
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="css/theme.css">
+	<link rel="stylesheet" type="text/css" href="css/chargingOverview.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+	<title>chargingOverview</title>
+</head>
+<body>
+	<ul class="chargeSessions" id="chargeSessions">
+		<li class="chargeSession" id="chargeSessionHeader">
+			<div class="chargeSessionElement doughnut">
+				<span class="value small">SOC</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="value small">charged kWh</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="value small">gained range</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="value small">power (⌀, min, max)</span>
+			</div>
+			<div class="chargeSessionElement">
+				<span class="value small">duration and date</span>
+			</div>
+		</li>
+		<template id="chargeSession">
+			<li class="chargeSession">
+				<div class="chargeSessionElement doughnut">
+					<canvas id="chargesoc"></canvas>
+				</div>
+				<div class="chargeSessionElements">
+					<div class="chargeSessionElement">
+						<label>charged kWh</label>
+						<span>
+							<span class="value big" id="kWh">00.00</span>
+							<span class="unit">kWh</span>
+						</span>
+					</div>
+					<div class="chargeSessionElement">
+						<label>gained range</label>
+						<span>
+							<span class="value big" id="range">000</span>
+							<span class="unit">km</span>
+						</span>
+					</div>
+					<div class="chargeSessionElement">
+						<label>power(⌀, min, max)</label>
+						<span>
+							<span class="value big" id="avgchargepower">XXX</span>
+							<span class="unit">kW</span>
+						</span>
+						<span>
+							<span class="value" id="minChargePower">XXX</span>
+							<span class="unit small">kW</span>
+							<span class="value">|</span>
+							<span class="value" id="maxChargePower">XXX</span>
+							<span class="unit small">kW</span>
+						</span>
+					</div>
+					<div class="chargeSessionElement">
+						<label>duration and date</label>
+						<span>
+							<span class="value big" id="duration">XXX</span>
+							<span class="unit">h</span>
+						</span>
+						<div class="chargeSessionTimeDate">
+							<span class="value small" id="time">XX:XX - XX:XX</span>
+							<span class="value small" id="date">XX.XX.XX</span>
+						</div>
+					</div>
+				</div>
+			</li>
+		</template>
+	</ul>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<script src="js/DoughnutValue.js"></script>
+	<script src="js/AnimatedValue.js"></script>
+	<script src="js/chargingOverview.js"></script>
+</body>

@@ -1,0 +1,23 @@
+:root{
+  --font-color: white;
+  --font-color-secondary: #777;
+  --background-color: black;
+  --accent-color-main: #111;
+  --accent-color-secondary: #222;
+  --accent-color-tertiary: #2c2c2c;
+  --transparent-accent: rgba(25, 25, 25, 0.75);
+}
+[data-theme="dimmed"]{
+  --font-color: white;
+  --font-color-secondary: #999;
+  --background-color: #111;
+  --accent-color-main: #1c1c1c;
+  --accent-color-secondary: #222;
+  --accent-color-tertiary: #333;
+}
+body{
+  color: var(--font-color);
+  background: var(--background-color);
+  margin: 0;
+  font-family: "Avenir", sans-serif;
+}

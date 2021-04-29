@@ -1,0 +1,61 @@
+.pagenav{
+  margin-top: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
+  position: fixed;
+  width: 170px;
+  height: 100%;
+  border-right: thin solid var(--accent-color-secondary);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background-color: var(--transparent-accent);
+}
+.pagenav a{
+  display: block;
+  padding: 16px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+/* Active page */
+.pagenav a.active {
+  background-color: var(--accent-color-secondary);
+}
+
+.pagenav a:hover:not(.active) {
+  background-color: var(--accent-color-tertiary);
+}
+
+.page{
+  padding-left: 170px;
+  margin: auto;
+  max-width: 1500px;
+}
+
+ul .horizontal > li {
+  display: inline-block;
+  /* You can also add some margins here to make it look prettier */
+  zoom: 1;
+}
+
+@media only screen and (max-width: 750px){
+  .pagenav{
+    display: flex;
+    justify-content: space-between;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    top: auto;
+    white-space: nowrap;
+    overflow-y: auto;
+    border-top: thin solid var(--accent-color-secondary);
+    margin-bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pagenav > li{
+    display: inline-block;
+  }
+  .page{
+    padding-left: 0;
+  }
+}

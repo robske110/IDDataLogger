@@ -1,27 +1,41 @@
 body{
-	color: white;
-	background: black;
-	font-family: "Avenir", sans-serif;
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-right: env(safe-area-inset-right);
+  min-height: calc(100vh - env(safe-area-inset-top, 50vh) - env(safe-area-inset-bottom, 50vh)); /* iOS is weird */
+}
+.top{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: env(safe-area-inset-top, 0px);
+  width: 100%;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background-color: rgba(0,0,0,0.75);
 }
 .container{
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  margin-left: 1em;
+  margin-right: 1em;
 }
 .row{
-	display: flex;
-	justify-content: space-between;
-	align-content: stretch;
-	margin-bottom: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-content: stretch;
+  margin-bottom: 1em;
 }
 .row > *{
-	flex-grow: 1;
-	flex-shrink: 1;
-	min-width: 0;
-	width: 33%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 #timetravel, .flatpickr-mobile{
   margin-left: auto;
@@ -29,28 +43,39 @@ body{
 #carUpdate{
   width: auto;
   flex-grow: 0;
-  color: #555;
+  color: var(--font-color-secondary);
   margin-right: 10;
 }
 .bigvalue{
-	font-size: 5vw;
-	text-align: center;
+  font-size: 5vw;
+  text-align: center;
 }
 .responsive {
-	width: 100%;
-	height: auto;
+  width: 100%;
+  height: auto;
 }
 .heat{
-	color: red;
+  color: red;
 }
 #versionInfo{
-  position: fixed;
-  left: 10px;
-  bottom: 5px;
-  color: #2f2f2f;
+  color: var(--font-color-secondary);
+  
+}
+.hidden{
+  display: none;
+}
+iframe{
+  border: none;
+  width: 100%;
+  height: 100%;
 }
 @media screen and (min-width: 480px) {
   .container {
     margin: 1em;
+  }
+}
+@media screen and (min-width: 1500px) {
+  .bigvalue {
+    font-size: 5em;
   }
 }

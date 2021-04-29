@@ -5,6 +5,10 @@ namespace robske_110\vwid;
 
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
+use robske_110\utils\QueryCreationHelper;
+use robske_110\vwid\chargesession\ChargeSessionHandler;
+use robske_110\vwid\db\DatabaseConnection;
+use robske_110\vwid\db\DBmigrator;
 use robske_110\vwid\api\API;
 use robske_110\vwid\wizard\SetupWizard;
 
@@ -16,6 +20,7 @@ class Main{
 	private DatabaseConnection $db;
 	
 	private CarStatusFetcher $carStatusFetcher;
+	private ChargeSessionHandler $chargeSessionHandler;
 	
 	public function __construct(){
 		Logger::log("Reading config...");
@@ -34,22 +39,20 @@ class Main{
 			$this->config["db"]["user"], $this->config["db"]["password"] ?? null,
 			$this->config["db"]["driver"] ?? "pgsql"
 		);
+		QueryCreationHelper::initDefaults($this->config["db"]["driver"] ?? "pgsql");
 		
 		$didWizard = false;
 		if(strtolower($this->db->query(
 			"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'carstatus' OR TABLE_NAME = 'carStatus'"
 			)[0]["table_name"] ?? "") !== "carstatus"
 		){
-			Logger::log("Initializing db tables...");
-			$sqlFilename = match($this->db->getDriver()){
-				'mysql' => 'db_mysql.sql',
-				'pgsql' => 'db.sql'
-			};
-			$this->db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
+			self::initializeTables($this->db);
 			if(($_SERVER['argv'][1] ?? "") != "--no-wizard"){
 				new SetupWizard($this);
 				$didWizard = true;
 			}
+		}else{
+			new DBmigrator($this->db);
 		}
 		if(!$didWizard && ($_SERVER['argv'][1] ?? "") === "--wizard"){
 			new SetupWizard($this);
@@ -59,12 +62,24 @@ class Main{
 		
 		new CarPictureHandler($this->db, $this->config);
 		
+		$this->chargeSessionHandler = new ChargeSessionHandler($this->db);
 		$this->carStatusFetcher = new CarStatusFetcher($this->config);
-		$this->carStatusFetcher->registerUpdateReceiver(new CarStatusWriter($this->db));
+		$carStatusWriter = new CarStatusWriter($this->db);
+		$carStatusWriter->registerUpdateReceiver($this->chargeSessionHandler);
+		$this->carStatusFetcher->registerUpdateReceiver($carStatusWriter);
 	}
 	
 	public function getDB(): DatabaseConnection{
 		return $this->db;
+	}
+	
+	public static function initializeTables(DatabaseConnection $db){
+		Logger::log("Initializing db tables...");
+		$sqlFilename = match($db->getDriver()){
+			'mysql' => 'db_mysql.sql',
+			'pgsql' => 'db.sql'
+		};
+		$db->getConnection()->exec(file_get_contents(BASE_DIR.$sqlFilename));
 	}
 	
 	public function tick(int $tickCnter){

@@ -21,7 +21,7 @@ class SetupWizard extends InteractiveWizard{
 		
 		$options = getopt("", ["frontend-username:", "frontend-password:", "frontend-apikey:"]);
 		if(empty($options["frontend-apikey"])){
-			$additional = $this->main->getDB()->query(" SELECT count(*) FROM authKeys")[0]["count"] > 0;
+			$additional = reset($this->main->getDB()->query("SELECT count(*) FROM authKeys")[0]) > 0;
 			$this->message(
 				"We can now generate an ".($additional ? "additional" : "").
 				" API key for accessing the carStatus and carPicture API. It is required for the iOS widget."
@@ -58,7 +58,7 @@ class SetupWizard extends InteractiveWizard{
 	}
 	
 	private function addApiKey(string $apiKey){
-		if($this->main->getDB()->query("SELECT count(*) FROM authKeys WHERE authkey = '".$apiKey."'")[0]["count"] == 0){
+		if(reset($this->main->getDB()->query("SELECT count(*) FROM authKeys WHERE authkey = '".$apiKey."'")[0]) == 0){
 			$this->main->getDB()->query("INSERT INTO authKeys(authKey) VALUES('".$apiKey."')");
 		}
 	}

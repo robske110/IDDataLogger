@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace robske_110\vwid;
+namespace robske_110\vwid\db;
 
 use PDO;
 use PDOException;
@@ -51,7 +51,7 @@ class DatabaseConnection{
 		}catch(PDOException $e){
 			throw $this->handlePDOexception($e, "Query ".$sql." failed");
 		}
-		return $res->fetchAll();
+		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
 	
 	public function prepare(string $sql): PDOStatement{
@@ -59,6 +59,15 @@ class DatabaseConnection{
 			$pdoStatement = $this->connection->prepare($sql);
 		}catch(PDOException $e){
 			throw $this->handlePDOexception($e, "Preparing query ".$sql." failed");
+		}
+		return $pdoStatement;
+	}
+	
+	public function queryStatement(string $sql): PDOStatement{
+		try{
+			$pdoStatement = $this->connection->query($sql);
+		}catch(PDOException $e){
+			throw $this->handlePDOexception($e, "Running query ".$sql." failed");
 		}
 		return $pdoStatement;
 	}
