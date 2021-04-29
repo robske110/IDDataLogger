@@ -104,7 +104,7 @@ spl_autoload_register(function ($class){
 		<iframe id="chargingOverviewPage" class="hidden"></iframe>
 		<div class="container hidden" id="settingsPage">
 			Settings are coming soon!
-			<div id="versionInfo">v0.0.6-InDev</div>
+			<div id="versionInfo">v0.0.6-InDev-mm</div>
 		</div>
 	</div>
 	
