@@ -78,14 +78,16 @@ class ChargeSession{
 		}
 		
 		++$this->entryCount;
-		
 		$currTime = (new DateTime($entry["time"]))->getTimestamp();
+		
+		$this->chargeDuration = $currTime - $this->chargeStartTime->getTimestamp();
+		
 		if(isset($this->lastTime)){
 			$this->integralChargeEnergy += ($currTime - $this->lastTime) * $this->lastChargePower;
 		}
 		$this->lastTime = $currTime;
-		$this->lastChargePower = (float) $entry["chargepower"];
 		
+		$this->lastChargePower = (float) $entry["chargepower"];
 		if($entry["chargepower"] == 0){
 			Logger::debug("Charging at ".$entry["time"]." with 0kW!");
 			return false;
