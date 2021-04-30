@@ -8,7 +8,7 @@ class DoughnutValue{
 		this.legendName = legendName;
 		
 		this.animationProgress = 0;
-				
+
 		this.createChart();
 		window.addEventListener('resize', function(){
 			setTimeout(this.update.bind(this), 100);
@@ -79,7 +79,7 @@ class DoughnutValue{
 	
 	onTooltipLabelCallback(tooltipItem, data){
 		let label = data.labels[tooltipItem.index] || '';
-					
+
 		let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
 		if(label){
 			label += ': ';
@@ -168,8 +168,8 @@ class SOCDoughnutValue extends DoughnutValue{
 			return;
 		}
 		let n, i, a;
-    	for(n = 0, i = (this.chart.data.datasets || []).length; n < i; ++n){
-    		(a = this.chart.getDatasetMeta(n)).data[index] && (a.data[index].hidden = !a.data[index].hidden);
+		for(n = 0, i = (this.chart.data.datasets || []).length; n < i; ++n){
+			(a = this.chart.getDatasetMeta(n)).data[index] && (a.data[index].hidden = !a.data[index].hidden);
 			if(index == 1){
 				if(a.data[index].hidden){
 					this.chart.data.datasets[0].data[2] = this.max-this.value;
@@ -177,8 +177,8 @@ class SOCDoughnutValue extends DoughnutValue{
 					this.chart.data.datasets[0].data[2] = this.max-Math.max(this.value, this.targetSOC);
 				}
 			}
-    	}
-    	this.chart.update();
+		}
+		this.chart.update();
 	}
 	
 	generateData(){
@@ -219,8 +219,8 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 			return;
 		}
 		let n, i, a;
-    	for(n = 0, i = (this.chart.data.datasets || []).length; n < i; ++n){
-    		(a = this.chart.getDatasetMeta(n)).data[index] && (a.data[index].hidden = !a.data[index].hidden);
+		for(n = 0, i = (this.chart.data.datasets || []).length; n < i; ++n){
+			(a = this.chart.getDatasetMeta(n)).data[index] && (a.data[index].hidden = !a.data[index].hidden);
 			if(index == 1){
 				if(a.data[index].hidden){
 					this.chart.data.datasets[0].data[2] = this.max-this.value;
@@ -230,8 +230,8 @@ class SOCchargeDoughnutValue extends DoughnutValue{
 					this.displaySlice = undefined;
 				}
 			}
-    	}
-    	this.chart.update();
+		}
+		this.chart.update();
 	}
 	
 	onTooltipFilterCallback(tooltipItem, data) {

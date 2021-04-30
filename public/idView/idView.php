@@ -11,6 +11,7 @@ spl_autoload_register(function ($class){
 	return true;
 });
 ?>
+<!DOCTYPE html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
@@ -18,9 +19,9 @@ spl_autoload_register(function ($class){
 	<link rel="stylesheet" type="text/css" href="css/theme.css">
 	<link rel="stylesheet" type="text/css" href="css/idView.css">
 	<link rel="stylesheet" type="text/css" href="css/pageNavigation.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover"/>
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<title>IDView</title>
 </head>
 <body>
@@ -118,7 +119,7 @@ spl_autoload_register(function ($class){
 		<li class="selectablePage" id="settings">
 			<a>Settings</a>
 		</li>
-	</ul>	
+	</ul>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@0.2.1"></script>

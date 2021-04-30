@@ -10,14 +10,14 @@ const dateLocaleSetting = "de-DE";
 flatpickr.localize(flatpickr.l10ns.de);
 let timetravelPicker = flatpickr("#timetravel", {dateFormat: "d.m.Y H:i", onChange: timetravelUser, enableTime: true, time_24hr: true});
 flatpickr("#graphDateRange", {mode: "range", dateFormat: "d.m.Y", onChange: carGraphRangeUser});
-	
+
 let chargePower = new AnimatedValue(document.getElementById("chargePower"), 0, "kW", 1, 10);
 let chargeKMPH = new AnimatedValue(document.getElementById("chargeKMPH"), 0, "km/h");
 let range = new AnimatedValue(document.getElementById("range"), 0, "km");
 let targetTemp = new AnimatedValue(document.getElementById("hvactargettemp"), 0, "°C", 1, 10);
 let soc = new SOCDoughnutValue(document.getElementById("soc"), 0, 100, "%", "soc");
 let chargeTimeRemaining = null;
-	
+
 async function getJSON(link){
 	return (await fetch(link)).json();
 }
@@ -25,10 +25,10 @@ async function getJSON(link){
 function timetravelUser(selectedDates, dateStr, instance){
 	timetravel(selectedDates[0]);
 }
-	
+
 let timetravelStatus = false;
 let timetravelDate;
-	
+
 function timetravel(date){
 	console.log(date);
 	if(date == false || date == undefined || date == null){
@@ -40,11 +40,11 @@ function timetravel(date){
 	timetravelDate = "@"+Math.round(date.getTime() / 1000);
 	updateCarStatus();
 }
-	
+
 updateCarStatus();
 
 setInterval(updateCarStatus, 15000);
-	
+
 async function updateCarStatus(){
 	const carStatus = await getJSON("../carStatus.php"+(timetravelStatus ? "?at="+timetravelDate : ""));
 	if(carStatus == undefined){
@@ -57,23 +57,23 @@ async function updateCarStatus(){
 	}
 	processCarStatus(carStatus);
 }
-	
+
 function processCarStatus(carStatus){
 	if(carStatus.plugConnectionState == "connected"){
 		document.getElementById("chargingDisplay").style.display = "flex";
 		let chargeState;
 		switch(carStatus.chargeState){
-		case "charging":
-			chargeState = "charging...";
-			break;
-		case "chargePurposeReachedAndConservation":
-			chargeState = "holding charge";
-			break;
-		case "readyForCharging":
-			chargeState = "not charging";
-			break;
-		default:
-			chargeState = "unknown: "+carStatus.chargeState;
+			case "charging":
+				chargeState = "charging...";
+				break;
+			case "chargePurposeReachedAndConservation":
+				chargeState = "holding charge";
+				break;
+			case "readyForCharging":
+				chargeState = "not charging";
+				break;
+			default:
+				chargeState = "unknown: "+carStatus.chargeState;
 		}
 		document.getElementById("chargingState").innerHTML = chargeState + "<br>" + "Plug " + carStatus.plugLockState;
 		//setTimeout(.bind(chargeTimeRemaining), 50);
@@ -83,7 +83,7 @@ function processCarStatus(carStatus){
 	soc.value = carStatus.batterySOC;
 	soc.targetSOC = carStatus.targetSOC;
 	soc.update();
-	
+
 	const carStatusTime = new Date(carStatus.time);
 	document.getElementById("carUpdate").textContent = carStatusTime.toLocaleString(dateLocaleSetting, {
 		day: '2-digit',
@@ -109,32 +109,32 @@ function processCarStatus(carStatus){
 	chargeTimeRemaining.max = elapsedMinutes + realTimeRemaining;
 	chargeTimeRemaining.value = chargeTimeRemaining.max - realTimeRemaining;
 	chargeTimeRemaining.update();
-	
+
 	range.setValue(carStatus.remainingRange);
 	chargePower.setValue(carStatus.chargePower*10);
 	chargeKMPH.setValue(carStatus.chargeRateKMPH);
 	targetTemp.setValue(carStatus.hvacTargetTemp*10);
-		
+
 	let hvacstate;
 	document.getElementById("hvacstate").classList.remove("heat");
 	document.getElementById("hvacstate").classList.remove("cool");
 	switch(carStatus.hvacState){
-	case "heating":
-		hvacstate = "heating";
-		document.getElementById("hvacstate").classList.add("heat");
-		break;
-	case "cooling":
-		hvacstate = "cooling";
-		document.getElementById("hvacstate").classList.add("cool");
-		break;
-	case "off":
-		hvacstate = "hvac off";
-		break;
-	case "ventilation":
-		hvacstate = "ventilating";
-		break;
-	default:
-		hvacstate = "unknown: "+carStatus.hvacstate;
+		case "heating":
+			hvacstate = "heating";
+			document.getElementById("hvacstate").classList.add("heat");
+			break;
+		case "cooling":
+			hvacstate = "cooling";
+			document.getElementById("hvacstate").classList.add("cool");
+			break;
+		case "off":
+			hvacstate = "hvac off";
+			break;
+		case "ventilation":
+			hvacstate = "ventilating";
+			break;
+		default:
+			hvacstate = "unknown: "+carStatus.hvacstate;
 	}
 	document.getElementById("hvacstate").innerHTML = hvacstate;
 }
@@ -177,8 +177,8 @@ chartStore.carGraph.chart.update();
 let beginTime = new Date();
 beginTime.setDate(beginTime.getDate()-7);
 beginTime.setHours(0,0,0,0);
-let endTime = null;	
-	
+let endTime = null;
+
 async function updateCarGraph(){
 	console.log(beginTime);
 	const graphData = await getJSON(
