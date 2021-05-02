@@ -54,7 +54,15 @@ class ChargeSession{
 		$this->rangeEnd = (int) $entry["remainingrange"];
 		$this->socEnd = (int) $entry["batterysoc"];
 		$this->targetSOC = (int) $entry["targetsoc"];
-		
+
+		if($entry["plugconnectionstate"] == "disconnected"){
+			Logger::log("Unplugged car at ".$entry["time"]);
+			$this->endTime = new DateTime($entry["time"]);
+		}
+		if($this->endTime !== null){
+			return true;
+		}
+
 		if($this->chargeStartTime === null){
 			if($entry["chargestate"] == "charging"){
 				Logger::log("Started charging at ".$entry["time"]);
@@ -67,14 +75,6 @@ class ChargeSession{
 			Logger::log("Ended charging at ".$entry["time"]);
 			Logger::debug("lCS".$this->lastChargeState." cs:".$entry["chargestate"]);
 			$this->setChargeEndTime(new DateTime($entry["time"]));
-		}
-		
-		if($entry["plugconnectionstate"] == "disconnected"){
-			Logger::log("Unplugged car at ".$entry["time"]);
-			$this->endTime = new DateTime($entry["time"]);
-		}
-		if($this->endTime !== null){
-			return true;
 		}
 		
 		++$this->entryCount;
