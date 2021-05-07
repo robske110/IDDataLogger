@@ -3,7 +3,7 @@
 
 cd ~ || exit
 cd IDDataLogger || exit
-git pull
+git pull --rebase
 git submodule update
 sudo rm -r /var/www/html/vwid/
 sudo cp -r ./public/. /var/www/html/vwid
