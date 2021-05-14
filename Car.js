@@ -125,7 +125,7 @@ async function createWidget() {
 	const carImage = await getImage(
 		baseURL.substr(baseURL.indexOf("://")+3).replace("/", "_")+"-car.png",
 		baseURL+"/carPicture.php?key="+apiKey)
-	let carImageElement = carColumn.addImage(carImage)
+	carColumn.addImage(carImage)
 
 	//carColumn.addSpacer(5)
 
@@ -186,15 +186,16 @@ async function createWidget() {
 	if(!Number.isNaN(Date.parse(data.time))){
 		dataTimestamp = new Date(Date.parse(data.time));
 	}
-	if(data.chargeState == "charging" || data.chargeState == "chargePurposeReachedAndConservation"){
+	if(data.chargeState === "charging" || data.chargeState === "chargePurposeReachedAndConservation"){
 		let realRemainChgTime = data.remainingChargingTime;
 		let finishTime = ""
 		if(dataTimestamp != null){
 			realRemainChgTime -= (scriptRun.getTime() - dataTimestamp.getTime()) / 60000;
+			realRemainChgTime = Math.max(0, realRemainChgTime);
 			finishTime = " ("+dF.string(new Date(dataTimestamp.getTime() + realRemainChgTime * 60000))+")";
 		}
 		let timeStr = Math.floor(realRemainChgTime / 60) + ":" + String(Math.round(realRemainChgTime % 60)).padStart(2, '0') + "h"
-		chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr + (showFinishTime ? finishTime : ""))
+		let chargeStateLabel = chargeInfo.addText(data.chargePower + " kW | " + timeStr + (showFinishTime ? finishTime : ""))
 		chargeStateLabel.font = Font.regularSystemFont(10)
 	}else{
 		chargeInfo.addSpacer(10)
@@ -204,7 +205,7 @@ async function createWidget() {
 
 	addFormattedData(dataCol1, getTranslatedText("soc"), data.batterySOC.toString()+"%")
 	dataCol1.addSpacer(10)
-	let range = ""
+	let range
 	if(!rangeInMiles){
 		range = data.remainingRange+"km";
 	}else{
