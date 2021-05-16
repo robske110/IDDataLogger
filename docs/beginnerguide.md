@@ -1,16 +1,17 @@
 # Setup Guide for beginners
-Hi! You want to use this project, but have little to no experience setting up servers?
+Hi! You want to use this project, but have little to no experience setting up servers? This guide is for you!
 Please free up about an hour for setting this project up.
 
-Setting this project up is recommended on a Raspberry Pi for beginners. This guide assumes you are running raspbian.
+Setting this project up on a Raspberry Pi is recommended for beginners. This guide assumes you are running raspbian.
 If you do not have a Raspberry Pi handy, any Debian installation will also work with the easy install scripts and this guide.
 
 Before we begin, let's go through what this project needs and does from a technical overview standpoint:
 
-This project contains a long-running program which will fetch data from VW APIs regarding your car and store this data in a database.
-It also provides a website where you can view this data. Furthermore, it provides an API itself to quickly fetch the current car Status for displaying in, e.g. the iOS widget.
+This project contains a long-running program which will fetch data about your car from VW APIs and store it in a database.
+It also provides a website where you can view this data. Furthermore, it provides an API itself, providing the data in machine-readable format.
+This API is for example used for the iOS widget.
 
-So we have three components: The long-running programm, the database and a webserver to serve you the statistics website or the data for the iOS widget.
+To summarize we have three components: The long-running programm, the database and a webserver to serve you the statistics website or the data for the iOS widget.
 All of this can run on a Raspberry Pi.
 
 Let's get to work then.

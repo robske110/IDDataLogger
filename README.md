@@ -1,20 +1,21 @@
-# ID DataLogger
+# IDDataLogger
 
-Welcome to the ID DataLogger project.
-This program allows you to log data about your Volkswagen ID vehicle.
-It includes an iOS widget (using Scriptable) and a webpage for seeing current status and history graphs.
+Welcome to IDDataLogger, a data logger for Volkswagen ID vehicles.
+Features include:
+- A website displaying current status, history graphs and previous charging sessions.
+- An iOS widget (using Scriptable)
+- An easy-to-use API for integration with other systems. If you are interested see [here](https://github.com/robske110/IDDataLogger/wiki/API-reference).
 
 <p align="center">
-  <img src="docs/img/idView.png" width="500">
-  <img src="docs/img/widgets.png" width="300">
+  <img src="docs/img/idView.png" width="547">
+  <img src="docs/img/widget_and_chargingOverview.png" width="253">
 </p>
 
 ## Setup
 
 ### Setup for beginners
 
-A quick heads-up beforehand: Setting this up for someone who has never set up a webserver before can be challenging.
-Don't worry though, the [beginners guide](docs/beginnerguide.md) guides you through every step you need to take.
+You have never set up something similar? Don't worry, the [beginners guide](docs/beginnerguide.md) guides you through every step you need to take.
 Common problems and answers to frequently asked questions can be found [here](https://github.com/robske110/IDDataLogger/wiki/FAQ-and-frequent-problems).
 Should you have any remaining questions or issues please see [getting help](https://github.com/robske110/IDDataLogger/wiki/Getting-help).
 
@@ -37,7 +38,7 @@ Looking at the automated install script for debian [install.sh](docs/install.sh)
 might be helpful. (Instructions for using it can be found [here](docs/beginnerguide.md#installing-using-the-install-script))
 
 Clone this repository.
-   
+
 `git clone https://github.com/robske110/IDDataLogger.git --recursive`
 
 Create a database (and a user) in your PostgreSQL (or other) server for this project and fill in the details into
