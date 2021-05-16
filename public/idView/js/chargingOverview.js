@@ -14,7 +14,7 @@ function createChargeSession(data, last = false){
 	}
 
 	cS.id = "chargeSession-"+data.id;
-	cS.querySelector("#duration").textContent = Math.floor(data.duration / 3600)+":"+String(Math.round(data.duration % 3600 / 60)).padStart(2, '0');
+	cS.querySelector("#duration").textContent = Math.floor(data.duration / 3600)+":"+String(Math.floor(data.duration % 3600 / 60)).padStart(2, '0');
 	const timeOpts = {
 		hour: '2-digit',
 		minute: '2-digit'
