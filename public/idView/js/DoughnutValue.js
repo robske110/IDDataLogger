@@ -36,7 +36,7 @@ class DoughnutValue{
 			data: this.generateData(),
 			plugins: [plugin],
 			options: {
-				aspectRatio: window.innerWidth >= 400 ? 1.6 : 1.1,
+				aspectRatio: window.innerWidth >= 480 ? 1.6 : 1.1,
 				cutoutPercentage: 80,
 				tooltips: {
 					custom: function(tooltipModel) {
@@ -115,8 +115,8 @@ class DoughnutValue{
 	
 	update(){
 		if(
-			(window.innerWidth >= 400 && this.chart.options.aspectRatio != 1.6) ||
-			(window.innerWidth < 400 && this.chart.options.aspectRatio != 1.1)
+			(window.innerWidth >= 480 && this.chart.options.aspectRatio != 1.6) ||
+			(window.innerWidth < 480 && this.chart.options.aspectRatio != 1.1)
 		){
 			const parentEle = this.canvas.parentElement;
 			parentEle.removeChild(this.canvas);
@@ -127,7 +127,7 @@ class DoughnutValue{
 		}else{
 			this.updateData();
 		}
-		this.chart.options.legend.display = this.canvas.width >= 400;
+		this.chart.options.legend.display = this.canvas.width >= 480;
 		this.chart.update();
 	}
 }

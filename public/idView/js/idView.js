@@ -1,6 +1,6 @@
 function carGraphAspectRatio(){
 	const chart = chartStore.carGraph.chart;
-	chart.aspectRatio = window.innerWidth >= 400 ? 2 : 1;
+	chart.aspectRatio = window.innerWidth >= 480 ? 2 : 1;
 	chart.resize();
 }
 window.addEventListener('resize', carGraphAspectRatio);
