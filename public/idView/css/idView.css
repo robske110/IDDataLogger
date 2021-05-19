@@ -44,7 +44,7 @@ body{
   width: auto;
   flex-grow: 0;
   color: var(--font-color-secondary);
-  margin-right: 10;
+  margin-right: 10px;
 }
 .bigvalue{
   font-size: 5vw;

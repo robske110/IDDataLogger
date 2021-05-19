@@ -13,12 +13,6 @@
   list-style-type: none;
   padding-bottom: 0.5em;
 }
-@media only screen and (max-width: 750px){
-  .chargeSessions{
-    list-style-type: none;
-    margin-bottom: 49px;
-  }
-}
 .chargeSession{
   padding: 1.5vw;
   margin-top: 0.5em;

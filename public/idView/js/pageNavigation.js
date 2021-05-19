@@ -28,6 +28,10 @@ pageList.select(document.querySelector("#IDView"));
 
 const observer = new MutationObserver(function(mutationsList, observer){
 	const chargingOverview = document.querySelector("#chargingOverviewPage");
-	chargingOverview.style.height = chargingOverview.contentDocument.body.scrollHeight;
+	let height = chargingOverview.contentDocument.body.scrollHeight;
+	if(window.innerWidth <= 750){
+		height += 48; //menu at bottom
+	}
+	chargingOverview.style.height = "calc("+height+"px + 0.5em)"; //0.5em for margin in chargingSessions
 	console.log("found mutation!");
 });
