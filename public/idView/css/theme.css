@@ -21,3 +21,4 @@ body{
   margin: 0;
   font-family: "Avenir", sans-serif;
 }
+*, ::before, ::after { box-sizing: border-box; }
