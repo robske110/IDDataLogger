@@ -123,7 +123,7 @@ async function createWidget() {
 	carColumn.addSpacer(5)
 
 	const carImage = await getImage(
-		baseURL.substr(baseURL.indexOf("://")+3).replace("/", "_")+"-car.png",
+		baseURL.substr(baseURL.indexOf("://")+3).replaceAll("/", "_")+"-car.png",
 		baseURL+"/carPicture.php?key="+apiKey)
 	carColumn.addImage(carImage)
 
