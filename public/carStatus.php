@@ -31,33 +31,9 @@ WHERE prev_chargeState = 'readyForCharging' AND chargeState = 'charging' LIMIT 1
 
 if(($_ENV["DB_DRIVER"] ?? "pgsql") != "pgsql"){
 	if($statusAt !== null){
-		$statusAt = " AND ".substr($statusAt, 6);
+		$statusAt = "WHERE startTime ".substr($statusAt, 11);
 	}
-	$sqlChargeStart = 
-"SELECT time from (
-  SELECT t.time, t.chargeState, p.chargeState prev_chargeState
-  FROM
-  (
-    SELECT t.time, t.chargeState,
-    (
-      SELECT time
-      FROM carStatus
-      WHERE time < t.time
-      ORDER BY time DESC
-      LIMIT 1
-    ) prev_time,
-    (
-      SELECT time
-      FROM carStatus
-      WHERE time > t.time
-      ORDER BY time
-      LIMIT 1
-    ) next_time
-    FROM carStatus t
-  ) t LEFT JOIN carStatus p
-  ON t.prev_time = p.time LEFT JOIN carStatus n
-  ON t.next_time = n.time
-) a WHERE chargeState = 'charging' AND prev_chargeState = 'readyForCharging'".$statusAt." ORDER by time DESC LIMIT 1;";
+	$sqlChargeStart = "SELECT startTime AS time FROM chargingSessions ".($statusAt ?? "")." ORDER BY startTime DESC LIMIT 1;";
 }
 
 
