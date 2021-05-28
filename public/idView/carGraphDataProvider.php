@@ -56,7 +56,7 @@ class carGraphDataProvider{
 		$carGraphData->time = array_column($data, "time");
 		$timeCnt = count($carGraphData->time);
 		for($i = 0; $i < $timeCnt; $i++){
-			$carGraphData->time[$i] = ((new DateTime($carGraphData->time[$i]))->format(DateTimeInterface::ATOM));
+			$carGraphData->time[$i] = ((new DateTime($carGraphData->time[$i], new DateTimeZone("UTC")))->format(DateTimeInterface::ATOM));
 		}
 		
 		if($this->dataBracketing){
