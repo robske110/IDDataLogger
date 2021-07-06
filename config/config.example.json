@@ -22,5 +22,11 @@
         "curl-verbose": false,
         "file-enable": false,
         "log-dir": null
+    },
+    "integrations": {
+        "abrp": {
+            "api-key": "",
+            "user-token": ""
+        }
     }
 }
