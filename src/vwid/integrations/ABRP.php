@@ -20,7 +20,7 @@ class ABRP implements CarStatusWrittenUpdateReceiver{
 	}
 
 	public function carStatusWrittenUpdate(array $carStatus){
-		$postData = ["api_key" => $this->apiKey, "token" => $this->userToken, "tlm" => json_encode([
+		$postData = ["token" => $this->userToken, "tlm" => json_encode([
 			"utc" => (new DateTime($carStatus["time"], new DateTimeZone("UTC")))->getTimestamp(),
 			"soc" => $carStatus["batterySOC"],
 			"power" => - (float) $carStatus["chargePower"], //this will only be charge power (sent negative), otherwise zero
@@ -31,9 +31,9 @@ class ABRP implements CarStatusWrittenUpdateReceiver{
 		Logger::var_dump($postData, "PostData for ABRP");
 
 		$curlWrapper = new CurlWrapper();
-		$response = $curlWrapper->postRequest("https://api.iternio.com/1/tlm/send".HTTPUtils::makeFieldStr($postData), ""/*, [
-			"Authorization" => "APIKEY ".$this->apiKey
-		]*/);
+		$response = $curlWrapper->postRequest("https://api.iternio.com/1/tlm/send", http_build_query($postData), [
+			"Authorization: APIKEY ".$this->apiKey
+		]);
 
 		Logger::var_dump($response, "Response from ABRP");
 	}
