@@ -68,7 +68,7 @@ class chargingSessionDataProvider{
 		$chargingSessions = [];
 		foreach($data as $chargeSessionData){
 			$chargingSession = new ChargingSession();
-			$chargingSession->id = $chargeSessionData["sessionid"];
+			$chargingSession->id = (int) $chargeSessionData["sessionid"];
 			$chargingSession->startTime = self::formatDate($chargeSessionData["starttime"]);
 			$chargingSession->endTime = self::nullableFormatDate($chargeSessionData["endtime"]);
 			$chargingSession->chargeStartTime = self::nullableFormatDate($chargeSessionData["chargestarttime"]);
