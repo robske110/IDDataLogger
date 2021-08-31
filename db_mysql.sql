@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS carPictures (
 CREATE TABLE IF NOT EXISTS chargingSessions (
   sessionid       serial UNIQUE NOT NULL,
   startTime       TIMESTAMP NOT NULL PRIMARY KEY,
-  endTime         TIMESTAMP,
-  chargeStartTime TIMESTAMP,
-  chargeEndTime   TIMESTAMP,
+  endTime         TIMESTAMP NULL,
+  chargeStartTime TIMESTAMP NULL,
+  chargeEndTime   TIMESTAMP NULL,
   duration        integer,
   avgChargePower  decimal(4, 1),
   maxChargePower  decimal(4, 1),
