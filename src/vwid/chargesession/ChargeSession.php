@@ -127,7 +127,10 @@ class ChargeSession{
 		}
 		Logger::debug(
 			"chgKMR: min".round($this->minChargeKMR, 1)." max".round($this->maxChargeKMR, 1)." avg". round($this->avgChargeKMR, 1).PHP_EOL.
-			"avgChgKMR/avgChgPower: ".round($this->avgChargePower/$this->avgChargeKMR, 2).PHP_EOL.
+			(
+				$this->avgChargeKMR != 0 && $this->avgChargePower !== null ?
+				"avgChgKMR/avgChgPower: ".round($this->avgChargePower/$this->avgChargeKMR, 2).PHP_EOL : ""
+			).
 			"range/soc: start".round($this->rangeStart/$this->socStart, 1)." end".round($this->rangeEnd/$this->socEnd, 1)
 		);
 	}
