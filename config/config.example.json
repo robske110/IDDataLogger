@@ -25,8 +25,8 @@
     },
     "integrations": {
         "abrp": {
-            "api-key": "",
-            "user-token": ""
+            "user-token": "",
+            "api-key": null
         }
     }
 }

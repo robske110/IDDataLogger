@@ -88,6 +88,13 @@ class ChargeSessionHandler implements CarStatusWrittenUpdateReceiver{
 			Logger::debug("Continuing charging session!");
 		}
 	}
+
+	/**
+	 * Returns a ChargeSession if one is currently active (or being processed at startup)
+	 */
+	public function getCurrentChargingSession(): ?ChargeSession{
+		return $this->chargeSession;
+	}
 	
 	private function writeChargeSession(){
 		$this->chargeSessionWrite->execute([

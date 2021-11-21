@@ -69,8 +69,14 @@ class Main{
 		$carStatusWriter->registerUpdateReceiver($this->chargeSessionHandler);
 		$this->carStatusFetcher->registerUpdateReceiver($carStatusWriter);
 
-		$abrpIntegration = new ABRP($this->config["integrations"]["abrp"]["api-key"], $this->config["integrations"]["abrp"]["user-token"]);
-		$carStatusWriter->registerUpdateReceiver($abrpIntegration);
+		if(!empty($this->config["integrations"]["abrp"]["user-token"])){
+			$abrpIntegration = new ABRP(
+				$this->config["integrations"]["abrp"]["user-token"],
+				$this->config["integrations"]["abrp"]["api-key"] ?? null,
+				$this->chargeSessionHandler
+			);
+			$carStatusWriter->registerUpdateReceiver($abrpIntegration);
+		}
 	}
 	
 	public function getDB(): DatabaseConnection{
