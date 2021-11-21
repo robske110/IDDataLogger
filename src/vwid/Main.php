@@ -33,6 +33,7 @@ class Main{
 			forceShutdown();
 		}
 		Logger::addOutputFilter($this->config["password"]);
+		Logger::addOutputFilter($this->config["integrations"]["abrp"]["user-token"]);
 		
 		Logger::log("Connecting to db...");
 		$this->db = new DatabaseConnection(
