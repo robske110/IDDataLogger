@@ -5,6 +5,9 @@ namespace robske_110\vwid\integrations;
 
 use DateTime;
 use DateTimeZone;
+use JsonException;
+use RuntimeException;
+use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\vwid\CarStatusWrittenUpdateReceiver;
 use robske_110\vwid\chargesession\ChargeSessionHandler;
@@ -36,13 +39,48 @@ class ABRP implements CarStatusWrittenUpdateReceiver{
 			"est_battery_range" => $carStatus["remainingRange"]
 		])];
 
-		Logger::var_dump($postData, "PostData for ABRP");
+		Logger::var_dump($postData, "ABRP PostData");
 
 		$curlWrapper = new CurlWrapper();
 		$response = $curlWrapper->postRequest(self::API_SEND_ENDPOINT, http_build_query($postData), [
 			"Authorization: APIKEY ".($this->apiKey ?? self::API_KEY)
 		]);
 
-		Logger::var_dump($response, "Response from ABRP");
+
+		Logger::var_dump($response, "ABRP response");
+
+		$httpCode = curl_getinfo($curlWrapper->getCh(), CURLINFO_RESPONSE_CODE);
+		if($httpCode === 401){
+			if(str_contains($response, "Token")){
+				throw new RuntimeException(
+					"ABRP API returned ".$response.": Check user-token, or copy a new one from the ABRP app!"
+				);
+			}
+			if(str_contains($response, "Key")){
+				if($this->apiKey !== null){
+					throw new RuntimeException(
+						"ABRP API returned ".$response.": API key specified in config is invalid, try again without one!"
+					);
+				}else{
+					throw new RuntimeException("ABRP API returned ".$response.": Inbuilt API key seems invalid");
+				}
+			}
+			throw new RuntimeException("ABRP API returned: (httpCode 401) ".$response);
+		}
+		if($httpCode !== 200){
+			throw new RuntimeException("ABRP API returned: (httpCode ".$httpCode.") ".$response);
+		}
+
+		try{
+			$response = json_decode($response, associative: true, flags: JSON_THROW_ON_ERROR);
+		}catch(JsonException $jsonException){
+			Logger::critical("Error while decoding json in ABRP response");
+			ErrorUtils::logException($jsonException);
+			throw new RuntimeException("ABRP API: Could not decode response");
+		}
+
+		if($response["status"] !== "ok"){
+			Logger::warning("ABRP API: status is not ok");
+		}
 	}
 }
