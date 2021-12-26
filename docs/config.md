@@ -11,7 +11,8 @@ Can be `null`, which causes the first vehicle to be used. (Recommended when you 
 
 `base-updaterate` Updaterate for the car values. (Note: Data will only be written to db when data changed.)
 
-`increased-updaterate` This updaterate will be used while the car is charging or hvac is active.
+`increased-updaterate` This updaterate will be used while the car is charging or hvac is active, or if the last
+update was during the last 6 minutes (which will mainly be while driving).
 
 `db.host` The host of the postgres db server
 
