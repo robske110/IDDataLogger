@@ -4,6 +4,7 @@ Welcome to IDDataLogger, a data logger for Volkswagen ID vehicles.
 Features include:
 - A website displaying current status, history graphs and previous charging sessions.
 - An iOS widget (using Scriptable)
+- A Better Routeplanner live data integration
 - An easy-to-use API for integration with other systems. If you are interested see [here](https://github.com/robske110/IDDataLogger/wiki/API-reference).
 
 <p align="center">
