@@ -7,7 +7,7 @@ echo "What's your domain name?"
 read -r domain
 echo "Enter an E-Mail where you want to receive important certificate alerts (this will not be often)"
 read -r email
-sudo apt -y install certbot python-certbot-apache
+sudo apt -y install certbot python3-certbot-apache
 sudo certbot --apache --agree-tos -n -m $email -d $domain
 
 cd ..
