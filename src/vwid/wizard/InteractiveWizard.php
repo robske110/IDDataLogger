@@ -30,7 +30,7 @@ class InteractiveWizard{
 		if(!empty($options) && $input !== ""){
 			if(!in_array($input, $options, true)){
 				$this->message("Please answer with one of the following options (case-sensitive!): ".implode(",", $options));
-				$this->get($msg, $default, $options);
+				return $this->get($msg, $default, $options);
 			}
 		}
 		
