@@ -30,24 +30,24 @@ class WebsiteAPI extends API{
 		
 		$form = new Form($dom->getElementById("emailPasswordForm"));
 		$fields = $form->getHiddenFields();
-		#var_dump($fields);
+		if(self::$VERBOSE) Logger::var_dump($fields, "emailPasswordForm");
 		$fields["email"] = $loginInformation->username;
 		
 		Logger::debug("Sending email...");
 		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
-		
-		#var_dump($pwdPage);
+
 		$dom = new DOMDocument();
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($pwdPage);
 		
 		if($dom->getElementById("credentialsForm") === null){
+			Logger::var_dump($pwdPage, "pwdPage");
 			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
 		}
 		$form = new Form($dom->getElementById("credentialsForm"));
 		$fields = $form->getHiddenFields();
 		$fields["password"] = $loginInformation->password;
-		#var_dump($fields);
+		if(self::$VERBOSE) Logger::var_dump($fields, "credentialsForm");
 		
 		Logger::debug("Sending password ...");
 		$this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);

@@ -52,6 +52,7 @@ class MobileAppAPI extends API{
 		$dom->loadHTML($pwdPage);
 		
 		if($dom->getElementById("credentialsForm") === null){
+			Logger::var_dump($pwdPage, "pwdPage");
 			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
 		}
 		$form = new Form($dom->getElementById("credentialsForm"));
@@ -60,7 +61,7 @@ class MobileAppAPI extends API{
 		
 		Logger::debug("Sending password ...");
 		try{
-			$this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
+			$resultPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
 		}catch(CurlError $curlError){
 			if($curlError->curlErrNo !== 1){
 				throw $curlError;
@@ -68,9 +69,10 @@ class MobileAppAPI extends API{
 		}
 		
 		if(empty($this->weConnectRedirFields)){
+			Logger::var_dump($resultPage ?? "not defined", "loggedInPage");
 			throw new IDLoginException("Unable to login. Check login information (password)! See FAQ if issue persists. (Could not find location header)");
 		}
-		#var_dump($this->weConnectRedirFields);
+		if(self::$VERBOSE) Logger::var_dump($this->weConnectRedirFields, "weConnectRedirFields");
 		Logger::debug("Getting real token...");
 		$this->appTokens = $this->apiPost("login/v1", json_encode([
 			"state" => $this->weConnectRedirFields["state"],
