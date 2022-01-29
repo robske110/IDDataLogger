@@ -51,17 +51,32 @@ class MobileAppAPI extends API{
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($pwdPage);
 		
-		if($dom->getElementById("credentialsForm") === null){
+		if($dom->getElementById("emailPasswordForm") !== null){
 			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
+			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Still found emailPasswordForm)");
 		}
-		$form = new Form($dom->getElementById("credentialsForm"));
-		$fields = $form->getHiddenFields();
 		$fields["password"] = $this->loginInformation->password;
 		
+		$errorString =
+			"Unable to login. Most likely caused by an unexpected change on VW's side.".
+			" Check login information. If issue persists, open an issue!";
+		$hmac = preg_match("/\"hmac\":\"([^\"]*)\"/", $pwdPage, $matches);
+		if(!$hmac){
+			Logger::var_dump($pwdPage, "pwdPage");
+			throw new IDLoginException($errorString." (could not find hmac)");
+		}
+		$fields["hmac"] = $matches[1];
+
+		//Note: this could also be parsed from postAction
+		$action = preg_replace("/(?<=\/)[^\/]*$/", "authenticate", $form->getAttribute("action"));
+		if($action === $form->getAttribute("action") || $action === null){
+			Logger::var_dump($pwdPage, "pwdPage");
+			throw new IDLoginException($errorString." (action did not match expected format)");
+		}
+
 		Logger::debug("Sending password ...");
 		try{
-			$resultPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
+			$this->postRequest(self::LOGIN_HANDLER_BASE.$action, $fields);
 		}catch(CurlError $curlError){
 			if($curlError->curlErrNo !== 1){
 				throw $curlError;
