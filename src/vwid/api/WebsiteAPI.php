@@ -10,7 +10,6 @@ use robske_110\webutils\Form;
 
 class WebsiteAPI extends API{
 	const LOGIN_PAGE = "https://www.volkswagen.de/app/authproxy/login?fag=vw-de,vwag-weconnect&scope-vw-de=profile,address,phone,carConfigurations,dealers,cars,vin,profession&scope-vwag-weconnect=openid&prompt-vw-de=login&prompt-vwag-weconnect=none&redirectUrl=https://www.volkswagen.de/de/besitzer-und-nutzer/myvolkswagen/garage.html";
-	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	
 	private string $csrf;
 	
@@ -24,33 +23,10 @@ class WebsiteAPI extends API{
 		
 		$loginPage = $this->getRequest(self::LOGIN_PAGE);
 		
-		$dom = new DOMDocument();
-		$dom->strictErrorChecking = false;
-		$dom->loadHTML($loginPage);
-		
-		$form = new Form($dom->getElementById("emailPasswordForm"));
-		$fields = $form->getHiddenFields();
-		if(self::$VERBOSE) Logger::var_dump($fields, "emailPasswordForm");
-		$fields["email"] = $loginInformation->username;
-		
-		Logger::debug("Sending email...");
-		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
-
-		$dom = new DOMDocument();
-		$dom->strictErrorChecking = false;
-		$dom->loadHTML($pwdPage);
-		
-		if($dom->getElementById("credentialsForm") === null){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Could not find credentialsForm)");
-		}
-		$form = new Form($dom->getElementById("credentialsForm"));
-		$fields = $form->getHiddenFields();
-		$fields["password"] = $loginInformation->password;
-		if(self::$VERBOSE) Logger::var_dump($fields, "credentialsForm");
+		[$action, $fields] = $this->emailLoginStep($loginPage, $loginInformation);
 		
 		Logger::debug("Sending password ...");
-		$this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
+		$this->postRequest(self::LOGIN_HANDLER_BASE.$action, $fields);
 		
 		if(empty($this->csrf)){
 			throw new IDLoginException("Failed to login");

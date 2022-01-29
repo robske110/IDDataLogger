@@ -12,7 +12,6 @@ use robske_110\webutils\Form;
 
 class MobileAppAPI extends API{
 	const LOGIN_BASE = "https://login.apps.emea.vwapps.io";
-	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";
 	
 	private LoginInformation $loginInformation;
@@ -36,43 +35,7 @@ class MobileAppAPI extends API{
 			"redirect_uri" => "weconnect://authenticated"
 		]);
 		
-		$dom = new DOMDocument();
-		$dom->strictErrorChecking = false;
-		$dom->loadHTML($loginPage);
-		
-		$form = new Form($dom->getElementById("emailPasswordForm"));
-		$fields = $form->getHiddenFields();
-		$fields["email"] = $this->loginInformation->username;
-		
-		Logger::debug("Sending email...");
-		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
-		
-		$dom = new DOMDocument();
-		$dom->strictErrorChecking = false;
-		$dom->loadHTML($pwdPage);
-		
-		if($dom->getElementById("emailPasswordForm") !== null){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Still found emailPasswordForm)");
-		}
-		$fields["password"] = $this->loginInformation->password;
-		
-		$errorString =
-			"Unable to login. Most likely caused by an unexpected change on VW's side.".
-			" Check login information. If issue persists, open an issue!";
-		$hmac = preg_match("/\"hmac\":\"([^\"]*)\"/", $pwdPage, $matches);
-		if(!$hmac){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException($errorString." (could not find hmac)");
-		}
-		$fields["hmac"] = $matches[1];
-
-		//Note: this could also be parsed from postAction
-		$action = preg_replace("/(?<=\/)[^\/]*$/", "authenticate", $form->getAttribute("action"));
-		if($action === $form->getAttribute("action") || $action === null){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException($errorString." (action did not match expected format)");
-		}
+		[$action, $fields] = $this->emailLoginStep($loginPage, $this->loginInformation);
 
 		Logger::debug("Sending password ...");
 		try{
