@@ -80,7 +80,7 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 	public function writeCarStatus(array $carStatusData, bool $retry = true){
 		$data = [];
 		$dateTime = null;
-		foreach(CarStatusFetcher::DATA_MAPPING as $key => $val){
+		foreach(array_merge(...array_values(CarStatusFetcher::DATA_MAPPING)) as $key => $val){
 			if(!isset($carStatusData[$key."Timestamp"])){
 				Logger::notice("Could not find expected key '".$key."Timestamp' in carStatusData. Unexpected changes in older or newer car software can cause this!");
 				continue;

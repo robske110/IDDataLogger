@@ -28,41 +28,45 @@ class CarStatusFetcher{
 	const WINDOW_HEATING_STATUS_DYN = 0;
 	
 	const DATA_MAPPING = [
-		"batteryStatus" => [
-			"currentSOC_pct" => "batterySOC",
-			"cruisingRangeElectric_km" => "remainingRange"
+		"charging" => [
+			"batteryStatus" => [
+				"currentSOC_pct" => "batterySOC",
+				"cruisingRangeElectric_km" => "remainingRange"
+			],
+			"chargingStatus" => [
+				"remainingChargingTimeToComplete_min" => "remainingChargingTime",
+				"chargingState" => "chargeState",
+				"chargePower_kW" => "chargePower",
+				"chargeRate_kmph" => "chargeRateKMPH"
+			],
+			"chargingSettings" => [
+				"maxChargeCurrentAC" => null,
+				"autoUnlockPlugWhenCharged" => null,
+				"targetSOC_pct" => "targetSOC"
+			],
+			"plugStatus" => [
+				"plugConnectionState" => "plugConnectionState",
+				"plugLockState" => "plugLockState"
+			]
 		],
-		"chargingStatus" => [
-			"remainingChargingTimeToComplete_min" => "remainingChargingTime",
-			"chargingState" => "chargeState",
-			"chargePower_kW" => "chargePower",
-			"chargeRate_kmph" => "chargeRateKMPH"
-		],
-		"chargingSettings" => [
-			"maxChargeCurrentAC" => null,
-			"autoUnlockPlugWhenCharged" => null,
-			"targetSOC_pct" => "targetSOC"
-		],
-		"plugStatus" => [
-			"plugConnectionState" => "plugConnectionState",
-			"plugLockState" => "plugLockState"
-		],
-		"climatisationStatus" => [
-			"remainingClimatisationTime_min" => "remainClimatisationTime",
-			"climatisationState" => "hvacState"
-		],
-		"climatisationSettings" => [
-			"targetTemperature_C" => "hvacTargetTemp",
-			"climatisationWithoutExternalPower" => "hvacWithoutExternalPower",
-			"climatizationAtUnlock" => "hvacAtUnlock",
-			"windowHeatingEnabled" => null,
-			"zoneFrontLeftEnabled" => null,
-			"zoneFrontRightEnabled" => null,
-			"zoneRearLeftEnabled" => null,
-			"zoneRearRightEnabled" => null
-		],
-		"windowHeatingStatus" => [
-			"windowHeatingStatus" => self::WINDOW_HEATING_STATUS_DYN
+		"climatisation" => [
+			"climatisationStatus" => [
+				"remainingClimatisationTime_min" => "remainClimatisationTime",
+				"climatisationState" => "hvacState"
+			],
+			"climatisationSettings" => [
+				"targetTemperature_C" => "hvacTargetTemp",
+				"climatisationWithoutExternalPower" => "hvacWithoutExternalPower",
+				"climatizationAtUnlock" => "hvacAtUnlock",
+				"windowHeatingEnabled" => null,
+				"zoneFrontLeftEnabled" => null,
+				"zoneFrontRightEnabled" => null,
+				"zoneRearLeftEnabled" => null,
+				"zoneRearRightEnabled" => null
+			],
+			"windowHeatingStatus" => [
+				"windowHeatingStatus" => self::WINDOW_HEATING_STATUS_DYN
+			]
 		]
 	];
 	
@@ -128,7 +132,7 @@ class CarStatusFetcher{
 	private function fetchCarStatus(): bool{
 		Logger::log("Fetching car status...");
 		try{
-			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/status");
+			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=all");
 		}catch(IDAuthorizationException $exception){
 			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
 			Logger::notice("Refreshing tokens...");
@@ -150,19 +154,11 @@ class CarStatusFetcher{
 			return false;
 		}
 		
-		if(!empty($data["error"])){
+		if(($error = $data["error"] ?? null) !== null || ($error = $data["userCapabilities"]["capabilitiesStatus"]["error"] ?? null) !== null){
 			Logger::var_dump($data, "decoded Data");
-			Logger::warning("VW API reported error while fetching car status: ".print_r($data["error"], true));
+			Logger::warning("VW API reported error while fetching car status: ".print_r($error, true));
 			Logger::notice("Ignoring these errors and continuing to attempt to decode data...");
 		}
-		
-		if(empty($data["data"])){
-			Logger::critical("Failed to get carStatus: No Data in response!");
-			Logger::var_dump($data, "decoded Data");
-			return false;
-		}
-		
-		$data = $data["data"];
 		
 		$carStatusData = [];
 		
@@ -195,6 +191,8 @@ class CarStatusFetcher{
 						}
 					}
 				}
+			}elseif($key == "value"){ //filter "value" key
+				$this->readValues($content, $dataMap, $resultData, $lastLevelName); //skip over value key level
 			}elseif($lastLevelName !== "" && $key == "carCapturedTimestamp"){
 				$resultData[$lastLevelName."Timestamp"] = new DateTime($content);
 			}else{
