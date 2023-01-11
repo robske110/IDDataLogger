@@ -10,6 +10,7 @@ use robske_110\vwid\chargesession\ChargeSessionHandler;
 use robske_110\vwid\db\DatabaseConnection;
 use robske_110\vwid\db\DBmigrator;
 use robske_110\vwid\api\API;
+use robske_110\vwid\integrations\ABRP;
 use robske_110\vwid\wizard\SetupWizard;
 
 class Main{
@@ -32,6 +33,7 @@ class Main{
 			forceShutdown();
 		}
 		Logger::addOutputFilter($this->config["password"]);
+		Logger::addOutputFilter($this->config["integrations"]["abrp"]["user-token"]);
 		
 		Logger::log("Connecting to db...");
 		$this->db = new DatabaseConnection(
@@ -67,6 +69,15 @@ class Main{
 		$carStatusWriter = new CarStatusWriter($this->db);
 		$carStatusWriter->registerUpdateReceiver($this->chargeSessionHandler);
 		$this->carStatusFetcher->registerUpdateReceiver($carStatusWriter);
+
+		if(!empty($this->config["integrations"]["abrp"]["user-token"])){
+			$abrpIntegration = new ABRP(
+				$this->config["integrations"]["abrp"]["user-token"],
+				$this->config["integrations"]["abrp"]["api-key"] ?? null,
+				$this->chargeSessionHandler
+			);
+			$carStatusWriter->registerUpdateReceiver($abrpIntegration);
+		}
 	}
 	
 	public function getDB(): DatabaseConnection{

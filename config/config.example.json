@@ -16,6 +16,12 @@
         "angle": "right",
         "flip": true
     },
+    "integrations": {
+        "abrp": {
+            "user-token": "",
+            "api-key": null
+        }
+    },
     "timezone": null,
     "logging": {
         "debug-enable": false,

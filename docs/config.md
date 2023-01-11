@@ -11,7 +11,8 @@ Can be `null`, which causes the first vehicle to be used. (Recommended when you 
 
 `base-updaterate` Updaterate for the car values. (Note: Data will only be written to db when data changed.)
 
-`increased-updaterate` This updaterate will be used while the car is charging or hvac is active.
+`increased-updaterate` This updaterate will be used while the car is charging or hvac is active, or if the last
+update was during the last 6 minutes (which will mainly be while driving).
 
 `db.host` The host of the postgres db server
 
@@ -41,6 +42,10 @@ can have the following values:
 | front | right  |
 
 Note: For changes to the carpic settings to apply, delete data/carPic.png
+
+`integrations.abrp.user-token` The user token to use for the [ABRP integration](https://github.com/robske110/IDDataLogger/wiki/ABRP-integration), which can be generated in the ABRP app.
+
+`integrations.abrp.api-key` Strictly optional. Overrides the default (hardcoded) api token for the ABRP live data API.
 
 `timezone` Server timezone. This is used for correct timestamps in logs. (Overrides settings in php.ini)
 

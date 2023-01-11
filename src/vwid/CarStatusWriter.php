@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace robske_110\vwid;
 
+use DateTime;
 use PDOException;
 use PDOStatement;
 use robske_110\utils\ErrorUtils;
@@ -73,12 +74,8 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 	public function carStatusUpdate(array $carStatusData){
 		$this->writeCarStatus($carStatusData);
 	}
-	
-	/**
-	 * @param array $carStatusData The carStatusData to write to the db
-	 */
-	public function writeCarStatus(array $carStatusData, bool $retry = true){
-		$data = [];
+
+	public static function getCarStatusTimestamp(array $carStatusData): ?DateTime{
 		$dateTime = null;
 		foreach(array_merge(...array_values(CarStatusFetcher::DATA_MAPPING)) as $key => $val){
 			if(!isset($carStatusData[$key."Timestamp"])){
@@ -93,6 +90,15 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 				}
 			}
 		}
+		return $dateTime;
+	}
+
+	/**
+	 * @param array $carStatusData The carStatusData to write to the db
+	 */
+	public function writeCarStatus(array $carStatusData, bool $retry = true){
+		$data = [];
+		$dateTime = self::getCarStatusTimestamp($carStatusData);
 		if($dateTime == null){
 			Logger::var_dump($carStatusData, "carStatusData");
 			throw new RuntimeException("Data does not contain any timestamps, unable to write to db!");
