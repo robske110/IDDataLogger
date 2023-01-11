@@ -19,6 +19,13 @@ class ConfigWizard extends InteractiveWizard{
 		if(isset(getopt("", ["use-env"])["use-env"])){
 			exit($this->createConfigFromEnvironment() ? 0 : 1);
 		}
+		if(isset(getopt("", ["setup-abrp"])["setup-abrp"])){
+			if(!file_exists(BASE_DIR."config/config.json")){
+				$this->interactiveDBconfig();
+			}
+			$this->interactiveABRPconfig();
+			exit;
+		}
 		$this->interactiveDBconfig();
 	}
 	
@@ -155,6 +162,22 @@ environment variables or placing the content of public in another level of your 
 INFO);
 		}
 	}
+
+	public function interactiveABRPconfig(){
+		$this->message("Welcome to the config wizard for enabling the ABRP integration");
+		$this->message("You need to get a token for the generic data source from within the ABRP app.");
+		$this->message("See the wiki page \"ABRP integration\" for details!");
+
+		$abrpUserToken = $this->get("What is your abrp user token?");
+
+		if(file_exists(BASE_DIR."config/config.json")){
+			$this->writeJsonConfigABRP($abrpUserToken, "config.json");
+		}else{
+			$this->writeJsonConfigABRP($abrpUserToken);
+		}
+
+		$this->message("Perfect! The abrp user token has been written to config/config.json. You need to restart IDDataLogger now.");
+	}
 	
 	private function writeDotEnv(array $iniValues){
 		$newIni = "";
@@ -190,6 +213,17 @@ INFO);
 		$config["db"]["password"] = $password;
 		$config["db"]["driver"] = $driver;
 		
+		file_put_contents(BASE_DIR."config/config.json", json_encode($config, JSON_PRETTY_PRINT));
+		return $config;
+	}
+
+	private function writeJsonConfigABRP(
+		string $abrpUserToken, string $filename = "config.example.json"
+	): array{
+		$config = json_decode(file_get_contents(BASE_DIR."config/".$filename), true);
+
+		$config["integrations"]["abrp"]["user-token"] = $abrpUserToken;
+
 		file_put_contents(BASE_DIR."config/config.json", json_encode($config, JSON_PRETTY_PRINT));
 		return $config;
 	}
