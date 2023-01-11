@@ -43,6 +43,10 @@ can have the following values:
 
 Note: For changes to the carpic settings to apply, delete data/carPic.png
 
+`integrations.abrp.user-token` The user token to use for the [ABRP integration](https://github.com/robske110/IDDataLogger/wiki/ABRP-integration), which can be generated in the ABRP app.
+
+`integrations.abrp.api-key` Strictly optional. Overrides the default (hardcoded) api token for the ABRP live data API.
+
 `timezone` Server timezone. This is used for correct timestamps in logs. (Overrides settings in php.ini)
 
 `logging.debug-enable` Enables debug output

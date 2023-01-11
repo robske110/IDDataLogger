@@ -16,17 +16,17 @@
         "angle": "right",
         "flip": true
     },
+    "integrations": {
+        "abrp": {
+            "user-token": "",
+            "api-key": null
+        }
+    },
     "timezone": null,
     "logging": {
         "debug-enable": false,
         "curl-verbose": false,
         "file-enable": false,
         "log-dir": null
-    },
-    "integrations": {
-        "abrp": {
-            "user-token": "",
-            "api-key": null
-        }
     }
 }
