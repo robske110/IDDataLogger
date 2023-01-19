@@ -91,7 +91,7 @@ class CarStatusFetcher{
 			//increase update rate while charging or hvac active or when last update was less than 6 minutes ago
 			$timestamp = CarStatusWriter::getCarStatusTimestamp($this->carStatusData); //TODO: Refactor?
 			if(
-				$this->carStatusData["chargeState"] == "readyForCharging" &&
+				$this->carStatusData["chargeState"] == "notReadyForCharging" &&
 				$this->carStatusData["hvacState"] == "off" &&
 				(time() - $timestamp?->getTimestamp()) > 60 * 6
 			){

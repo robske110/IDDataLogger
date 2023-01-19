@@ -69,7 +69,13 @@ function processCarStatus(carStatus){
 			case "chargePurposeReachedAndConservation":
 				chargeState = "holding charge";
 				break;
+			case "chargePurposeReachedAndNotConservationCharging":
+				chargeState = "charged (no conservation)";
+				break;
 			case "readyForCharging":
+				chargeState = "not charging";
+				break;
+			case "notReadyForCharging":
 				chargeState = "not charging";
 				break;
 			default:
