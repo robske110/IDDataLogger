@@ -71,7 +71,10 @@ class ChargeSession{
 				return false;
 			}
 		}
-		if($entry["chargestate"] == "readyForCharging" && $this->lastChargeState != "readyForCharging"){
+		if(
+			$entry["chargestate"] == "notReadyForCharging" && $this->lastChargeState != "notReadyForCharging" ||
+			$entry["chargestate"] == "readyForCharging" && $this->lastChargeState != "readyForCharging" //pre 3.0
+		){
 			Logger::log("Ended charging at ".$entry["time"]);
 			Logger::debug("lCS".$this->lastChargeState." cs:".$entry["chargestate"]);
 			$this->setChargeEndTime(new DateTime($entry["time"]));

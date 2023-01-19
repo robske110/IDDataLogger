@@ -16,7 +16,7 @@ const timetravel = null; //set to a unix timestamp to emulate the script being r
 
 const socThreshold = 95 //not implemented
 
-// WIDGET VERSION: v0.0.6-InDev
+// WIDGET VERSION: v0.0.7-InDev
 
 // Created by robske_110 24.01.2020
 // This script is originally inspired from https://gist.github.com/mountbatt/772e4512089802a2aa2622058dd1ded7
@@ -138,6 +138,8 @@ async function createWidget() {
 		case "connected":
 			//widget.refreshAfterDate = new Date(Date.now() + 300) //increase refresh rate?
 			switch (data.chargeState){
+				case "chargePurposeReachedAndNotConservationCharging":
+				case "notReadyForCharging":
 				case "readyForCharging":
 					chargeStatus = "🟠 "+getTranslatedText("chargeStatus.connected")
 					break;

@@ -27,7 +27,7 @@ $sqlChargeStart = "WITH chargeState_wprev AS (
 )
 SELECT time, chargeState, prev_chargeState
 FROM chargeState_wprev
-WHERE prev_chargeState = 'readyForCharging' AND chargeState = 'charging' LIMIT 1";
+WHERE prev_chargeState IN ('readyForCharging', 'notReadyForCharging') AND chargeState = 'charging' LIMIT 1";
 
 if(($_ENV["DB_DRIVER"] ?? "pgsql") != "pgsql"){
 	if($statusAt !== null){
