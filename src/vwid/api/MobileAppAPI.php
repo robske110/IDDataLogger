@@ -11,8 +11,8 @@ use robske_110\webutils\CurlError;
 use robske_110\webutils\Form;
 
 class MobileAppAPI extends API{
-	const LOGIN_BASE = "https://login.apps.emea.vwapps.io";
-	const API_BASE = "https://mobileapi.apps.emea.vwapps.io";
+	const LOGIN_BASE = "https://emea.bff.cariad.digital/user-login";
+	const API_BASE = "https://emea.bff.cariad.digital/vehicle/v1";
 	
 	private LoginInformation $loginInformation;
 	
