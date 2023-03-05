@@ -57,12 +57,12 @@ class CarPictureHandler{
 			}
 		}
 		$images = $websiteAPI->apiGetAP(
-			"https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/".$vin
+			"https://myvw-vilma-proxy-prod.apps.mega.cariad.cloud/vehicleimages/exterior/".$vin
 		)["images"];
 		foreach($images as $image){
 			if(
-				$image["viewDirection"] == ($this->config["viewDirection"] ?? "front") &&
-				$image["angle"] == ($this->config["angle"] ?? "right")
+				strtolower($image["viewDirection"]) == ($this->config["viewDirection"] ?? "front") &&
+				strtolower($image["angle"]) == ($this->config["angle"] ?? "right")
 			){
 				$imageUrl = $image["url"];
 			}
