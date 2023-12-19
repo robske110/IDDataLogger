@@ -140,7 +140,7 @@ class CarStatusFetcher{
 	private function fetchCarStatus(): bool{
 		Logger::log("Fetching car status...");
 		try{
-			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=all");
+			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=access,activeVentilation,auxiliaryHeating,batteryChargingCare,batterySupport,charging,chargingProfiles,climatisation,climatisationTimers,departureProfiles,fuelStatus,honkAndFlash,hybridCarAuxiliaryHeating,userCapabilities,vehicleHealthWarnings,vehicleHealthInspection,vehicleLights,measurements,departureTimers");
 		}catch(IDAuthorizationException $exception){
 			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
 			Logger::notice("Refreshing tokens...");
