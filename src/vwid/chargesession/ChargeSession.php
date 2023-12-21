@@ -134,7 +134,8 @@ class ChargeSession{
 				$this->avgChargeKMR != 0 && $this->avgChargePower !== null ?
 				"avgChgKMR/avgChgPower: ".round($this->avgChargePower/$this->avgChargeKMR, 2).PHP_EOL : ""
 			).
-			"range/soc: start".round($this->rangeStart/$this->socStart, 1)." end".round($this->rangeEnd/$this->socEnd, 1)
+			"range/soc: start".round($this->rangeStart/max($this->socStart, 1), 1).
+			" end".round($this->rangeEnd/max($this->socEnd, 1), 1)
 		);
 	}
 }
