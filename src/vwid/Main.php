@@ -51,6 +51,7 @@ class Main{
 			)[0]["table_name"] ?? "") !== "carstatus"
 		){
 			self::initializeTables($this->db);
+			new DBmigrator($this->db, true);
 			if(($_SERVER['argv'][1] ?? "") != "--no-wizard"){
 				new SetupWizard($this);
 				$didWizard = true;
