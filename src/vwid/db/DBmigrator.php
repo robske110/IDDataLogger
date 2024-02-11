@@ -18,11 +18,19 @@ class DBmigrator{
 	
 	public function doAutoMigration(){
 		try{
-			$this->db->query("SELECT settingValue FROM settings WHERE settingKey = 'dbschemaversion'");
+			$dbSchemaVersion = $this->db->query(
+				"SELECT settingvalue FROM settings WHERE settingKey = 'dbschemaversion'"
+			)[0]["settingvalue"];
 		}catch(RuntimeException){
 			Logger::notice("Could not find settings table, upgrading schema to V1");
 			Main::initializeTables($this->db);
 			$this->setDBversion("1");
+			$dbSchemaVersion = "1";
+		}
+		if(version_compare($dbSchemaVersion, "1.1") < 0){
+			Logger::notice("Upgrading schema to V1.1 (Adding odometer column)");
+			$this->db->query("ALTER TABLE carStatus ADD COLUMN odometer integer");
+			$this->setDBversion("1.1");
 		}
 	}
 	

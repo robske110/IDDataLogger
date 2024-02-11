@@ -67,7 +67,36 @@ class CarStatusFetcher{
 			"windowHeatingStatus" => [
 				"windowHeatingStatus" => self::WINDOW_HEATING_STATUS_DYN
 			]
+		],
+		"measurements" => [
+			"odometerStatus" => [
+				"odometer" => null
+			]
 		]
+	];
+
+	const JOBS = [
+		"access",
+		"activeVentilation",
+		"auxiliaryHeating",
+		"batteryChargingCare",
+		"batterySupport",
+		"charging",
+		"chargingProfiles",
+		"climatisation",
+		"climatisationTimers",
+		"departureProfiles",
+		"fuelStatus",
+		"honkAndFlash",
+		"hybridCarAuxiliaryHeating",
+		"userCapabilities",
+		"vehicleHealthWarnings",
+		"vehicleHealthInspection",
+		"vehicleLights",
+		"measurements",
+		"departureTimers",
+		"lvBattery",
+		"readiness"
 	];
 	
 	public function __construct(array $config){
@@ -140,7 +169,7 @@ class CarStatusFetcher{
 	private function fetchCarStatus(): bool{
 		Logger::log("Fetching car status...");
 		try{
-			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=access,activeVentilation,auxiliaryHeating,batteryChargingCare,batterySupport,charging,chargingProfiles,climatisation,climatisationTimers,departureProfiles,fuelStatus,honkAndFlash,hybridCarAuxiliaryHeating,userCapabilities,vehicleHealthWarnings,vehicleHealthInspection,vehicleLights,measurements,departureTimers");
+			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=".implode(",", self::JOBS));
 		}catch(IDAuthorizationException $exception){
 			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
 			Logger::notice("Refreshing tokens...");
