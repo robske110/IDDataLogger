@@ -72,6 +72,12 @@ class CarStatusFetcher{
 			"odometerStatus" => [
 				"odometer" => null
 			]
+		],
+		"parking" => [
+			"parkingPosition" => [
+				"latitude" => "latitude",
+				"longitude" => "longitude"
+			]
 		]
 	];
 
@@ -96,7 +102,8 @@ class CarStatusFetcher{
 		"measurements",
 		"departureTimers",
 		"lvBattery",
-		"readiness"
+		"readiness",
+		"parking"
 	];
 	
 	public function __construct(array $config){

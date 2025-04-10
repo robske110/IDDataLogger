@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS carStatus (
   zoneRearRightEnabled      boolean,
   frontWindowHeatingState   text,
   rearWindowHeatingState    text,
-  odometer                  integer
+  odometer                  integer,
+  latitude		    decimal(8, 6),
+  longitude		    decimal(9, 6)
 );
 
 CREATE TABLE IF NOT EXISTS users (
