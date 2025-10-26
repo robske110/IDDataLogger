@@ -17,7 +17,7 @@ class DBmigrator{
 		if(!$initialStart){
 			$this->doAutoMigration();
 		}else{
-			$this->setDBversion("1.1");
+			$this->setDBversion("1.2");
 			Logger::log("Successfully initialized database with schema version V".$this->dbSchemaVersion);
 		}
 	}
@@ -44,6 +44,12 @@ class DBmigrator{
 			Logger::notice("Upgrading schema to V1.1 (Adding odometer column)");
 			$this->db->query("ALTER TABLE carStatus ADD COLUMN odometer integer");
 			$this->setDBversion("1.1");
+		}
+		if(version_compare($this->dbSchemaVersion, "1.2") < 0){
+			Logger::notice("Upgrading schema to V1.2 (Adding parking position columns)");
+			$this->db->query("ALTER TABLE carStatus ADD COLUMN parkingPositionLongitude float");
+			$this->db->query("ALTER TABLE carStatus ADD COLUMN parkingPositionLatitude float");
+			$this->setDBversion("1.2");
 		}
 		if($startupDbSchemaVersion !== $this->dbSchemaVersion){
 			Logger::log(

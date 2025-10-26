@@ -37,7 +37,9 @@ class CarStatusWriter implements CarStatusUpdateReceiver{
 		"zoneRearRightEnabled",
 		"frontWindowHeatingState",
 		"rearWindowHeatingState",
-		"odometer"
+		"odometer",
+		"parkingPositionLongitude",
+		"parkingPositionLatitude"
 	];
 	
 	private DatabaseConnection $db;

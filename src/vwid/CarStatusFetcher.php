@@ -72,6 +72,10 @@ class CarStatusFetcher{
 			"odometerStatus" => [
 				"odometer" => null
 			]
+		],
+		"parkingPosition" => [
+			"lon" => "parkingPositionLongitude",
+			"lat" => "parkingPositionLatitude"
 		]
 	];
 
@@ -117,6 +121,9 @@ class CarStatusFetcher{
 			if(!$this->fetchCarStatus()){
 				return;
 			}
+			if(!$this->fetchCarParkingPosition()){
+				return;
+			}
 			//increase update rate while charging or hvac active or when last update was less than 6 minutes ago
 			$timestamp = CarStatusWriter::getCarStatusTimestamp($this->carStatusData); //TODO: Refactor?
 			if(
@@ -160,9 +167,21 @@ class CarStatusFetcher{
 		$this->vin = $vehicleToUse["vin"];
 		//$name = $vehicleToUse["nickname"];
 	}
+
+	private function handleIDAuthorizationException(IDAuthorizationException $exception){
+		Logger::notice("IDAuthorizationException: ".$exception->getMessage());
+		Logger::notice("Refreshing tokens...");
+		if(!$this->idAPI->refreshToken()){
+			Logger::notice("Failed to refresh token, trying to re-login");
+			$this->login();
+		}else{
+			Logger::log("Successfully refreshed token");
+		}
+		$this->currentUpdateRate = 1; //trigger update on next tick
+	}
 	
 	/**
-	 * Fetches the new car status from the vehicles/vin/status endpoint
+	 * Fetches the new car status from the vehicles/vin/selectivestatus endpoint with SELF::JOBS
 	 *
 	 * @return bool Whether the fetching was successful.
 	 */
@@ -171,15 +190,7 @@ class CarStatusFetcher{
 		try{
 			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/selectivestatus?jobs=".implode(",", self::JOBS));
 		}catch(IDAuthorizationException $exception){
-			Logger::notice("IDAuthorizationException: ".$exception->getMessage());
-			Logger::notice("Refreshing tokens...");
-			if(!$this->idAPI->refreshToken()){
-				Logger::notice("Failed to refresh token, trying to re-login");
-				$this->login();
-			}else{
-				Logger::log("Successfully refreshed token");
-			}
-			$this->currentUpdateRate = 1; //trigger update on next tick
+			$this->handleIDAuthorizationException();
 			return false;
 		}catch(IDAPIException $idAPIException){
 			Logger::critical("IDAPIException while trying to fetch car status");
@@ -205,6 +216,42 @@ class CarStatusFetcher{
 		$this->readValues($data, self::DATA_MAPPING, $carStatusData);
 		$this->carStatusData = $carStatusData;
 		#var_dump($carStatusData);
+		return true;
+	}
+
+	/**
+	 * Fetches the new car status from the vehicles/vin/status endpoint
+	 *
+	 * @return bool False when fetching should be retried to avoid writing status without parkingPosition.
+	 */
+	private function fetchCarParkingPosition(): bool{
+		try{
+			$data = $this->idAPI->apiGet("vehicles/".$this->vin."/parkingposition");
+		}catch(IDAuthorizationException $exception){
+			$this->handleIDAuthorizationException($exception);
+			return false;
+		}catch(IDAPIException $idAPIException){
+			Logger::critical("IDAPIException while trying to fetch car parking position");
+			ErrorUtils::logException($idAPIException);
+			return true;
+		}catch(CurlError $curlError){
+			Logger::critical("CurlError while trying to fetch car parking position");
+			ErrorUtils::logException($curlError);
+			return true;
+		}
+
+		if(($error = $data["error"] ?? null) !== null){
+			Logger::var_dump($data, "decoded Data");
+			Logger::warning("VW API reported error while fetching car parking position: ".print_r($error, true));
+			Logger::notice("Ignoring these errors and continuing to attempt to decode data...");
+		}
+
+		if(API::$VERBOSE){
+			Logger::var_dump($data);
+		}
+		$data = ["parkingPosition" => $data["data"]];
+		$this->readValues($data, self::DATA_MAPPING, $this->carStatusData);
+		#Logger::var_dump($this->carStatusData);
 		return true;
 	}
 	
