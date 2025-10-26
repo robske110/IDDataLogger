@@ -73,9 +73,11 @@ class CarStatusFetcher{
 				"odometer" => null
 			]
 		],
-		"parkingPosition" => [
-			"lon" => "parkingPositionLongitude",
-			"lat" => "parkingPositionLatitude"
+		"parking" => [
+			"parkingPosition" => [
+				"lon" => "parkingPositionLongitude",
+				"lat" => "parkingPositionLatitude"
+			]
 		]
 	];
 
@@ -249,9 +251,10 @@ class CarStatusFetcher{
 		if(API::$VERBOSE){
 			Logger::var_dump($data);
 		}
-		$data = ["parkingPosition" => $data["data"]];
+		//TODO: Do not merge this into the carStatusData to preserve timestamp (potentially should have own table)
+		$data = ["parking" => ["parkingPosition" => $data["data"]]];
 		$this->readValues($data, self::DATA_MAPPING, $this->carStatusData);
-		#Logger::var_dump($this->carStatusData);
+		Logger::var_dump($this->carStatusData);
 		return true;
 	}
 	
