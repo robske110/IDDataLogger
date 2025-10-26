@@ -99,7 +99,7 @@ psql -c "CREATE USER iddatalogger WITH PASSWORD '$pg_pw';"
 The first cpmmand will create a secure password for our database. The second one will connect to the database and use
 the generated password to create the user iddatalogger. We must now echo this password using `echo "$pg_pw"`.
 You'll need the password in the one of the next steps, please copy it to a temporary location.
-Before we leave the postgres user we must create a database for the ID DataLogger: `createdb vwid`.
+Before we leave the postgres user we must create a database for the ID DataLogger: `createdb vwid --owner iddatalogger`.
 We are now finished with setting up the PostgreSQL database and can leave the postgres user using `exit`.
 
 #### 3. Downloading and configuring the ID DataLogger
