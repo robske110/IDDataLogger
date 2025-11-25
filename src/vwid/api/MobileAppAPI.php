@@ -35,20 +35,11 @@ class MobileAppAPI extends API{
 			"redirect_uri" => "weconnect://authenticated"
 		]);
 		
-		[$action, $fields] = $this->emailLoginStep($loginPage, $this->loginInformation);
-
-		Logger::debug("Sending password ...");
-		try{
-			$this->postRequest(self::LOGIN_HANDLER_BASE.$action, $fields);
-		}catch(CurlError $curlError){
-			if($curlError->curlErrNo !== 1){
-				throw $curlError;
-			}
-		}
+		$loggedInPage = $this->loginPage($loginPage, $this->loginInformation);
 		
 		if(empty($this->weConnectRedirFields)){
-			Logger::var_dump($resultPage ?? "not defined", "loggedInPage");
-			throw new IDLoginException("Unable to login. Check login information (password)! See FAQ if issue persists. (Could not find location header)");
+			Logger::var_dump($loggedInPage ?? "not defined", "loggedInPage");
+			throw new IDLoginException("Unable to login. Check login information! See FAQ if issue persists. (Could not find location header)");
 		}
 		if(self::$VERBOSE) Logger::var_dump($this->weConnectRedirFields, "weConnectRedirFields");
 		Logger::debug("Getting real token...");

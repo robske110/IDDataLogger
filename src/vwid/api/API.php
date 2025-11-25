@@ -9,8 +9,10 @@ use robske_110\utils\Logger;
 use robske_110\vwid\api\exception\IDAPIException;
 use robske_110\vwid\api\exception\IDAuthorizationException;
 use robske_110\vwid\api\exception\IDLoginException;
+use robske_110\webutils\CurlError;
 use robske_110\webutils\CurlWrapper;
 use robske_110\webutils\Form;
+use robske_110\webutils\HTTPUtils;
 
 class API extends CurlWrapper{
 	public static bool $VERBOSE = false;
@@ -42,46 +44,26 @@ class API extends CurlWrapper{
 	
 	const LOGIN_HANDLER_BASE = "https://identity.vwgroup.io";
 	
-	public function emailLoginStep(string $loginPage, LoginInformation $loginInformation){
+	public function loginPage(string $loginPage, LoginInformation $loginInformation){
 		$dom = new DOMDocument();
 		$dom->strictErrorChecking = false;
 		$dom->loadHTML($loginPage);
 		
-		$form = new Form($dom->getElementById("emailPasswordForm"));
+		$form = new Form($dom->getElementsByTagName("form")->item(0));
 		$fields = $form->getHiddenFields();
 		if(self::$VERBOSE) Logger::var_dump($fields, "emailPasswordForm");
-		$fields["email"] = $loginInformation->username;
-		
-		Logger::debug("Sending email...");
-		$pwdPage = $this->postRequest(self::LOGIN_HANDLER_BASE.$form->getAttribute("action"), $fields);
-		
-		$dom = new DOMDocument();
-		$dom->strictErrorChecking = false;
-		$dom->loadHTML($pwdPage);
-		
-		if($dom->getElementById("emailPasswordForm") !== null){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException("Unable to login. Check login information (e-mail)! (Still found emailPasswordForm)");
-		}
+		$fields["username"] = $loginInformation->username;
 		$fields["password"] = $loginInformation->password;
 		
-		$errorString =
-			"Unable to login. Most likely caused by an unexpected change on VW's side.".
-			" Check login information. If issue persists, open an issue!";
-		$hmac = preg_match("/\"hmac\":\"([^\"]*)\"/", $pwdPage, $matches);
-		if(!$hmac){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException($errorString." (could not find hmac)");
+		Logger::debug("Sending emailPasswordForm...");
+		try{
+			$loggedInPage = $this->postRequest(curl_getinfo($this->ch, CURLINFO_EFFECTIVE_URL), HTTPUtils::makeFieldStr($fields));
+		}catch(CurlError $curlError){
+			if($curlError->curlErrNo !== 1){
+				throw $curlError;
+			}
 		}
-		$fields["hmac"] = $matches[1];
-		
-		//Note: this could also be parsed from postAction
-		$action = preg_replace("/(?<=\/)[^\/]*$/", "authenticate", $form->getAttribute("action"));
-		if($action === $form->getAttribute("action") || $action === null){
-			Logger::var_dump($pwdPage, "pwdPage");
-			throw new IDLoginException($errorString." (action did not match expected format)");
-		}
-		
-		return [$action, $fields];
+
+		return $loggedInPage ?? null;
 	}
 }

@@ -10,7 +10,7 @@ final class HTTPUtils{
 		}
 		$fieldStr = "?";
 		foreach($fields as $fieldName => $fieldValue){
-			$fieldStr.= $fieldName."=".$fieldValue."&";
+			$fieldStr.= $fieldName."=".urlencode($fieldValue)."&";
 		}
 		return $fieldStr;
 	}
