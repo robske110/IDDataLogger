@@ -13,7 +13,7 @@
     },
     "carpic": {
         "viewDirection": "front",
-        "angle": "right",
+        "angle": "left",
         "flip": true
     },
     "integrations": {

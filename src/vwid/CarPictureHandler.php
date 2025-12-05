@@ -6,6 +6,7 @@ namespace robske_110\vwid;
 use robske_110\utils\ErrorUtils;
 use robske_110\utils\Logger;
 use robske_110\utils\QueryCreationHelper;
+use robske_110\utils\Uuid;
 use robske_110\vwid\api\LoginInformation;
 use robske_110\vwid\api\WebsiteAPI;
 use robske_110\vwid\db\DatabaseConnection;
@@ -39,13 +40,16 @@ class CarPictureHandler{
 	
 	public function fetchCarPicture(){
 		$websiteAPI = new WebsiteAPI(new LoginInformation($this->config["username"], $this->config["password"]));
-		
-		$cars = $websiteAPI->apiGetAP("https://myvwde.cloud.wholesaleservices.de/api/tbo/cars");
-		$vin = $cars[0]["vin"];
+
+		$cars = $websiteAPI->apiGetCSRF(
+			"https://www.volkswagen.de/app/authproxy/vw-de/proxy/v2/users/me/relations",
+			["resourceHost" => "myvw-vum-prod"], ["traceId: ".Uuid::randomUUID()]
+		)["relations"];
+		$vin = $cars[0]["vehicle"]["vin"];
 		if(!empty($this->config["vin"])){
 			foreach($cars as $car){
-				if($car["vin"] === $this->config["vin"]){
-					$vin = $car["vin"];
+				if($car["vehicle"]["vin"] === $this->config["vin"]){
+					$vin = $car["vehicle"]["vin"];
 				}
 			}
 			if($vin !== $this->config["vin"]){
@@ -56,13 +60,14 @@ class CarPictureHandler{
 				);
 			}
 		}
-		$images = $websiteAPI->apiGetAP(
-			"https://myvw-vilma-proxy-prod.apps.mega.cariad.cloud/vehicleimages/exterior/".$vin
+		$images = $websiteAPI->apiGetCSRF(
+			"https://www.volkswagen.de/app/authproxy/vw-de/proxy/vehicleimages/exterior/".$vin,
+			["resourceHost" => "myvw-vilma-proxy-prod"]
 		)["images"];
 		foreach($images as $image){
 			if(
-				strtolower($image["viewDirection"]) == ($this->config["viewDirection"] ?? "front") &&
-				strtolower($image["angle"]) == ($this->config["angle"] ?? "right")
+				strtolower($image["viewDirection"]) == ($this->config["carPic"]["viewDirection"] ?? "front") &&
+				strtolower($image["angle"]) == ($this->config["carPic"]["angle"] ?? "left")
 			){
 				$imageUrl = $image["url"];
 			}
@@ -71,7 +76,8 @@ class CarPictureHandler{
 			Logger::var_dump($images);
 			throw new RuntimeException(
 				"Unable to fetch a car picture: Could not find uri for vin: ".
-				$vin.", viewDirection: ".$this->config["viewDirection"].", angle: ".$this->config["angle"]
+				$vin.", viewDirection: ".($this->config["carPic"]["viewDirection"] ?? "front").
+				", angle: ".($this->config["carPic"]["angle"] ?? "right")
 			);
 		}
 		file_put_contents(self::PICTURE_LOCATION, file_get_contents($imageUrl));
